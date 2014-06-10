@@ -202,6 +202,42 @@ function poi_pos_models(instance, module){
 
             return invoiced;
         },
+        _save_to_server: function (orders, options) {
+            if (!orders || !orders.length) {
+                var result = $.Deferred();
+                result.resolve();
+                return result;
+            }
+
+            options = options || {};
+
+            var self = this;
+            var timeout = typeof options.timeout === 'number' ? options.timeout : 30000 * orders.length;
+
+            // we try to send the order. shadow prevents a spinner if it takes too long. (unless we are sending an invoice,
+            // then we want to notify the user that we are waiting on something )
+            var posOrderModel = new instance.web.Model('pos.order');
+            return posOrderModel.call('create_from_ui',
+                [_.map(orders, function (order) {
+                    order.to_invoice = options.to_invoice || false;
+                    return order;
+                })],
+                undefined,
+                {
+                    shadow: !options.to_invoice,
+                    timeout: timeout
+                }
+            ).then(function () {
+                _.each(orders, function (order) {
+                    self.db.remove_order(order.id);
+                });
+            }).fail(function (unused, event){
+                // prevent an error popup creation by the rpc failure
+                // we want the failure to be silent as we send the orders in the background
+                event.preventDefault();
+                console.error('Failed to send orders:', orders);
+            });
+        },
     });
 
 	module.Orderline = module.Orderline.extend({
