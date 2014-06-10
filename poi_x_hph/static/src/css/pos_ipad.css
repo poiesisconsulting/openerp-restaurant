@@ -1,0 +1,612 @@
+.pos .modal-dialog{
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height:100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index:1000;
+}
+.pos .modal-dialog .popup{
+    padding:0;
+    padding-top:0;
+    text-align:center;
+    background-color: rgba(0,0,0,0.5);
+    color: white;
+    border-radius: 3px;
+    z-index:1200;
+}
+
+/*This CSS will avoid divs to be wider than container because of padding extra pixels*/
+.pos .modal-dialog .popup div{
+    width: 100%;
+    -moz-box-sizing:    border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing:        border-box;
+}
+
+.pos .modal-dialog .popup_header{
+    position: absolute;
+    top: 0;
+    height: 70px;
+    padding: 10px;
+    font-weight:bold;
+    font-size:36px;
+    border-bottom: 1px solid white;
+}
+
+.pos .modal-dialog .multiple_header{
+    position: absolute;
+    top: 70px;
+    padding: 10px;
+    overflow: auto;
+}
+
+.pos .modal-dialog .popup_body{
+    position: absolute;
+    top: 70px;
+    padding: 10px;
+    overflow: auto;
+}
+
+.pos .modal-dialog .message_box{
+    display: none;
+    background-color: rgba(0,0,0,0.5);
+    color: #FF3333;
+    font-size: 24px;
+    font-weight: normal;
+    text-align: center;
+    z-index:1500;
+}
+
+.pos .modal-dialog .popup_footer{
+    position: absolute;
+    bottom: 0;
+    padding: 10px;
+    text-align: right;
+    border-top: 1px solid white;
+}
+
+.pos .modal-dialog .popup_button, .pos .modal-dialog .popup_button:focus{
+    margin-left: 10px;
+    -webkit-margin-before: 10px;
+    border-color: black !important;
+    font-size: 32px;
+    font-weight: bold;
+    width: 150px;
+    height: 80px;
+    vertical-align: middle !important;
+    background-image: none !important;
+    background-color: rgba(0,0,0,0.5) !important;
+    border-color: black;
+    color: white;
+    text-shadow: none;
+    -webkit-box-shadow: 0 0 5px #000000, 0 1px 1px rgba(255, 255, 255, 0.8) inset;
+    box-shadow: 0 0 5px #000000, 0 1px 1px rgba(255, 255, 255, 0.8) inset;
+}
+.pos .modal-dialog .popup_button:hover{
+    -webkit-box-shadow: 0 0 5px #000000, 0 1px 1px rgba(255, 255, 255, 0.8) inset;
+    box-shadow: 0 0 5px #000000, 0 1px 1px rgba(255, 255, 255, 0.8) inset;
+}
+
+.pos .modal-dialog .popup_button:active{
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+.pos .modal-dialog .popup_button_2x, .pos .modal-dialog .popup_button:focus{
+    margin-left: 10px;
+    -webkit-margin-before: 10px;
+    border-color: black !important;
+    font-size: 32px;
+    font-weight: bold;
+    width: 150px;
+    height: 80px;
+    vertical-align: middle !important;
+    background-image: none !important;
+    background-color: rgba(0,0,0,0.5);
+    border-color: black;
+    color: white;
+    text-shadow: none;
+    -webkit-box-shadow: 0 0 5px #000000, 0 1px 1px rgba(255, 255, 255, 0.8) inset;
+    box-shadow: 0 0 5px #000000, 0 1px 1px rgba(255, 255, 255, 0.8) inset;
+}
+.pos .modal-dialog .popup_button_2x:hover{
+    -webkit-box-shadow: 0 0 5px #000000, 0 1px 1px rgba(255, 255, 255, 0.8) inset;
+    box-shadow: 0 0 5px #000000, 0 1px 1px rgba(255, 255, 255, 0.8) inset;
+}
+
+.pos .modal-dialog .popup_button_2x:active{
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+.pos .modal-dialog table.numpad{
+    padding: 2px;
+}
+
+.pos .modal-dialog table.numpad td{
+    padding: 5px;
+}
+
+.pos .modal-dialog .pin-number-char, .pos .modal-dialog .seq-number-char {
+    height: 100px;
+    width: 100px;
+    font-size: 75px;
+    font-weight: bold;
+    vertical-align: middle;
+
+    background-image: none !important;
+    background-color: rgba(0,0,0,0.5) !important;
+    border-color: black;
+    color: white;
+    text-shadow: none;
+    -webkit-box-shadow: 0 0 5px #000000, 0 1px 1px rgba(255, 255, 255, 0.8) inset;
+    box-shadow: 0 0 5px #000000, 0 1px 1px rgba(255, 255, 255, 0.8) inset;
+}
+
+.pos .modal-dialog .pin-numpad-backspace, .pos .modal-dialog .seq-numpad-backspace{
+    position: relative;
+    margin-left: 5px;
+    height: 100px;
+    width: 150px;
+
+    background-image: none !important;
+    background-color: rgba(0,0,0,0.5) !important;
+    border-color: black;
+    color: white;
+    text-shadow: none;
+    -webkit-box-shadow: 0 0 5px #000000, 0 1px 1px rgba(255, 255, 255, 0.8) inset;
+    box-shadow: 0 0 5px #000000, 0 1px 1px rgba(255, 255, 255, 0.8) inset;
+}
+
+.pos .modal-dialog .pin_code, .pos .modal-dialog .sequence-text{
+    font-size: 50px;
+    width: 150px;
+    text-align: center;
+}
+
+.pos button.fired{
+    color: black !important;
+    background-color: rgb(100,100,100) !important;
+    box-shadow: none !important;
+    /*text-decoration: line-through !important;*/
+}
+
+.pos button.fired:active{
+    background-color: #7f82ac !important;
+}
+
+#notes_text{
+    float:left;
+    resize: none;
+    border: 1;
+    color: black;
+    font-size: 24px;
+    font-weight:normal;
+    width: 100%;
+    height: 100px;
+    -webkit-box-sizing:
+    border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.pos .modal-dialog .td_right{
+    text-align: right !important;
+}
+.pos .modal-dialog .td_left{
+    text-align: left !important;
+}
+
+.pos .modal-dialog .popup_body div.modif_header{
+    margin-top: 30px;
+    float: left;
+    text-align: left;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    width: 50%;
+}
+
+.pos .modal-dialog .popup_body .modif_body{
+    color: white;
+    font-weight:normal;
+    border-bottom:groove gray;
+}
+
+.pos .modal-dialog .popup_body .modifRows td{
+    height: 40px;
+    font-size: 24px;
+}
+
+.pos .modal-dialog .popup_lock{
+    position: absolute;
+    display: inline-block;
+    top: 25%;
+    left: 55%;
+}
+
+.pos .modal-dialog .popup_sequence{
+    position: absolute;
+    display: inline-block;
+    top: 25%;
+    left: 55%;
+}
+
+.pos .modal-dialog .popup_ol_options{
+    position: absolute;
+    top: 35%;
+    left: 50%;
+    text-align: center;
+    font-weight: normal;
+}
+
+.pos .modal-dialog .popup_modifiers{
+    position: absolute;
+    top: 25%;
+    left: 55%;
+    padding: 10none;
+    text-align: center;
+    font-weight: normal;
+}
+
+.pos .modal-dialog .popup_multiple{
+    position: absolute;
+    top: 25%;
+    left: 45%;
+}
+
+.pos .multiRows td{
+    height: 60px;
+    vertical-align: middle;
+    border-bottom: 1px solid gray;
+}
+
+.pos .modal-dialog .popup_showOrds{
+    position: absolute;
+    top: 30%;
+    left: 55%;
+    width: 320px;
+    height: 300px;
+}
+
+.pos .popup_showOrds .show_orders_td{
+    padding: 5px;
+    vertical-align: middle;
+    font-weight: normal;
+    border-top: 1px solid gray;
+    cursor: pointer;
+}
+
+.pos .popup_sp .sp_td{
+    padding: 5px;
+    vertical-align: middle;
+    font-weight: normal;
+    border-bottom: 1px solid gray;
+    cursor: pointer;
+}
+
+
+
+/*HIDDING IMAGES*/
+
+.pos .hph-category-button {
+    font-size: 1.7em;
+    position: relative;
+    display: inline-block;
+    margin-right:10px;
+    padding: 5px 12px;
+    line-height: 24px;
+    border-radius: 3px;
+
+    cursor: pointer;
+    border: 1px solid #cacaca;
+
+    background: #e2e2e2;
+}
+
+
+/*  e) the product */
+
+.pos .product {
+    font-size: 1.9em;
+    position:relative;
+    vertical-align: top;
+    display: inline-block;
+    line-height: 100px;
+    margin: 5px !important;
+    width: 30%;
+    height:80px;
+    background:#fff;
+    border: 1px solid #e2e2e2;
+    border-radius: 3px;
+    border-bottom-width: 3px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.pos .product .hph-price-tag {
+    vertical-align: top;
+    float: right;
+    color: white;
+    line-height: 13px;
+    background: #7f82ac;
+    padding: 5px 8px;
+    border-radius: 2px;
+}
+
+.pos .product .product-details {
+    position: absolute;
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+        -ms-box-sizing: border-box;
+            box-sizing: border-box;
+    bottom:0;
+    top:auto;
+    line-height: 14px;
+    width:100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    //background: -webkit-linear-gradient(-90deg,rgba(255,255,255,0),rgba(255,255,255,1), rgba(255,255,255,1));
+    //background:    -moz-linear-gradient(-90deg,rgba(255,255,255,0),rgba(255,255,255,1), rgba(255,255,255,1));
+    //background:     -ms-linear-gradient(-90deg,rgba(255,255,255,0),rgba(255,255,255,1), rgba(255,255,255,1));
+    /* troublesome in latest webkit
+    //background:         linear-gradient(-90deg,rgba(255,255,255,0),rgba(255,255,255,1), rgba(255,255,255,1));
+    */
+    /*background:#FFF;*/
+    padding: 3px;
+    padding-top:15px;
+}
+
+.pos .product .product-name {
+    position: absolute;
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+        -ms-box-sizing: border-box;
+            box-sizing: border-box;
+    bottom:auto;
+    top:0;
+    line-height: 20px;
+    width:100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background: rgba(255,255,255,0);
+    text-shadow: 1px 1px #FFF;
+    //background: -webkit-linear-gradient(-90deg,rgba(255,255,255,0),rgba(255,255,255,1), rgba(255,255,255,1));
+    //background:    -moz-linear-gradient(-90deg,rgba(255,255,255,0),rgba(255,255,255,1), rgba(255,255,255,1));
+    //background:     -ms-linear-gradient(-90deg,rgba(255,255,255,0),rgba(255,255,255,1), rgba(255,255,255,1));
+    /* troublesome in latest webkit
+    //background:         linear-gradient(-90deg,rgba(255,255,255,0),rgba(255,255,255,1), rgba(255,255,255,1));
+    */
+    /*background:#FFF;*/
+    padding: 3px;
+    padding-top:15px;
+}
+
+.pos .order .prop_desc{
+    display: inline-block;
+    width:75%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.pos .order .orline_notes{
+    display: inline-block;
+    width:75%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pos .product .product-img {
+    position: relative;
+    width: 100%;
+    height: 100px;
+    background: white;
+    text-align: right;
+}
+
+.pos .product .product-img img {
+    max-height: 100px;
+    max-width:  120px;
+    vertical-align: middle;
+}
+
+
+
+
+
+.pos .order-button{
+    color: #f0f0f0;
+    display: inline-block;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    height: 32px;
+    padding: 4px 8px;
+    margin: 3px;
+    margin-bottom: 0px;
+    margin-right: 2px;
+    padding-top: 0px;
+    background: #8b8b8b;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    vertical-align: top;
+    line-height: 26px;
+    text-align: center;
+    box-shadow: 0px -5px 10px -6px rgb(82,82,82) inset;
+    cursor: pointer;
+    min-width: 54px;
+}
+
+/*  ********* The paypad contains the payment buttons ********* */
+
+.pos .paypad {
+    padding: 8px 4px 8px 8px;
+    display: inline-block;
+    text-align: center;
+    vertical-align: top;
+    width: 150px;
+    max-height: 350px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.pos .paypad button {
+    height: 39px;
+    display: block;
+    width: 100%;
+    margin: 0px -6px 4px -2px;
+    font-weight: bold;
+    vertical-align: middle;
+    color: #555555;
+    font-size: 20px;
+}
+
+/*  ********* The Numpad ********* */
+
+.pos .numpad {
+    padding: 8px 8px 8px 4px;
+    display: inline-block;
+    text-align: center;
+}
+.pos .numpad button {
+    height: 65px;
+    width: 65px;
+    margin: 0px 0px 4px 0px;
+    font-weight: bold;
+    vertical-align: middle;
+    color: #555555;
+}
+.pos .input-button {
+    font-size: 45px;
+}
+.pos .mode-button {
+    font-size: 20px;
+}
+
+
+/*  ********* MODIFIERS: hide price at popup ********* */
+.pos .modifPrice{
+    display: none;
+}
+/*  ************************************************** */
+
+
+#request_text{
+    float:left;
+    resize: none;
+    border: 1;
+    color: black;
+    font-size: 24px;
+    font-weight:normal;
+    width: 100%;
+    height: 100px;
+    -webkit-box-sizing:
+    border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+
+button.select-order{
+    display: none !important;
+}
+
+button.deleteorder-button{
+    display: none !important;
+}
+
+
+
+
+
+
+
+/*  ********* The black header bar ********* */
+
+
+.pos .pos-topheader {
+    position:absolute;
+    left:0;
+    top:0;
+    width: 100%;
+    height: 74px;
+    margin:0;
+    padding:0;
+    color: gray;
+    background: #393939;
+}
+
+.pos .pos-content {
+    width: 100%;
+    position: absolute;
+    top: 74px;
+    bottom: 0;
+    background: #F0EEEE;
+}
+
+
+.pos .order-button{
+    color: #f0f0f0;
+    display: inline-block;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    height: 72px;
+    width: 100px !important;
+    padding: 4px 8px;
+    margin: 3px;
+    margin-bottom: 0px;
+    margin-right: 2px;
+    padding-top: 0px;
+    background: #8b8b8b;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    vertical-align: middle;
+    line-height: 26px;
+    text-align: center;
+    box-shadow: 0px -5px 10px -6px rgb(82,82,82) inset;
+    cursor: pointer;
+    min-width: 34px;
+}
+
+.pos .order-button i{
+    font-size: 30px;
+}
+
+.pos .info-list{
+    font-size: 18px;
+}
+
+.pos .orderlines .orderline .product-name{
+    font-size: 20px;
+}
+
+.pos .order-scroller{
+    width:440px !important;
+}
+
+.pos .order-scroller .order{
+    position: relative;
+    top: -15px;
+    left: -15px;
+    width:99% !important;
+}
+
+.pos .orderline-buttons{
+    float: right;
+    position: relative;
+    top: -50px;
+    right: -10px;
+
+}
+
+.pos .order .orderline{
+    height: 120px !important;
+}
+
+.pos .order .selected{
+    height: 120px !important;
+}
+
+

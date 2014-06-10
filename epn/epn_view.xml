@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+        <record model="ir.ui.view" id="view_pos_pos_form">
+            <field name="name">pos.order.inherit</field>
+            <field name="model">pos.order</field>
+            <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"></field>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='statement_ids']/tree" position="inside">
+                    <field name='epn_info'/>
+                    <field name='signature'/>
+                </xpath>
+
+                <xpath expr="//field[@name='statement_ids']/form/group" position="inside">
+                    <field name='epn_info'/>
+                    <field name='signature'/>
+                </xpath>
+
+            </field>
+        </record>
+
+    </data>
+</openerp>

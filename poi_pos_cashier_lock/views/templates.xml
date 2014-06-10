@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- vim:fdn=3:
+-->
+<openerp>
+    <data>
+
+<template id="index" inherit_id='point_of_sale.index' name="Poi Pos Cashier Lock Index">&lt;!DOCTYPE html&gt;
+    <xpath expr="//link[@id='pos-stylesheet']" position="after">
+        <link rel="stylesheet" href="/poi_pos_cashier_lock/static/src/css/pos.css" />
+    </xpath>
+</template>
+
+    </data>
+</openerp>

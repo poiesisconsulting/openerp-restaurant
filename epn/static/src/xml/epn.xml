@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="Paymentline">
+        
+        <t t-if='line.cashregister.journal.type !== "bank"' >
+            <div t-attf-class="paymentline #{line.selected ? 'selected' : ''}">
+                <div class='paymentline-name'>
+                    <!-- <t t-esc="line.name"/> -->
+                    Amount
+                </div>
+                <input class='paymentline-input dao-amount' type="number" step="0.01" t-att-value="line.get_amount().toFixed(2)" />
+                <span  class='paymentline-delete'>
+                    <img src="/point_of_sale/static/src/img/search_reset.gif" />
+                </span>
+                Tips
+                <input class='paymentline-input dao-tips' type="number" step="0.01" t-att-value="line.get_tips().toFixed(2)" />
+                <!-- DAO SYSTEMS LA SE AGREGO UN DIV PARA LOS CONTROLES -->
+                <div class="paymentline-buttons-extend" />
+            </div>
+        </t>
+
+        <t t-if='line.cashregister.journal.type === "bank"' >
+            <div t-attf-class="paymentline #{line.selected ? 'selected' : ''}">
+                <div class='paymentline-name'>
+                    <t t-esc="line.name"/>
+                </div>
+                <input class='oe_hidden' />
+                <div t-attf-class='paymentline-input #{line.status || ""}'>
+                    <t t-if='line.status === "confirmed"'>
+                        <span  class='ok'>
+                            Paid 
+                        </span>
+                    </t>
+                    <t t-if='line.status === "waiting"'>
+                        <span class='nok'>
+                            Unpaid 
+                        </span>
+                    </t>
+                    <t t-esc="line.get_amount().toFixed(2)"/>
+                </div>
+                <t t-if='line.status !== "confirmed"'>
+                    <span  class='paymentline-delete'>
+                        <img src="/point_of_sale/static/src/img/search_reset.gif" />
+                    </span>
+                </t>
+                <t t-if='line.status === "confirmed"'>
+                    <span  class='paymentline-delete oe_hidden'>
+                        <img src="/point_of_sale/static/src/img/search_reset.gif" />
+                    </span>
+                </t>
+            </div>
+        </t>
+
+    </t>
+
+
+    <!-- DAO SYSTEMS LA Revisar tb la epn.xml xq ese extiende del POS y sobreescribe el paymentline template  -->
+    <t t-name="PaymentLineButtonCash">
+        <span class="control-button payment-line-button-cs">
+            <i class="fa fa-money"></i>
+        </span>
+    </t>
+    <t t-name="PaymentLineButtonCreditCard">
+        <span class="control-button payment-line-button-cc">
+            <i class="fa fa-credit-card"></i>
+        </span>
+    </t>
+    <t t-name="PaymentLineButtonOthers">
+        <span class="control-button payment-line-button-cc">
+            <i class="fa"><t t-esc="code" /></i>
+        </span>
+    </t>
+    <t t-name="PayButtonDao">
+         <button class="paypad-button-dao" >
+             Pay
+         </button>
+    </t>
+    <t t-name="MyPaymentSplit">
+
+      <div class="modal-dialog">
+
+          <div class="popup" style="width:510px; height:500px">
+
+          <div class="popup_header" style="">Split Bill</div>
+
+          <div class="popup_body" style="">
+
+              <span>Split the bill beetween:<input id="splitNumber" type="number" value="1" /></span>
+
+          </div>
+
+          <div class="popup_footer" style="">
+
+          <button id="btnSplitEvenly" class="popup_button">Split evenly</button>
+
+              <button id="btnDone" class="popup_button">Done</button>
+
+              <button id="btnCancel" class="popup_button">Cancel</button>
+
+          </div>
+
+          </div>
+
+      </div>
+
+     </t>
+
+
+</templates>
+

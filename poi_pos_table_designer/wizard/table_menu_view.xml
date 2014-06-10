@@ -1,0 +1,29 @@
+<openerp>
+    <data>
+        <record id="table_menu_wizard_view" model="ir.ui.view">
+            <field name="name">table.menu.wizard.form</field>
+            <field name="model">table.menu.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Assign Tables" version="7.0">
+                    <group>
+                        <field name="table_id" colspan="4" nolabel="1" invisible="1"/>
+                    </group>
+                    <button name="free_table" string="Free Table" type="object" class="oe_highlight"/>
+                    <button name="mark_as_seated" string="Mark as Seated" type="object" class="oe_highlight"/>
+                    <button name="mark_as_served" string="Mark as Served" type="object" class="oe_highlight"/>
+                    <button name="view_order" string="View Order" type="object" class="oe_highlight"/>
+                    <!--<button name="transfer" string="Transfer" type="object" class="oe_highlight"/>-->
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </form>
+            </field>
+        </record>
+
+        <record id="action_table_menu_wizard" model="ir.actions.act_window">
+            <field name="name">Table Options</field>
+            <field name="res_model">table.menu.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+    </data>
+</openerp>

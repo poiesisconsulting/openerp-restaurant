@@ -1,0 +1,44 @@
+<templates>
+<div t-name="web_example.action">
+
+    <div class="oe_view_manager oe_view_manager_current">
+        <div class="oe_view_manager_header oe_padding">
+            <h2>
+                <span id="table_designer_title">Table Designer</span>
+            </h2>
+            <select class="oe_table_select_area">
+
+            </select>
+            <span id="table_manager_buttons">
+                <input type="hidden" name="session_id"
+                   t-att-value="widget.session.session_id"/>
+                <input type="hidden" name="import_id"/>
+                <button type="button"
+                        class="oe_button oe_highlight oe_save_table_layout"
+                    >Save</button>
+                <span class="oe_fade">or</span>
+                <a class="oe_import_cancel" href="#">Cancel</a>
+            </span>
+            <span id="table_hostess_buttons">
+                <input type="hidden" name="session_id"
+                   t-att-value="widget.session.session_id"/>
+                <input type="hidden" name="import_id"/>
+                <button type="button"
+                        class="oe_button oe_highlight oe_create_table_order"
+                    >Create Order</button>
+                <span class="oe_fade">or</span>
+                <a class="oe_import_cancel" href="#">Clear</a>
+            </span>
+        </div>
+    </div>
+
+
+    <div class="gridster">
+    <ul>
+
+    </ul>
+</div>
+
+
+</div>
+</templates>

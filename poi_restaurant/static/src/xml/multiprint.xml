@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="SubmitOrderButton">
+        <span class="control-button order-submit">
+            <i class="fa fa-cutlery"></i>
+        </span>
+    </t>
+
+    <t t-name="OrderChangeReceipt">
+        <receipt
+            align = 'center'
+            width = '360'
+            size = 'double-height'
+            line-ratio = '0.5'
+            font  = 'b'
+            value-decimals = '3'
+            value-thousands-separator = ''
+            value-autoint = 'on'
+        >
+            <div>
+            <t t-foreach="changes.areas" t-as="area">
+                <t t-esc="area"/>
+            </t>
+             / Gst: <t t-esc="changes.number_of_seats" /></div>
+            <br />
+            <div>User: <t t-esc="changes.user_name" />
+                 /
+                <t t-foreach="changes.tables" t-as="table">
+                    <t t-esc="table"/>
+                </t>
+            </div>
+            <br/>
+            <br/>
+            <br/>
+            <t t-if="changes.DAO.new.length > 0">
+                <t t-foreach="changes.DAO.new" t-as="obj">
+                        <t t-foreach="obj.Items" t-as="item">
+                            <div size="double-height" align="left">
+                                <p>
+                                    <t t-esc="item.qty" /> -- <t t-esc="item.name" />
+                                    <t t-if="item.seats.length == 1">
+                                        - <t t-esc="item.seats[0].Numbers" />
+                                    </t>
+                                </p>
+                            </div>
+                            <div size="double-height" align="left">
+                                <t t-foreach="item.seats" t-as="seat">
+                                    <p align="left" color="red" indent="2">
+                                        <t t-if="item.seats.length > 1">
+                                            <t t-esc="seat.sub_qty"/>
+                                        </t>
+                                        <t t-foreach="seat.modifiers" t-as="modifier">
+                                            <t t-esc="modifier"/>
+                                        </t>
+                                        <t t-if="item.seats.length > 1">
+                                            <span color="black"> - <t t-esc="seat.Numbers" /></span>
+                                        </t>
+                                    </p>
+                                    <t t-if="seat.order_line_notes" >
+                                        <p align="left" color="red" indent="2">(<t t-esc="seat.order_line_notes" />)</p>
+                                    </t>
+                                </t>
+                            </div>
+                        </t>
+                    <t t-if="obj_index != changes.DAO.new.length - 1">
+                        <div>---------------------------------</div>
+                    </t>
+
+                </t>
+            </t>
+
+            <br/>
+            <br/>
+            <div size="double-height">
+                <t t-foreach="changes.tables" t-as="table">
+                    <t t-esc="table"/>
+                </t>
+            </div>
+            <div size="normal">
+                <t t-esc="changes.time" />
+            </div>
+            <br/>
+            <br/>
+            <br/>
+        </receipt>
+    </t>
+
+</templates>

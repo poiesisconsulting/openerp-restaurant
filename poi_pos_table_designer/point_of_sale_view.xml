@@ -1,0 +1,291 @@
+<openerp>
+    <data>
+
+        <!-- POS ORDER -->
+        <record model="ir.ui.view" id="view_pos_pos_extended_tree">
+            <field name="name">pos.order.tree.extended</field>
+            <field name="model">pos.order</field>
+            <field name="type">tree</field>
+            <field name="inherit_id" ref="point_of_sale.view_pos_order_tree" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                      <field name="tables"/>
+                      <field name="covers"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_pos_pos_extended_form">
+            <field name="name">pos.order.extended</field>
+            <field name="model">pos.order</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="point_of_sale.view_pos_pos_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//notebook/page[@string='Products']" position="after">
+                    <page string="Tables">
+                        <group>
+                            <field name="covers"/>
+                            <field name="internal_message"/>
+                        </group>
+                        <field name="table_ids">
+                            <tree>
+                                <field name="code" />
+                                <field name="name" />
+                                <field name="area_id"/>
+                                <field name="number_of_seats"/>
+                            </tree>
+                        </field>
+                        <separator string="Table States"/>
+                        <field name="state_log">
+                            <tree>
+                                <field name="order_id"/>
+                                <field name="state"/>
+                                <field name="creation_date"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+                <xpath expr="//field[@name='lines']/tree/field[@name='product_id']" position="after">
+                    <field name="sequence" string="Course"/>
+                    <field name="property_description"/>
+                    <field name="order_line_notes"/>
+                    <field name="seat"/>
+                </xpath>
+                <xpath expr="//field[@name='lines']/tree/field[@name='price_subtotal_incl']" position="replace">
+                    <field name="unique_name" readonly="0"/>
+                </xpath>
+                <xpath expr="//field[@name='statement_ids']" position="after">
+                    <separator string="Late Voids"/>
+                    <field name="lines_rejected">
+                        <tree>
+                            <field name="product_id"/>
+                            <field name="qty"/>
+                            <field name="price_unit"/>
+                            <field name="order_line_notes"/>
+                        </tree>
+                    </field>
+                </xpath>
+                <!--<xpath expr="//field[@name='lines']/tree/field[@name='product_id']" position="after">
+                    <field name="property_description"/>
+                </xpath>
+                <xpath expr="//field[@name='lines']/form/group[1]/field[@name='notice']" position="before">
+                    <field name="product_ids" colspan="4" nolable="1"/>
+                </xpath>-->
+            </field>
+        </record>
+
+
+        <record id='pos_order_line_tree_view' model='ir.ui.view'>
+            <field name='name'>pos.order.line.tree.view</field>
+            <field name='model'>pos.order.line</field>
+            <field name='type'>tree</field>
+            <field name='arch' type='xml'>
+                <tree string="POS Orders lines">
+                    <field name="order_id" />
+                    <field name="create_date" />
+                    <field name="product_id" />
+                    <field name="property_description"/>
+                    <field name="qty" />
+                    <field name="price_unit" />
+                </tree>
+            </field>
+        </record>
+
+        <record id='pos_order_line_form_view' model='ir.ui.view'>
+            <field name='name'>pos.order.line.form.view</field>
+            <field name='model'>pos.order.line</field>
+            <field name='type'>form</field>
+            <field name='arch' type='xml'>
+                <form string='Product Information' version='7.0'>
+                    <header>
+                        <field name="order_line_state_id"
+                        widget="statusbar" clickable="True" />
+                    </header>
+                    <sheet>
+                        <div>
+                            <h1><field name="order_id" readonly="1"/></h1>
+                        </div>
+                        <div class='oe_title'>
+                            <div class="oe_edit_only">
+                                <label for="product_id" string="Product Name"/>
+                            </div>
+                            <group colspan='2' cols='2' >
+                                <h1><field name='product_id'  width='200'/></h1>
+                            </group>
+                        </div>
+                        <notebook>
+                            <page string="Information">
+                                <group>
+                                    <group cols="2">
+                                        <field name="qty" />
+                                        <field name="price_unit" />
+                                        <field name="discount" />
+                                        <field name="price_subtotal"/>
+                                        <field name="price_subtotal_incl"/>
+                                    </group>
+                                    <group cols="2">
+                                        <field name="company_id" />
+                                        <field name="create_date" />
+                                        <field name='color'/>
+                                    </group>
+                                    <group colspan="4">
+                                        <h2><label for="property_description" string="product Property"/></h2><newline/>
+                                        <field name="property_description" nolabel="1"/><newline/>
+                                    </group>
+                                    <group colspan="4">
+                                        <h2><label for="notice" string="Notice"/></h2><newline/>
+                                        <field name="notice" nolabel="1"/><newline/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="sale_order_line_search_view">
+            <field name="name">pos.order.line.search</field>
+            <field name="model">pos.order.line</field>
+            <field name="arch" type="xml">
+                <search>
+                    <group expand="0" string="Group By...">
+                        <filter icon="terp-stock_symbol-selection" string="Order" context="{'group_by':'order_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_pos_order_line_kanban">
+            <field name="name">pos.order.line.kanban.view</field>
+            <field name="model">pos.order.line</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="order_line_state_id"
+                class="oe_notes oe_kanban_quickcreate_textarea" version="7.0">
+                    <field name='color' />
+                    <field name="company_id" />
+                    <field name="product_id" />
+                    <field name="price_unit" />
+                    <field name="qty" />
+                    <field name="order_id" />
+                    <field name="create_date" />
+                    <field name="property_description" />
+                    <field name="order_line_state_id" />
+                    <templates>
+                        <t t-name="kanban-box">
+                        <div
+                        t-attf-class="oe_kanban_color_#{kanban_getcolor(record.color.raw_value)} oe_kanban_global_click_edit oe_semantic_html_override oe_kanban_card oe_kanban_card_fancy">
+                            <div class="oe_dropdown_kanban">
+                                <!-- dropdown menu -->
+                                <span class="oe_dropdown_toggle">
+                                <span class="oe_e">í</span>
+                                <ul class="oe_dropdown_menu">
+                                    <li>
+                                        <a type="delete">
+                                            Delete
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <ul
+                                            class="oe_kanban_colorpicker" data-field="color" />
+                                    </li>
+                                </ul>
+                                </span>
+                                <div style="display: inline"></div>
+                            </div>
+                            <div style="min-height:80px;">
+                                <span style="color:black !important; font-size:14pt !important;">
+                                    <b><field name="product_id" /></b>
+                                </span>
+                                <br/>
+                                <field name="table_ids"/>
+                                <b>Order: </b><field name="order_id" /> || <b>Qty: </b><field name="qty"/><br/>
+                                <t t-if="record.property_description.raw_value">
+                                    <b>Modifiers: </b><field name="property_description" /><br/>
+                                </t>
+
+                                <t t-if="record.order_line_notes.raw_value != ''">
+                                    <b>Notes: </b><field name="order_line_notes" /><br/>
+                                </t>
+                            </div>
+                        </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <record id='action_pos_order_line_view' model='ir.actions.act_window'>
+            <field name='name'>Kitchen Screen</field>
+            <field name='res_model'>pos.order.line</field>
+            <field name='view_type'>form</field>
+            <field name='view_mode'>kanban,tree,form</field>
+            <field name='auto_refresh'>5000</field>
+            <!-- <field name="domain">[('order_line_state_id[0]','=', 4)]</field> -->
+            <field name="context">{'search_default_open_true':True}</field>
+        </record>
+
+        <menuitem parent="point_of_sale.menu_point_of_sale" id="menu_point_of_sale_order_line" action="action_pos_order_line_view" sequence="3"/>
+
+        <record model="ir.ui.view" id="view_pos_config_form">
+            <field name="name">pos.config.form.view.inherit</field>
+            <field name="model">pos.config</field>
+            <field name="inherit_id" ref="point_of_sale.view_pos_config_form"></field>
+            <field name="arch" type="xml">
+                <sheet position='inside'>
+                    <group string="Kitchen Screen" >
+                        <field name="kitchen_screen" />
+                    </group>
+                </sheet>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="pos_sales_promotions_form">
+        <field name="name">pos.sales.promotions.form</field>
+        <field name="model">pos.sales.promotions</field>
+        <field name="arch" type="xml">
+            <form version="7.0">
+              <group>
+                <field name="reason"/>
+                <field name="active"/>
+              </group>
+            </form>
+        </field>
+      </record>
+
+        <record model="ir.ui.view" id="pos_sales_promotions_tree" >
+        <field name="name">pos.sales.promotions.tree</field>
+        <field name="model">pos.sales.promotions</field>
+        <field name="arch" type="xml">
+            <tree string="Sales &amp; Promotions" editable="bottom">
+                <field name="reason"/>
+                <field name="active"/>
+            </tree>
+        </field>
+      </record>
+
+      <record id="view_pos_sales_promotions_action" model="ir.actions.act_window">
+        <field name="name">Sales and Promotions</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">pos.sales.promotions</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="pos_sales_promotions_tree"/>
+      </record>
+
+        <menuitem action="view_pos_sales_promotions_action" id="pos_sales_promotions_menu" parent="point_of_sale.menu_point_config_product" sequence="1"/>
+
+       <record model="ir.ui.view" id="view_public_category_extended_form">
+            <field name="name">product.public.category.extended</field>
+            <field name="model">product.public.category</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="product.product_public_category_form_view" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='sequence']" position="after">
+                      <field name="course_sequence"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</openerp>

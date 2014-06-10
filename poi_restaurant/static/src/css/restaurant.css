@@ -1,0 +1,14 @@
+/* --- Restaurant Specific CSS --- */
+
+.pos .modal-dialog .popup_fire{
+    position: absolute;
+    top: 30%;
+    left: 55%;
+    width: 320px;
+    height: 300px;
+}
+
+.pos .fire-course-button{
+    width: 300px !important;
+}
+

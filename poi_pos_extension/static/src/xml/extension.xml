@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="ShowOrdersButton">
+        <span class="order-button show-orders">
+            <i class="fa">Orders</i>
+        </span>
+    </t>
+
+    <t t-name="OrderSelectorButtonWidget">
+        <span class="order-selector-button select-order">
+            <div t-att-order-id="widget.order.id">
+                <div class="order_data">
+
+                </div>
+            </div>
+        </span>
+    </t>
+
+    <t t-name="OrderSelectorScreenWidget">
+        <div class='splitbill-screen screen'>
+            <div class='screen-content'>
+                <div class='top-content'>
+                    <h1>Select an Order</h1>
+                </div>
+                <div class='left-content touch-scrollable scrollable-y'>
+                    <div class='order-list'>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+
+</templates>

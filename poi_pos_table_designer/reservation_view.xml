@@ -1,0 +1,75 @@
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="waiting_queue_filter">
+            <field name="name">waiting.queue.search</field>
+            <field name="model">waiting.queue</field>
+            <field name="arch" type="xml">
+            <search>
+                <field name="sequence"/>
+                <field name="partner_id"/>
+                <filter name="no_of_people"/>
+                <group expand="0" string="Group By...">
+                    <filter icon="terp-stock_symbol-selection" string="Stage" context="{'group_by':'state'}"/>
+                </group>
+            </search>
+            </field>
+	    </record>
+
+
+        <record id='waiting_queue_tree_view' model='ir.ui.view'>
+            <field name='name'>waiting.queue.tree.view</field>
+            <field name='model'>waiting.queue</field>
+            <field name='type'>tree</field>
+            <field name='arch' type='xml'>
+                <tree string="Waiting Queue" colors="red:state=='allow';blue:state=='left'" version="7.0" editable="bottom">
+                    <field name="sequence" />
+                    <field name="partner_id" />
+                    <field name="no_of_people" required="1"/>
+                    <field name="reservation_date"/>
+                    <field name="state" readonly="1"/>
+                    <!--                <button name="change_state_allow" string="Allow" type="object" icon="terp-locked"/>-->
+                    <button name="%(action_waiting_queue_allow_state)d" string="Allowed" type="action" icon="terp-check" attrs="{'invisible':['|',('state','=','left'),('state','=','allow')]}"/>
+                    <button name="change_state_left" string="Left" type="object"  icon="gtk-go-forward" attrs="{'invisible':['|',('state','=','left'),('state','=','allow')]}"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id='waiting_queue_form_view' model='ir.ui.view'>
+            <field name='name'>waiting.queue.form.view</field>
+            <field name='model'>waiting.queue</field>
+            <field name='arch' type='xml'>
+                <form string="Waiting Queue" version="7.0">
+                    <sheet name="Waiting Queue">
+                        <group col="4" colspan="2">
+                            <field name="sequence" />
+                            <field name="partner_id" />
+                        </group>
+                        <group col="4" colspan="2">
+                            <field name="no_of_people" required="1"/>
+                            <field name="reservation_date"/>
+                        </group>
+                        <group col="4" colspan="2">
+                            <field name="state" readonly="1"/>
+                        </group>
+                        <newline/>
+                        <field name="table_ids" colspan="4" nolabel="1" />
+                        <button name="%(action_waiting_queue_allow_state)d" string="Allowed" type="action" icon="terp-check" attrs="{'invisible':['|',('state','=','left'),('state','=','allow')]}"/>
+                        <button name="change_state_left" string="Left" type="object"  icon="gtk-go-forward" attrs="{'invisible':['|',('state','=','left'),('state','=','allow')]}"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id='action_waiting_queue_view' model='ir.actions.act_window'>
+            <field name='name'>Waiting Queue</field>
+            <field name='res_model'>waiting.queue</field>
+            <field name='view_type'>form</field>
+            <field name='view_mode'>tree,form</field>
+            <field name="search_view_id" ref="waiting_queue_filter"/>
+        </record>
+
+
+        <menuitem action="action_waiting_queue_view" id="menu_point_of_sale_waiting_queue"
+            parent="point_of_sale.menu_point_config_product" sequence="1" groups="point_of_sale.group_pos_user"/>
+    </data>
+</openerp>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- vim:fdn=3:
+-->
+<openerp>
+    <data>
+
+<template id="index" inherit_id='point_of_sale.index' name="Poi Pos HPH Index">&lt;!DOCTYPE html&gt;
+    <xpath expr="//link[@id='pos-stylesheet']" position="after">
+        <link rel="stylesheet" media="all and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait)" href="/poi_x_hph/static/src/css/pos_ipad.css"/>
+        <link rel="stylesheet" media="all and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:landscape)" href="/poi_x_hph/static/src/css/pos_ipad.css"/>
+        <link rel="stylesheet" media="all and (min-device-width: 1025px)" href="/poi_x_hph/static/src/css/pos_ipad.css"/>
+    </xpath>
+</template>
+
+    </data>
+</openerp>

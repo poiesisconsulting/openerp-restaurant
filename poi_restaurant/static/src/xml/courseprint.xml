@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="CourseOrderButton">
+        <span class="control-button order-submit">
+            <i class="fa fa-fire"></i>
+        </span>
+    </t>
+
+    <t t-name="CoursePrintWidget">
+        <div class="modal-dialog">
+            <div class="popup popup_fire touch-scrollable" style="width:400px; height:600px">
+                <div class="popup_header" style="">
+                    Fire Courses
+                </div>
+                <div class="popup_body" style="height:400px">
+                    <t t-foreach="widget.course_buttons" t-as="course">
+                        <button class="popup_button_2x fire-course-button" t-att-data-course="course">Fire Course <t t-esc="course"/></button><br/>
+                    </t>
+                </div>
+                <div class="message_box" style="">
+                        <span class="message_box_text"/>
+                    </div>
+                <div class="popup_footer" style="">
+                    <button id="courseprintCancel" class="popup_button" style="">Close</button>
+                </div>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="CourseRequestReceipt">
+        <receipt 
+            align='center' 
+            width='40' 
+            size='double-height' 
+            line-ratio='0.2'
+            value-decimals='3' 
+            value-thousands-separator=''
+            value-autoint='on' 
+        >
+            <t t-foreach="order_data.areas" t-as="area">
+                <t t-esc="area"/>
+            </t>
+            <div>---------------------------------</div>
+            <div><t t-esc="order_data.name" /></div>
+            <div>---------------------------------</div>
+            <br />
+            <div>
+                Tables:
+            <t t-foreach="order_data.tables" t-as="table">
+                <t t-esc="table"/>
+            </t>
+            </div>
+            <br />
+            <t t-if="order_data.actual_lines.length > 0">
+                <div bold='on' size='double'>FIRE <t t-esc="order_data.course_number" /></div>
+            </t>
+            <div>---------------------------------</div>
+            <div><t t-esc="order_data.time" /></div>
+        </receipt>
+    </t>
+
+</templates>

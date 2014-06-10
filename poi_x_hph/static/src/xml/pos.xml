@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vim:fdl=1:
+-->
+<templates id="template" xml:space="preserve">
+    <t t-name="CategoryButton">
+        <span class='hph-category-button js-category-switch' t-att-data-category-id="category.id" >
+            <div class="category-name">
+                <t t-esc="category.name"/>
+            </div>
+        </span>
+    </t>
+
+    <t t-name="CategorySimpleButton">
+        <span class='hph-category-button js-category-switch' t-att-data-category-id="category.id" >
+            <t t-esc="category.name"/>
+        </span>
+    </t>
+
+    <t t-name="Product">
+        <span class='product' t-att-data-product-id="product.id">
+            <div class="product-img">
+                <img t-att-src='image_url' />
+            </div>
+            <div class="product-name">
+                <t t-esc="product.name"/>
+            </div>
+        </span>
+    </t>
+
+    <t t-name="NumpadWidget">
+        <div class="numpad">
+            <button class="input-button number-char">1</button>
+            <button class="input-button number-char">2</button>
+            <button class="input-button number-char">3</button>
+            <button class="mode-button" data-mode='quantity'>Qty</button>
+            <br />
+            <button class="input-button number-char">4</button>
+            <button class="input-button number-char">5</button>
+            <button class="input-button number-char">6</button>
+            <button class="mode-button" data-mode='discount'>Disc</button>
+            <br />
+            <button class="input-button number-char">7</button>
+            <button class="input-button number-char">8</button>
+            <button class="input-button number-char">9</button>
+            <button class="mode-button" data-mode='price'>Price</button>
+            <br />
+            <button class="input-button numpad-minus" style="font-size:30px">+/-</button>
+            <button class="input-button number-char">0</button>
+            <button class="input-button number-char" style="font-size:50px">.</button>
+            <button class="input-button numpad-backspace">
+                <img src="/point_of_sale/static/src/img/backspace.png" width="50" height="50" />
+            </button>
+            <br />
+        </div>
+    </t>
+
+    <t t-name="Orderline">
+        <li t-attf-class="orderline #{ line.selected ? 'selected' : '' }">
+            <span class="product-name">
+                <t t-esc="line.get_product().name"/>
+            </span>
+            <span>
+                <ul class="info-list">
+                    <li class="info">
+                        <t t-if="line.get_quantity_str()">
+                            <em>
+                                <t t-esc="line.get_quantity_str()" />
+                            </em>
+                        </t>
+                        <t t-if="line.get_discount_str() !== '0'">
+                            <em>
+                                | -<t t-esc="line.get_discount_str()" />%
+                            </em>
+                        </t>
+                        <em>
+                            | <t t-esc="widget.format_currency(line.get_display_price())"/>
+                        </em>
+                    </li>
+                    <li>
+                        <span class="prop_desc">
+                            <t t-esc="line.property_description" />
+                        </span>
+                    </li>
+                    <li>
+                        <span class="orline_notes">
+                            <t t-esc="line.order_line_notes" />
+                        </span>
+                    </li>
+                </ul>
+            </span>
+        </li>
+    </t>
+
+</templates>

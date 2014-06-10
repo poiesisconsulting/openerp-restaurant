@@ -1,0 +1,192 @@
+<openerp>
+    <data>
+
+
+        <menuitem name="Table Manager" parent="point_of_sale.menu_point_root"
+            id="menu_point_table_manager" sequence="20" groups="point_of_sale.group_pos_manager"/>
+
+
+
+        <!--Table Area view -->
+        <record id="table_area_form_view" model="ir.ui.view">
+            <field name="name">table.area.form.view</field>
+            <field name="model">table.area</field>
+            <field name="arch" type="xml">
+                <form string="Areas" version="7.0">
+                    <sheet>
+                        <div class="oe_edit_only">
+	                    <label for="name"/>
+	                    </div>
+	                    <div class='oe_title'>
+	                       <group colspan = "4">
+	                           <h1><field name="name"/></h1>
+	                       </group>
+	                    </div>
+                        <group cols="4">
+	                           <h2><label string="Tables"/></h2><newline/>
+	                        <field name="table_ids" widgets="many2many" nolabel="1"/>
+	                    </group>
+                        <group cols="4">
+                            <group>
+                                <field name="open_timer"/>
+                                <field name="just_seated_timer"/>
+                                <field name="order_taken_timer"/>
+                            </group>
+                            <group>
+                                <field name="served_timer"/>
+                                <field name="check_timer"/>
+                                <field name="paid_timer"/>
+                            </group>
+                            <label string="Timers are expressed on minutes, 0 means that some state does not need a timer" colspan="4"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="table_area_tree_view" model="ir.ui.view">
+            <field name="name">table.area.tree.view</field>
+            <field name="model">table.area</field>
+            <field name="arch" type="xml">
+                <tree string="Table Areas">
+                    <field name="name" />
+                </tree>
+            </field>
+        </record>
+
+        <record id="table_area_action" model="ir.actions.act_window">
+            <field name="name">Areas</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">table.area</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" eval="False" />
+        </record>
+
+        <menuitem action="table_area_action" id="menu_table_area"
+            parent="menu_point_table_manager" sequence="0" groups="point_of_sale.group_pos_manager"/>
+
+
+
+        <!--Table Table view -->
+        <record id="table_table_form_view" model="ir.ui.view">
+            <field name="name">table.table.form.view</field>
+            <field name="model">table.table</field>
+            <field name="arch" type="xml">
+                <form string="Tables" version="7.0">
+                    <header>
+                        <field name="state" widget="statusbar" statusbar_visible="open,served" statusbar_colors='{"free":"blue","served":"red"}'/>
+                    </header>
+                    <sheet>
+                        <div class="oe_edit_only">
+	                    <label for="name" string="Description"/>
+	                    </div>
+	                    <div class='oe_title'>
+	                       <group colspan = "4">
+	                           <h1><field name="name"/></h1>
+	                       </group>
+	                    </div>
+                    	<group col="4">
+		                    <field name="code"/>
+                            <field name="area_id"/>
+		                    <field name="number_of_seats"/>
+                            <field name="max_number_of_seats"/>
+                            <field name="only_free_state"/>
+	                    </group>
+                        <notebook>
+                            <page string="Orders">
+                                <group cols="4">
+                                    <h2><label string="Orders"/></h2><newline/>
+                                    <field name="order_ids" widgets="many2many" nolabel="1"/>
+                                </group>
+                            </page>
+                            <page string="Users">
+                                <group cols="4">
+                                    <h2><label string="Users"/></h2><newline/>
+                                    <field name="users_ids" widgets="many2many" nolabel="1"/>
+                                </group>
+                            </page>
+                            <page string="Grid Positions">
+                                <group>
+                                    <group>
+                                        <field name="col"/>
+                                        <field name="row"/>
+                                    </group>
+                                    <group>
+                                        <field name="size_x"/>
+                                        <field name="size_y"/>
+                                    </group>
+                                </group>
+
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="table_table_tree_view" model="ir.ui.view">
+            <field name="name">table.table.tree.view</field>
+            <field name="model">table.table</field>
+            <field name="arch" type="xml">
+                <tree string="Tables">
+                    <field name="area_id"/>
+                    <field name="name" />
+                    <field name="code" />
+                    <field name="number_of_seats"/>
+                    <field name="state"/>
+                    <field name="only_free_state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="table_table_action" model="ir.actions.act_window">
+            <field name="name">Tables</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">table.table</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" eval="False" />
+        </record>
+
+        <menuitem action="table_table_action" id="menu_table_table"
+            parent="menu_point_table_manager" sequence="1" groups="point_of_sale.group_pos_manager"/>
+
+
+
+        <!-- The table interface.xml -->
+        <record model="ir.actions.client" id="view_table_designer_client_action">
+            <field name="name">Table Designer</field>
+            <field name="tag">pos.table.designer</field>
+            <field name="context">{'type': 'designer'}</field>
+        </record>
+
+        <menuitem action="view_table_designer_client_action"
+                  id="menu_table_designer" parent="menu_point_table_manager"/>
+
+        <!-- The table interface.xml -->
+        <record model="ir.actions.client" id="view_table_hostess_client_action">
+            <field name="name">Table Assignment</field>
+            <field name="tag">pos.table.designer</field>
+            <field name="context">{'type': 'hostess'}</field>
+        </record>
+
+        <menuitem action="view_table_hostess_client_action"
+                  id="menu_table_hostess" parent="point_of_sale.menu_point_of_sale"/>
+
+
+        <record id="res_users_tables_form_view" model="ir.ui.view">
+            <field name="name">res.users.tables.form.view</field>
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="point_of_sale.res_users_form_view" />
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='edit_ean']" position="after">
+                    <newline/>
+                    <separator string="Assigned Tables"/>
+                    <field name="table_ids" nolabel="1"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</openerp>

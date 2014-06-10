@@ -1,0 +1,88 @@
+<openerp>
+<data>
+
+	<record id="pos_table_daily_report_report_tree" model="ir.ui.view">
+         <field name="name">pos.table.daily.report.tree</field>
+         <field name="model">pos.table.daily.report</field>
+         <field name="arch" type="xml">
+             <tree string="Daily Report">
+             	<field name="order_id" invisible="1"/>
+				<field name="date_service"/>
+				<field name="area"/>
+                <field name="tables"/>
+                <field name="covers"/>
+				<field name="total" sum="total"/>
+				<field name="total_incl" sum="total_incl"/>
+				<field name="tips" sum="tips"/>
+                <field name="revenue" sum="rev"/>
+				<field name="cash" sum="met"/>
+				<field name="vs" sum="met"/>
+				<field name="ax" sum="met"/>
+				<field name="mc" sum="met"/>
+                <field name="ds" sum="met"/>
+				<field name="sp" sum="met"/>
+				<field name="state"/>
+                <field name="state_session" invisible="1"/>
+                <field name="user_id"/>
+				<field name="session_id" invisible="1"/>
+                <button name="launch_form" type="object" string="Ver Orden" icon="STOCK_FIND"/>
+             </tree>
+         </field>
+     </record>
+     
+     <record id="pos_table_daily_report_report_search" model="ir.ui.view">
+            <field name="name">pos.table.daily.report.filter</field>
+            <field name="model">pos.table.daily.report</field>
+            <field name="arch" type="xml">
+                <search string="Search Order">
+                    <group col="10" colspan="4">
+                        <field name="order_id" select='1' string="Order"/>
+                        <field name="date_service"/>
+                        <field name="state"/>
+                        <field name="user_id"/>
+                        <field name="session_id" select="1" string="Fecha Factura"/>
+                        <field name="area" select='1' string="Order"/>
+                        <filter string="Opened" name="session_opened" domain="[('state_session','=','opened')]"/>
+                        <filter string="Closed" name="session_closed" domain="[('state_session','=','closeed')]"/>
+                    </group>
+                    <newline/>
+                    <group expand="0" string="Group By...">
+                        <filter string="Service date" icon="terp-go-month" domain="[]" context="{'group_by':'date_service'}"/>
+                        <filter string="Session" icon="terp-go-month" domain="[]" context="{'group_by':'session_id'}"/>
+                        <filter name="group_area" string="Area" icon="terp-go-month" domain="[]"  context="{'group_by':'area'}"/>
+                        <filter string="Status" icon="terp-go-month" domain="[]"  context="{'group_by':'state'}"/>
+                        <filter string="Server" icon="terp-go-month" domain="[]"  context="{'group_by':'user_id'}"/>
+                    </group>
+               </search>
+            </field>
+        </record>
+        <record id="pos_table_daily_report_report_graph" model="ir.ui.view">
+            <field name="name">pos.table.daily.report.graph</field>
+            <field name="model">pos.table.daily.report</field>
+            <field name="arch" type="xml">
+                <graph string="Daily Report" type="bar">
+                    <field name="order_id" type="row"/>
+                    <field name="revenue" type="measure"/>
+                </graph>
+            </field>
+        </record>
+        
+        
+        
+     <record id="pos_table_daily_report_in_action" model="ir.actions.act_window">
+         <field name="name">Daily Report</field>
+         <field name="res_model">pos.table.daily.report</field>
+         <field name="view_type">form</field>
+         <field name="view_mode">tree,graph</field>
+         <field name="view_id" ref="pos_table_daily_report_report_tree"/>
+         <field name="search_view_id" ref="pos_table_daily_report_report_search"/>
+         <field name="context">{'search_default_session_opened':1, 'search_default_group_area':1}</field>
+     </record>
+
+     
+     <menuitem parent="point_of_sale.menu_point_rep" name="Daily Report" action="pos_table_daily_report_in_action" id="pos_table_daily" sequence="30"/>
+
+     
+
+</data>
+</openerp>

@@ -1,0 +1,14 @@
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_pos_logout_config_form">
+            <field name="name">pos.config.logout.view.inherit</field>
+            <field name="model">pos.config</field>
+            <field name="inherit_id" ref="point_of_sale.view_pos_config_form"></field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='warehouse_id']" position="before">
+                    <field name="logout_timeout"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>

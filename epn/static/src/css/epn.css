@@ -1,0 +1,22 @@
+.paymentline-input.confirmed{
+    background: rgb(110,200,155);
+    color: white;
+}
+.paymentline-input.waiting{
+    background: white;
+    animation-duration: 1s;
+    animation-name: waitingconfirm;
+    animation-iteration-count: infinite;
+}
+@keyframes waitingconfirm {
+    0%   { background: white; }
+    50%  { background: rgb(215,255,231); }
+    100% { background: white; }
+}
+.paymentline .ok{
+    float: left;
+}
+.paymentline .nok{
+    float: left;
+    margin-left: 22px;
+}

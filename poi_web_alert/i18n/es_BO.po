@@ -1,0 +1,108 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+#	* poi_web_alert
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenERP Server 8.0dev-20140326-000101\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-04-03 15:30+0000\n"
+"PO-Revision-Date: 2014-04-03 15:30+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: poi_web_alert
+#: field:web.alert,displayed:0
+msgid "Displayed"
+msgstr "Mostrado"
+
+#. module: poi_web_alert
+#: field:web.alert,message:0
+msgid "Message"
+msgstr "Mensaje"
+
+#. module: poi_web_alert
+#: field:web.alert,noty_id:0
+msgid "Noty ID"
+msgstr "ID Noty"
+
+#. module: poi_web_alert
+#. openerp-web
+#: code:addons/poi_web_alert/static/src/js/web_alerts.js:71
+#, python-format
+msgid "Ok"
+msgstr "Aceptar"
+
+#. module: poi_web_alert
+#: field:web.alert,read:0
+msgid "Read"
+msgstr "Leido"
+
+#. module: poi_web_alert
+#: field:web.alert,relevance:0
+msgid "Relevance"
+msgstr "Relevancia"
+
+#. module: poi_web_alert
+#. openerp-web
+#: code:addons/poi_web_alert/static/src/js/web_alerts.js:81
+#, python-format
+msgid "Remind me later"
+msgstr "Envíar recordatorio mas tarde"
+
+#. module: poi_web_alert
+#: field:web.alert,time_programmed:0
+msgid "Time programmed"
+msgstr "Hora programada"
+
+#. module: poi_web_alert
+#: field:web.alert,to:0
+msgid "User"
+msgstr "Usuario"
+
+#. module: poi_web_alert
+#. openerp-web
+#: code:addons/poi_web_alert/static/src/js/web_alerts.js:84
+#, python-format
+msgid "You will be reminded in 1 hour"
+msgstr "Se le enviará un recordatorio en 1 hora"
+
+#. module: poi_web_alert
+#: selection:web.alert,relevance:0
+msgid "alert"
+msgstr "alerta"
+
+#. module: poi_web_alert
+#: selection:web.alert,relevance:0
+msgid "error"
+msgstr "error"
+
+#. module: poi_web_alert
+#: selection:web.alert,relevance:0
+msgid "information"
+msgstr "información"
+
+#. module: poi_web_alert
+#: selection:web.alert,relevance:0
+msgid "notification"
+msgstr "notificación"
+
+#. module: poi_web_alert
+#: selection:web.alert,relevance:0
+msgid "success"
+msgstr "exito"
+
+#. module: poi_web_alert
+#: selection:web.alert,relevance:0
+msgid "warning"
+msgstr "advertencia"
+
+#. module: poi_web_alert
+#: model:ir.model,name:poi_web_alert.model_web_alert
+msgid "web.alert"
+msgstr "Alerta Web"
+

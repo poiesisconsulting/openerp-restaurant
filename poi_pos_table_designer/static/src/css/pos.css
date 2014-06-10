@@ -1,0 +1,487 @@
+/* Copied as is from OpenERP to add number of seat and time */
+.pos .order-selector-button{
+    color: #f0f0f0;
+    display: inline-block;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    padding: 4px 8px;
+    margin: 3px;
+    margin-bottom: 0px;
+    margin-right: 2px;
+    padding-top: 0px;
+    background: #8b8b8b;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    vertical-align: top;
+    line-height: 26px;
+    text-align: center;
+    box-shadow: 0px -5px 10px -6px rgb(82,82,82) inset;
+    cursor: pointer;
+    width: 110px;
+    height: 100px;
+}
+
+.pos .order .orderline{
+    width:100%;
+    margin:0px;
+    padding-top:3px;
+    padding-bottom:25px;
+    height:55px;
+    padding-left:15px;
+    padding-right:15px;
+    cursor: pointer;
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+        -ms-box-sizing: border-box;
+            box-sizing: border-box;
+    -webkit-transition: background 250ms ease-in-out;
+       -moz-transition: background 250ms ease-in-out;
+            transition: background 250ms ease-in-out;
+}
+
+.pos .order .orderline .product-name{
+    padding:0;
+    font-weight: bold;
+    white-space:nowrap;
+    width:75%;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+.pos .order .orderline .orderline-options{
+    padding:0;
+    font-weight: bold;
+    float:right;
+    background-image: url('../img/options.png');
+    background-size: 100% 100%;
+    text-align:center;
+    font-size: 16px;
+    width: 35px;
+    line-height: 35px;
+    color: #ffffff;
+}
+.pos .order .orderline .orderline-options-action{
+    padding:0;
+    font-weight: bold;
+    float:right;
+    background-image: url('../img/options.png');
+    background-size: 100% 100%;
+    text-align:center;
+    font-size: 16px;
+    width: 35px;
+    line-height: 35px;
+    color: #ffffff;
+}
+.pos .order .orderline .orderline-sequence{
+    padding:0;
+    font-weight: bold;
+    float:right;
+    background-image: url('../img/round_clock_small.png');
+    background-size: 100% 100%;
+    text-align:center;
+    font-size: 16px;
+    width: 35px;
+    line-height: 35px;
+}
+.pos .order .orderline .seat-number{
+    padding:0;
+    font-weight: bold;
+    float:right;
+    background-image: url('../img/seat.png');
+    background-size: 100% 100%;
+    text-align:center;
+    font-size: 16px;
+    width: 35px;
+    line-height: 35px;
+    color: #ffffff;
+}
+.pos .order .orderline .orderline-sequence-action{
+    padding:0;
+    font-weight: bold;
+    float:right;
+    background-image: url('../img/round_clock_small.png');
+    background-size: 100% 100%;
+    text-align:center;
+    font-size: 16px;
+    width: 35px;
+    line-height: 35px;
+}
+.pos .order .orderline .seat-number-action{
+    padding:0;
+    font-weight: bold;
+    float:right;
+    background-image: url('../img/seat.png');
+    background-size: 100% 100%;
+    text-align:center;
+    font-size: 16px;
+    width: 35px;
+    line-height: 35px;
+    color: #ffffff;
+}
+.pos .order .orderline .price{
+    padding:0;
+    font-weight: bold;
+    float:right;
+}
+
+.openerp .oe_web_example {
+    color: white;
+    background-color: black;
+    height: 100%;
+    font-size: 400%;
+}
+
+.openerp .oe_web_example {
+    color: white;
+    background-color: black;
+    height: 100%;
+}
+.openerp .oe_web_example h4 {
+    margin: 0;
+    font-size: 200%;
+}
+.openerp .oe_web_example.oe_web_example_started .oe_web_example_start button,
+.openerp .oe_web_example.oe_web_example_stopped .oe_web_example_stop button {
+    display: none
+}
+
+
+
+.pos .screen .pos-table-row {
+    border:none;
+    width:100%;
+    height:0px;
+}
+
+.gridster * {
+  margin:0;
+  padding:0;
+}
+
+ul {
+  list-style-type: none;
+}
+
+
+/*/
+/* demo
+/*/
+
+
+.controls {
+    margin-bottom: 20px;
+}
+
+/*/
+/* gridster
+/*/
+
+.gridster ul {
+    background-color: #EFEFEF;
+}
+
+.gridster li {
+    font-size: 1em;
+    font-weight: bold;
+    text-align: center;
+    line-height: 100%;
+}
+
+
+.gridster {
+    margin: 0 auto;
+
+    opacity: .8;
+
+    -webkit-transition: opacity .6s;
+    -moz-transition: opacity .6s;
+    -o-transition: opacity .6s;
+    -ms-transition: opacity .6s;
+    transition: opacity .6s;
+}
+
+.gridster .gs-w {
+    background: #DDD;
+    cursor: pointer;
+}
+
+.gridster .gs-w .table-orders{
+    font-size:0.8em;
+    color: #000000;
+}
+
+.gridster .gs-w[state=open] {
+    background: #FFB6AE;
+    cursor: pointer;
+}
+
+.gridster .gs-w[state=reserved] {
+    background: #FFE1AE;
+    cursor: pointer;
+}
+
+.gridster .gs-w[state=just_seated] {
+    background: #FAFCAF;
+    cursor: pointer;
+}
+
+.gridster .gs-w[state=order_taken] {
+    background: #B0F2C2;
+    cursor: pointer;
+}
+
+.gridster .gs-w[state=served] {
+    background: #B0C2F2;
+    cursor: pointer;
+}
+
+.gridster .gs-w[state=checked] {
+    background: #F5DCF9;
+    cursor: pointer;
+}
+
+.gridster .gs-w[state=paid] {
+    background: #E9B0F2;
+    cursor: pointer;
+}
+
+.gridster .gs-w[selected]{
+    background: #000;
+    cursor: pointer;
+}
+
+.gridster .player {
+    background: #BBB;
+}
+
+
+.gridster .preview-holder {
+    border: none!important;
+    background: red!important;
+}
+
+.gridster .number-seats-inputbox {
+    border: 1px solid #006;
+    width: 60px;
+}
+
+/* TABLE GRIDSTER */
+.table-gridster * {
+  margin:0;
+  padding:0;
+}
+
+ul {
+  list-style-type: none;
+}
+
+
+/*/
+/* demo
+/*/
+
+
+.controls {
+    margin-bottom: 20px;
+}
+
+/*/
+/* gridster
+/*/
+
+.table-gridster ul {
+    background-color: #EFEFEF;
+}
+
+.table-gridster li {
+    font-size: 1.3em;
+    font-weight: bold;
+    text-align: center;
+    line-height: 100%;
+}
+
+
+.table-gridster {
+    margin: 0 auto;
+
+    opacity: .8;
+
+    -webkit-transition: opacity .6s;
+    -moz-transition: opacity .6s;
+    -o-transition: opacity .6s;
+    -ms-transition: opacity .6s;
+    transition: opacity .6s;
+}
+
+.table-gridster .gs-w {
+    background: #DDD;
+    cursor: pointer;
+}
+
+.table-gridster .gs-w[state=open] {
+    background: #FFB6AE;
+    cursor: pointer;
+}
+
+.table-gridster .gs-w[state=reserved] {
+    background: #FFE1AE;
+    cursor: pointer;
+}
+
+.table-gridster .gs-w[state=just_seated] {
+    background: #FAFCAF;
+    cursor: pointer;
+}
+
+.table-gridster .gs-w[state=order_taken] {
+    background: #B0F2C2;
+    cursor: pointer;
+}
+
+.table-gridster .gs-w[state=served] {
+    background: #B0C2F2;
+    cursor: pointer;
+}
+
+.table-gridster .gs-w[state=checked] {
+    background: #F5DCF9;
+    cursor: pointer;
+}
+
+.table-gridster .gs-w[state=paid] {
+    background: #E9B0F2;
+    cursor: pointer;
+}
+
+.table-gridster .gs-w[selected]{
+    background: #000;
+    cursor: pointer;
+}
+
+.table-gridster .player {
+    background: #BBB;
+}
+
+.table-gridster .preview-holder {
+    border: none!important;
+    background: red!important;
+}
+
+.table-gridster .number-seats-inputbox {
+    border: 1px solid #006;
+    font-size: 1.5em;
+    width: 90%;
+}
+
+/*
+    .pos .side_button img{
+        float: left;
+        width: 30px;
+        height: 30px;
+    }
+*/
+
+.pos .multiTable{
+    font-weight: normal;
+    border: 1px;
+}
+.pos .multiTable td{
+    padding: 5px;
+    vertical-align: middle;
+    border-bottom: 1px solid gray;
+}
+
+.pos .modif_body tr{
+    cursor: pointer;
+}
+
+.pos .modif_body td{
+    border-top: 1px solid gray;
+}
+
+.pos .tr_sel_true{
+    background-color: rgba(0, 200, 0, 0.8);
+}
+
+
+.pos .modal-dialog .message_box{
+    display: none;
+    position: absolute;
+    bottom: 150px;
+    width: 100%;
+    height: 35px;
+    background-color: black !important;
+    color: #FF3333;
+    font-size: 16px;
+    font-weight: normal;
+    text-align: center;
+}
+
+
+/*  ********* The table header buttons ********* */
+
+.pos .table-buttons {
+    padding-top: 8px;
+    padding-bottom: 18px;
+}
+
+.pos .table-title {
+    font-size: 30px;
+    background: #7f82ac;
+    color: white;
+    font-weight: bold;
+    padding: 13px;
+    padding-left: 26px;
+    padding-right: 26px;
+}
+
+.pos .table-label {
+    font-size: 18px;
+}
+
+.pos .table-button {
+    background: #e2e2e2;
+    border: solid 1px #BEBEBE;
+    display: inline-block;
+    line-height: 49px;
+    min-width: 46px;
+    text-align: center;
+    border-radius: 3px;
+    padding: 0px 10px;
+    font-size: 18px;
+    margin-left: 6px;
+    cursor: pointer;
+}
+.pos .table-button[id=course_add] {
+    min-width: 89px;
+    line-height: 38px;
+    background: #9b9b9b;
+}
+
+.pos .table-button .fa{
+    margin-right: 4px;
+}
+
+.pos .table-button.highlight{
+    background: #6EC89B;
+    border: solid 1px #6EC89B;
+    color: white;
+}
+.pos .table-button:active {
+    background: #7F82AC;
+    border: solid 1px #7F82AC;
+    color: white;
+}
+.pos .table-button.disabled,
+.pos .table-button.disabled:active{
+    background: #e2e2e2;
+    border: solid 1px #BEBEBE;
+    opacity: 0.5;
+    cursor: default;
+    color: inherit;
+}
+
+.pos button.course_selected{
+    background: #6EC89B !important;
+    color: white;
+}
+

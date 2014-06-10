@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record id="hph_server_closing_report_view" model="ir.ui.view">
+            <field name="name">Server Closing Report</field>
+            <field name="model">hph.server.closing</field>
+            <field name="arch" type="xml">
+            <form string="Report Options" version="7.0">
+                <group col="4">
+                   <field name="user_id" widget='selection' col="4"/>
+                    <field name="date_start"/>
+                    <field name="date_end"/>
+                </group>
+                <footer>
+                    <button name="print_report" string="Print" type="object" default_focus="1" class="oe_highlight"/>
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+            </field>
+        </record>
+
+        <record id='hph_server_closing_report_action' model='ir.actions.act_window'>
+            <field name='name'>Server Closing Report</field>
+            <field name='res_model'>hph.server.closing</field>
+            <field name='view_type'>form</field>
+            <field name='view_mode'>form</field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem parent="point_of_sale.menu_point_of_sale" id="menu_hph_server_closing_report" action="hph_server_closing_report_action" sequence="10"/>
+
+
+
+
+    </data>
+</openerp>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <report
+            id="action_report_server_closing"
+            model="hph.server.closing"
+            string="Server Closing Report"
+            report_type="qweb-pdf"
+            name="poi_x_hph.report_server_closing"
+            file="poi_x_hph.report_server_closing"
+        />
+
+    </data>
+
+</openerp>

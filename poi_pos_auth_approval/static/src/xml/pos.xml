@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vim:fdl=1:
+-->
+<templates id="template" xml:space="preserve">
+
+    <t t-name="ApprovalPopup">
+        <div class="modal-dialog">
+            <div class="popup approval_popup touch-scrollable" style="width:600px; height:400px">
+                <div class="popup_header" style="">
+                    Approval Request
+                </div>
+                <div class="popup_body" style="height:220px">
+                    <span>This order requires manager authorization:</span>
+                    <t t-if="widget.state == 'rejected'">
+                        <span>This order has been rejected for the following reason:</span>
+                    </t>
+                    <table class="approval_messages" border="0" width="100%" align="center">
+                        <t t-foreach="widget.messages" t-as="message">
+                            <tr class="">
+                                <td class="td_left" style="border: 1px solid gray; font-weight: normal">
+                                    - <t t-esc="message" />
+                                </td>
+                            </tr>
+                        </t>
+                    </table>
+                </div>
+                <div class="popup_footer" style="">
+                    <t t-if="widget.state != 'rejected'">
+                        <textarea id="request_text" placeholder="Write a message to the Manager here."/><br/>
+                        <button id="app_send" class="popup_button" style="">Send</button>
+                    </t>
+                    <button id="app_cancel" class="popup_button" style="">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </t>
+
+</templates>

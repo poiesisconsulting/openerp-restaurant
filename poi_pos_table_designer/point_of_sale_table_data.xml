@@ -1,0 +1,33 @@
+<openerp> 
+    <data noupdate="1">
+
+        <record model="pos.order.line.state" id="state_in_queue">
+            <field name="name">In Queue</field>
+            <field name="sequence">1</field>
+        </record>
+
+        <record model="pos.order.line.state" id="state_in_progress">
+            <field name="name">In Progress</field>
+            <field name="sequence">2</field>
+        </record>
+
+        <record model="pos.order.line.state" id="state_in_done">
+            <field name="name">Is Done</field>
+            <field name="sequence">3</field>
+        </record>
+
+        <record model="pos.order.line.state" id="state_in_served">
+            <field name="name">Is Served</field>
+            <field name="sequence">4</field>
+        </record>
+
+        <!-- Metodo S&P -->
+        <record model="account.journal" id="journal_sp">
+            <field name="code">S &amp; P</field>
+            <field name="name">Sales &amp; Prom</field>
+            <field name="type">cash</field>
+            <field name="journal_user">1</field>
+        </record>
+
+    </data>
+</openerp>

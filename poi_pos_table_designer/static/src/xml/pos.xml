@@ -1,0 +1,463 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vim:fdl=1:
+-->
+<templates id="template" xml:space="preserve">
+
+
+    <!--
+    Adding TableHeaderWidget
+    -->
+    <t t-extend="ProductScreenWidget">
+        <t t-jquery=".header-row" t-operation="before">
+            <tr class="pos-table-row">
+                <td class="header-cell">
+                    <span class="placeholder-TableHeaderWidget" />
+                </td>
+            </tr>
+
+        </t>
+    </t>
+
+    <t t-name="OrderButtonWidget">
+        <button class="order-button select-order"><t t-esc="widget.order.get_order_name()"/> - <t t-esc="widget.order.get_order_ref()"/></button>
+    </t>
+
+    <t t-name="TableHeaderWidget">
+        <table>
+            <tr>
+                <td align="top" width="118px">
+                    <span class="table-label">Course</span>
+                    <button class="table-button" id="course_add" style="min-width: 89px; line-height: 38px"> + </button>
+                    <!-- <button class="table-button" id="course_rem">-</button> -->
+                    <br/>
+                    <t t-raw="widget.courses"/>
+                </td>
+                <td width="20px">
+                    <span>  </span>
+                </td>
+                <td>
+                    <div class="table-header-buttons">
+                        <span class="table-title"><t t-esc="widget.table_header"/></span>
+                        <button class="assign-table table-button">Reassign</button>
+                        <button class="add-seat-button table-button">Add Seat</button>
+                        <button class="internal-message-button table-button">Set Note</button>
+
+                        <!--<button class="table-button send-to-kitchen-button">
+                            <i class="fa fa-save"></i>
+                        </button>-->
+                    </div>
+                    <div class="table-buttons">
+                        <table>
+                            <tr>
+                                <td>
+                                    <div align="left">
+                                        <t t-raw="widget.table_seats"/>
+                                        <button class="seat-button table-button" seat="0">ALL</button><br/>
+                                        <t t-raw="widget.lady_seats"/>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+    </t>
+
+    <t t-name="SelectTableScreenWidget">
+        <div class="table-screen screen">
+            <header class='rightpane-header'><h2>Assign Table</h2></header>
+
+            <select class="oe_table_select_area">
+
+            </select>
+
+            <div class="table-gridster gridster touch-scrollable">
+                <ul>
+
+                </ul>
+            </div>
+        </div>
+    </t>
+
+    <t t-extend="OrderSelectorButtonWidget">
+        <t t-jquery=".order_data" t-operation="inner">
+            <h1><t t-esc='widget.order.tables'/></h1>
+            <t t-if="widget.order.internal_message">
+                <t t-esc='widget.order.internal_message'/>
+            </t>
+        </t>
+    </t>
+
+    <t t-extend="Orderline">
+        <t t-jquery=".info-list" t-operation="after">
+            <div class="orderline-buttons">
+                <t t-if="line.selected ">
+                    <span class="orderline-button orderline-options-action">
+                        <!-- the "O" is to show the Options icon --> O
+                    </span>
+                </t>
+                <span class="orderline-button orderline-sequence-action">
+                    <t t-esc="line.get_sequence()"/>
+                </span>
+                <span class="orderline-button seat-number-action">
+                    <t t-if="line.get_is_lady()">
+                        L
+                    </t>
+                    <t t-esc="line.get_seat()"/>
+                </span>
+            </div>
+        </t>
+    </t>
+
+
+    <t t-name="select-table">
+        <div>
+            <t t-if="table.re_assign">
+               <label for="booked_table"><b>Booked Table</b></label>
+               <select  style="height:30px;width:146px;" id="booked_table">
+                   <option value=""></option>
+                   <t t-foreach="table.booked_table" t-as="b_table">
+                       <option t-att-value= "b_table[2]"><t t-esc="b_table[1]"/></option>
+                   </t>
+               </select>
+               <br/><br/>
+            </t>
+            <table style="border-radius : 1.6em;border-spacing: 10px 10px; box-shadow: 3px 3px 4px 4px #999;" id="table_list">
+                <t t-if="table.empty_table" t-foreach="table.empty_table" t-as="option">
+                    <tr style="border-radius : 0 0 9px 9px;box-shadow: 1px 1px 4px 4px #999;height:10px;">
+                        <td style="border-radius :1.6em; box-shadow: 1px 1px 4px 4px #999;">
+                           <input class="field_boolean" type="checkbox" t-att-id="option.id" t-att-value="option.name" style="height:25px; width:25px"/>
+                        </td>
+                        <td style="width:160px; border-radius : 1.6em;box-shadow: 1px 1px 4px 4px #999;text-align: center;"><b><t t-esc="option.name"/></b></td>
+                        <td style="border : 2px solid; box-shadow: 3px 3px 10px 5px #999;width: 90px;"><img style="height:15px" src="/web/static/src/img/icons/stock_person.png"/>
+                        <b><span t-att-id="option.id+'_leaft_seat'"><t t-esc="option.number_of_seats+' max('+option.max_number_of_seats+')'"/></span><input type="textbox" t-att-id="option.id+'_reserv_sit'" t-att-value="option.number_of_seats" style="width:30px;float: right;"></input></b>
+                        </td>
+                        <!--
+                            <td style="border : 2px solid; box-shadow: 3px 3px 10px 5px #999;">
+
+                            </td>
+                        -->
+                    </tr>
+                </t>
+            </table>
+	    </div>
+    </t>
+
+    <t t-name="SendToKitchenButton">
+        <span class="table-button send-to-kitchen">
+            <i class="fa fa-save"></i>
+        </span>
+    </t>
+
+    <t t-name="MultipleButton">
+        <span class="control-button multiple-action">
+            <i class="fa fa-list-alt"></i>
+        </span>
+    </t>
+
+    <t t-name="SPbutton">
+        <span class="control-button multiple-action">
+            <i class="fa">S&amp;P</i>
+        </span>
+    </t>
+
+    <!--
+        <t t-extend="PaypadWidget">
+            <t t-jquery=".paypad" t-operation="append">
+                <button id="multiple_opts" class="side_button">
+                    <div>
+                        <img src="/poi_pos_table_designer/static/src/img/multiple.png"/>
+                    </div>
+                    <div class="btn_txt">
+                        Multiple Lines
+                    </div>
+                </button>
+                <button id="send_to_kitchen" class="side_button">
+                    <div>
+                        <img src="/poi_pos_table_designer/static/src/img/kitchen.png"/>
+                    </div>
+                    <div class="btn_txt">
+                        Send to Kitchen
+                    </div>
+                </button>
+                <br/>
+            </t>
+        </t>
+    -->
+
+
+    <t t-name="Modifiers">
+        <div class="modal-dialog">
+            <div class="popup popup_modifiers touch-scrollable scrollable-y" style="width:500px; height:700px">
+                <div class="popup_header" style="">
+                    Modifiers
+                </div>
+                <div class="popup_body" style="height:400px">
+                    <t t-foreach="widget.properties_modifiers" t-as="properties">
+                        <t t-foreach="properties" t-as="property">
+                            <t t-if="property" t-foreach="property" t-as="prop">
+                                <div class="modif_header" >
+                                    <b><t t-esc="prop"/></b>
+                                </div>
+                            <t t-if="property[prop].single">
+                                <div class="modif_choice" style="width:50%; float:right; text-align:right; color:#5ee55e; margin-top:30px">single</div>
+                            </t>
+                            <t t-if="!property[prop].single">
+                                <div class="modif_choice" style="width:50%; float:right; text-align:right; color:#5ee55e; margin-top:30px">multiple</div>
+                            </t>
+
+                                <div class="modif_body">
+                                    <table class="modifRows" border="0" width="100%" align="center">
+                                        <t t-if="property[prop]" t-foreach="property[prop].attirbute" t-as="attr">
+                                            <t t-if="property[prop].single">
+                                                <tr t-att-class="prop+' tr_sel_false'" t-att-id="attr['id']">
+                                                    <td class="modifName td_left" width="75%">
+                                                        <t t-esc="attr['name']"/>
+                                                    </td>
+                                                    <td class="modifPrice td_right">
+                                                        <t t-esc="widget.format_currency(attr['price'])"/>
+                                                    </td>
+                                               </tr>
+                                            </t>
+                                            <t t-if="!property[prop].single">
+                                                <tr class="tr_sel_false" t-att-id="attr['id']">
+                                                    <td class="modifName td_left" width="75%">
+                                                        <t t-esc="attr['name']"/>
+                                                    </td>
+                                                    <td class="modifPrice td_right">
+                                                        <t t-esc="widget.format_currency(attr['price'])"/>
+                                                    </td>
+                                               </tr>
+                                            </t>
+                                        </t>
+                                    </table>
+                                </div>
+                            </t>
+                        </t>
+                    </t>
+
+                </div>
+                <div class="message_box" style="">
+                    <span class="message_box_text"/>
+                </div>
+                <div class="popup_footer" style="">
+                    <textarea id="notes_text" placeholder="Write your notes here."/> <br/>
+                    <button id="btnDone" class="popup_button">Done</button>
+                    <button id="btnCancel" class="popup_button">Cancel</button>
+                </div>
+            </div>
+        </div>
+        <input id="done_action" type="hidden"/>
+    </t>
+
+
+    <t t-name="SetSeatPopup">
+        <div class="modal-dialog">
+            <div class="popup set_seat_popup touch-scrollable" style="width:600px; min-height:330px;">
+                <div class="popup_header" style="">
+                    Set Seat Number
+                </div>
+                <div class="popup_body" style="min-height:155px;">
+                    <table>
+                        <tr>
+                            <td valign="top">
+                                <span class="table-label">Seat:</span>
+                            </td>
+                            <td>
+                                <div class="table-buttons" align="left">
+                                    <button class="seat-button table-button" seat="0">ALL</button>
+                                    <br/>
+                                    <t t-raw="widget.table_seats"/>
+                                    <br/>
+                                    <t t-raw="widget.lady_seats"/>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+
+
+                </div>
+                <div class="popup_footer">
+                    <button id="seatsCancel" class="popup_button">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </t>
+
+
+    <t t-name="MultipleWidget">
+        <div class="modal-dialog">
+            <div class="popup popup_multiple touch-scrollable scrollable-y" style="width:650px; height:800px">
+                <div class="popup_header" style="">
+                    Multiple Lines - Options
+                </div>
+                <div class="multiple_header">
+                    <table class="multiRows" border="0" align="center" width="100%">
+                        <tr style="font-size:24px; color:#5ee55e">
+                            <td class="td_left" width="50%"><b>Product</b></td>
+                            <td class="" width="15%"><b>Course</b></td>
+                            <td class="" width="15%"><b>Seat</b></td>
+                            <td class="td_right"><b>Kitchen</b></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="popup_body" style="height:550px; top: 140px">
+                    <div>
+                        <table class="multiRows" border="0" align="center" width="100%">
+                            <t t-foreach="widget.orderLines" t-as="orln">
+                                <tr class="tr_sel_false" t-att-id="orln.cid">
+                                    <td style="font-size:24px;" class="td_left" width="50%"><t t-esc="orln.product.name"/></td>
+                                    <td style="font-size:24px;" class="" width="15%"><t t-esc="orln.sequenceStr"/></td>
+                                    <td style="font-size:24px;" class="" width="15%">
+                                        <t t-if="orln.get_is_lady()">
+                                            L
+                                        </t>
+                                        <t t-esc="orln.seatStr"/>
+                                    </td>
+                                    <td style="font-size:20px; color:#5ee55e" class="td_right" id="kitchen" valign="middle">
+                                        <t t-if="orln.sent_to_kitchen">
+                                            <t t-if="widget.KitchenScreen">
+                                                <t t-esc="orln.order_line_state_id[1]"/>
+                                            </t>
+                                            <t t-if="!widget.KitchenScreen">
+                                                printed
+                                            </t>
+                                        </t>
+                                        <t t-if="!orln.sent_to_kitchen"> not sent </t>
+                                    </td>
+                                </tr>
+                            </t>
+                        </table>
+                    </div>
+                </div>
+                <div class="message_box" style="">
+                    <span class="message_box_text"></span>
+                </div>
+                <div class="popup_footer" style="">
+                    <button id="multiVoid" class="popup_button" style="">Void</button>
+                    <button id="multiDuplicate" class="popup_button" style="width: 160px;">Duplicate</button>
+                    <button id="multiCancel" class="popup_button" style="">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="SP_Widget">
+        <div class="modal-dialog">
+            <div class="popup popup_sp touch-scrollable scrollable-y" style="width:600px; height:400px">
+                <div class="popup_header" style="">
+                    S &amp; P reasons
+                </div>
+                <div class="popup_body" style="height:220px">
+                    <table class="sp_rows" border="0" width="100%" align="center">
+                        <t t-foreach="widget.sp_reasons" t-as="reason">
+                            <tr class="tr_sel_false" t-att-id="reason.id">
+                                <td class="sp_td td_left">
+                                    <t t-esc="reason.reason" />
+                                </td>
+                            </tr>
+                        </t>
+                    </table>
+                </div>
+                <div class="popup_footer" style="">
+                    <button id="sp_apply" class="popup_button" style="">Apply</button>
+                    <button id="sp_cancel" class="popup_button" style="">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="OrderLineOptionsWidget">
+        <div class="modal-dialog">
+            <div class="popup popup_ol_options" style="height:450px !important">
+
+                <div class="popup_header" style="">
+                    Options
+                </div>
+
+                <div class="popup_body" style="">
+                    <button class="popup_button" id="btnEdit" style="width: 300px;">Edit Modifiers</button>
+                    <br/><br/>
+                    <button class="popup_button" id="btnDup" style="width: 300px;">Duplicate</button>
+                    <br/><br/>
+
+                </div>
+
+                <div class="message_box" style="">
+                    <span class="message_box_text"/>
+                </div>
+
+                <div class="popup_footer" style="">
+                    <button class="popup_button" id="btnCancel">Cancel</button>
+                </div>
+
+            </div>
+        </div>
+    </t>
+
+    <t t-name="SelectSequenceWidget">
+        <div class="modal-dialog">
+            <div class="popup popup_sequence" style="width:500px; height:800px">
+                <div class="popup_header" style="">
+                    Sequence for orderline
+                </div>
+                <div class="popup_body sequence-numpad" style="">
+                    <input class="sequence-text" type="text" maxlength="4"/>
+                    <br /><br />
+                    <table class="numpad" border="0">
+                        <tr>
+                            <td><button class="seq-number-char">1</button></td>
+                            <td><button class="seq-number-char">2</button></td>
+                            <td><button class="seq-number-char">3</button></td>
+                        </tr>
+                        <tr>
+                            <td><button class="seq-number-char">4</button></td>
+                            <td><button class="seq-number-char">5</button></td>
+                            <td><button class="seq-number-char">6</button></td>
+                        </tr>
+                        <tr>
+                            <td><button class="seq-number-char">7</button></td>
+                            <td><button class="seq-number-char">8</button></td>
+                            <td><button class="seq-number-char">9</button></td>
+                        </tr>
+                        <tr>
+                            <td class="" colspan="3">
+                                <button class="seq-number-char">0</button>
+                                <span> </span><span> </span>
+                                <button class="seq-numpad-backspace">
+                                    <img src="/poi_pos_cashier_lock/static/src/img/backspace_white.png" width="80px" height="70px"/>
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="popup_footer" style="">
+                    <button class="popup_button" id="change_sequence">Done</button>
+                    <button class="popup_button" id="cancel_sequence">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </t>
+
+
+    <t t-name="InternalMessagePopup">
+        <div class="modal-dialog">
+            <div class="popup approval_popup touch-scrollable" style="width:600px; height:400px">
+                <div class="popup_header" style="">
+                    Set Internal Message
+                </div>
+                <div class="popup_body">
+                    <textarea id="internal_message" style="font-size:22px; width:550px; height:180px; resize: none;" placeholder="Set an internal message for the order here."/>
+                </div>
+                <div class="popup_footer" style="">
+                    <button id="im_set" class="popup_button" style="">Set</button>
+                    <button id="im_cancel" class="popup_button" style="">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </t>
+
+</templates>

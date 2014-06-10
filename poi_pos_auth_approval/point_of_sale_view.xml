@@ -1,0 +1,96 @@
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="pos_auth_condition_search">
+            <field name="name">pos.auth.condition.search</field>
+            <field name="model">pos.auth.condition</field>
+            <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+            </search>
+            </field>
+	    </record>
+
+
+        <record id='pos_auth_condition_tree' model='ir.ui.view'>
+            <field name='name'>pos.auth.condition.tree</field>
+            <field name='model'>pos.auth.condition</field>
+            <field name='arch' type='xml'>
+                <tree string="Auth Conditions">
+                    <field name="name" />
+                    <field name="pos_config_ids"/>
+                    <field name="users_notified"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id='pos_auth_condition_form' model='ir.ui.view'>
+            <field name='name'>pos.auth.condition.form</field>
+            <field name='model'>pos.auth.condition</field>
+            <field name='arch' type='xml'>
+                <form string="Waiting Queue" version="7.0">
+                    <sheet name="Waiting Queue">
+                        <group col="4" colspan="2">
+                            <field name="name"/>
+                            <field name="active"/>
+                            <field name="pos_config_ids" widget="many2many_tags"/>
+                            <field name="users_notified" widget="many2many_tags"/>
+                        </group>
+                        <notebook>
+                            <page string="Conditions">
+                                <field name="condition_lines">
+                                    <tree editable="bottom">
+                                        <field name="field_name"/>
+                                        <field name="operator"/>
+                                        <field name="condition_value"/>
+                                        <field name="message"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id='pos_auth_condition_action' model='ir.actions.act_window'>
+            <field name='name'>Auth Conditions</field>
+            <field name='res_model'>pos.auth.condition</field>
+            <field name='view_type'>form</field>
+            <field name='view_mode'>tree,form</field>
+            <field name="search_view_id" ref="pos_auth_condition_search"/>
+        </record>
+
+
+        <menuitem action="pos_auth_condition_action" id="menu_pos_auth_condition"
+            parent="point_of_sale.menu_point_config_product" sequence="5" groups="point_of_sale.group_pos_user"/>
+
+        <record model="ir.ui.view" id="view_pos_auth_form">
+            <field name="name">pos.order.auth</field>
+            <field name="model">pos.order</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="point_of_sale.view_pos_pos_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="before">
+                    <field name="auth_state" invisible="1"/>
+                    <div class="oe_right oe_button_box" style="background-color: darkcyan;" name="buttons" attrs="{'invisible': [('auth_state','!=', 'submit')]}">
+                        <field name="resp_note" states="draft" placeholder="Write message in response to Requestor"/>
+                        <button name="approve" string="Approve" type="object" states="draft"/>
+                        <button name="reject" string="Reject" type="object" states="draft" class="oe_highlight"/>
+                    </div>
+                    <div class="oe_right oe_button_box" style="background-color: orange;" name="buttons" attrs="{'invisible': [('auth_state','!=', 'rejected')]}">
+                        Rejected by
+                        <field name="auth_by" readonly="1" class="oe_inline"/>
+                    </div>
+                </xpath>
+                <xpath expr="//field[@name='note']" position="after">
+                    <separator string="Authorization"/>
+                    <field name="auth_state" readonly="1"/>
+                    <field name="auth_by" readonly="1"/>
+                    <field name="auth_note" readonly="1" colspan="4"/>
+                    <field name="resp_note" readonly="1" colspan="4"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</openerp>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vim:fdl=1:
+-->
+<templates id="template" xml:space="preserve">
+
+    <t t-name="CashierLoginPopupWidget">
+        <div class="modal-dialog">
+            <div class="popup popup_lock" style="width:400px; height:650px">
+                <div class="popup_header" style="">
+                    Insert your PIN code
+                </div>
+                <div class="popup_body pin-numpad" style="">
+                    <input class="pin_code" type="password" maxlength="4" readonly="readonly"/>
+
+                    <table class="numpad" border="0">
+                        <tr>
+                            <td><button class="pin-number-char">1</button></td>
+                            <td><button class="pin-number-char">2</button></td>
+                            <td><button class="pin-number-char">3</button></td>
+                        </tr>
+                        <tr>
+                            <td><button class="pin-number-char">4</button></td>
+                            <td><button class="pin-number-char">5</button></td>
+                            <td><button class="pin-number-char">6</button></td>
+                        </tr>
+                        <tr>
+                            <td><button class="pin-number-char">7</button></td>
+                            <td><button class="pin-number-char">8</button></td>
+                            <td><button class="pin-number-char">9</button></td>
+                        </tr>
+                        <tr>
+                            <td class="" colspan="3">
+                                <button class="pin-number-char">0</button>
+                                <span> </span><span> </span>
+                                <button class="pin-numpad-backspace" >
+                                    <img src="/poi_pos_cashier_lock/static/src/img/backspace_white.png" width="80px" height="70px"/>
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <!--
+                    <div class="footer">
+                        <div id="validate_button" class="button">
+                            Validate
+                        </div>
+                        <div id="close_session" class="button">
+                            Close Session
+                        </div>
+                    </div>
+                -->
+            </div>
+        </div>
+    </t>
+
+
+    <t t-name="LockScreenWidget">
+        <div class="oe_status js_synch">
+            <span>Lock</span>
+        </div>
+    </t>
+
+</templates>
