@@ -33,10 +33,12 @@ class table_merge_wizard(osv.osv_memory):
         'target_order_ids': fields.one2many('table.merge.wizard.line', 'wizard_id', 'Target Orders'),
         'from_order_ids': fields.one2many('table.merge.wizard.line', 'wizard_id', 'Merge from Orders'),
         'into_order_id': fields.many2one('pos.order','Merge Into Order', domain=[('state','=','draft')]),
+        'backend': fields.boolean('Backend Call'),
 
     }
     _defaults = {
         'case': 'into',
+        'backend': False,
     }
 
     def default_get(self, cr, uid, fields, context=None):
@@ -46,12 +48,15 @@ class table_merge_wizard(osv.osv_memory):
 
         res = super(table_merge_wizard, self).default_get(cr, uid, fields, context=context)
 
-        if context.get('base_order_id'):
-            res['base_order_id'] = context.get('base_order_id')
+        base_order_id = context.get('base_order_id',0)
+        if base_order_id > 0:
+            res['base_order_id'] = base_order_id
+        if context.get('backend'):
+            res['backend'] = True
 
         res['target_order_ids'] = []
         order_pool = self.pool.get('pos.order')
-        draft_ids = order_pool.search(cr, uid, [('state','=','draft')], order="tables", context=context)
+        draft_ids = order_pool.search(cr, uid, [('state','=','draft'), ('id','!=',base_order_id)], order="tables", context=context)
         for o_id in draft_ids:
             res['target_order_ids'].append({'order_id': o_id, 'apply': False})
 
@@ -99,11 +104,11 @@ class table_merge_wizard(osv.osv_memory):
                         target_print = target_read and target_read[0] and target_read[0]['print_resume'] or False
 
                         if target_print and len(target_print) > 0:
-                            target_dict = eval(target_print)
-                            base_dict = eval(base_print)
+                            target_dict = eval(target_print.replace('true','True').replace('false','False'))
+                            base_dict = eval(base_print.replace('true','True').replace('false','False'))
                             if isinstance (target_dict,dict) and isinstance(base_dict,dict):
                                 target_dict.update(base_dict)
-                                new_print = str(target_dict)
+                                new_print = str(target_dict).replace('True','true').replace('False','false')
                         else:
                             new_print = base_print
 
@@ -119,14 +124,24 @@ class table_merge_wizard(osv.osv_memory):
                     #Delete base order
                     order_pool.unlink(cr, uid, [base_order.id])
 
-
-
             elif wizard.case == 'from':
                 pass
+                #ToDo: Implement From
+                raise osv.except_osv(_('Version Error'), _('FROM not implemented yet. Update next version'))
             else:
                 raise osv.except_osv(_('Data Error'), _('Unknown Merge case.'))
 
-        return True
+        if wizard.backend:
+            return {
+                'view_mode': 'tree',
+                'view_type': 'form',
+                'res_model': 'pos.order',
+                'type': 'ir.actions.act_window',
+                'nodestroy': True,
+                'context': context,
+            }
+        else:
+            return True
 
 class table_merge_wizard_line(osv.osv_memory):
 

@@ -9,6 +9,7 @@
                         <group cols="2">
                             <field name="case" widget="radio"/>
                             <field name="base_order_id"/>
+                            <field name="backend" invisible="1"/>
                         </group>
                         <group cols="2">
                             <label string="Merge From Orders" attrs="{'invisible': [('case','!=','from')]}"/>
@@ -42,7 +43,7 @@
         <act_window
             id="act_table_merge_wizard"
             name="Merge"
-            context="{'base_order_id':[active_id]}"
+            context="{'base_order_id':[active_id],'backend': True}"
             res_model="table.merge.wizard"
             src_model="pos.order"
             target="new"

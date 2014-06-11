@@ -123,10 +123,9 @@ class pos_order(osv.osv):
             ids = [ids]
 
         res = []
-        for r in self.read(cr, uid, ids, ['name','tables']):
-            res.append((r['id'], '%s (%s)' % (r['name'],r['tables'])))
+        for r in self.read(cr, uid, ids, ['name', 'tables']):
+            res.append((r['id'], '%s (%s)' % (r['name'], r['tables'])))
         return res
-
 
     _columns = {
         'table_ids': fields.many2many("table.table", "table_pos_order_rel", "order_id", "table_id", "Tables"),
