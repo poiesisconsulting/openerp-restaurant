@@ -33,16 +33,6 @@ class server_closing(osv.osv_memory):
 
     _rec_name = 'user_id'
 
-    def pre_print_report(self, cr, uid, ids, data, context=None):
-        if context is None:
-            context = {}
-        data['form'].update(self.read(cr, uid, ids, ['display_account'], context=context)[0])
-        return data
-
-    def _print_report(self, cr, uid, ids, data, context=None):
-        data = self.pre_print_report(cr, uid, ids, data, context=context)
-        return self.pool['report'].get_action(cr, uid, ids, 'poi_x_hph.report_server_closing', data=data, context=context)
-
     def print_report(self, cr, uid, ids, context=None):
         """
              To get the date and print the report
@@ -64,4 +54,4 @@ class server_closing(osv.osv_memory):
         #used_context = self._build_contexts(cr, uid, ids, data, context=context)
         #data['form']['periods'] = used_context.get('periods', False) and used_context['periods'] or []
         #data['form']['used_context'] = dict(used_context, lang=context.get('lang', 'en_US'))
-        return self._print_report(cr, uid, ids, data, context=context)
+        return self.pool['report'].get_action(cr, uid, ids, 'poi_x_hph.report_server_closing', data=data, context=context)

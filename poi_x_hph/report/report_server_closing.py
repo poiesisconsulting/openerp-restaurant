@@ -49,6 +49,17 @@ class server_closing(report_sxw.rml_parse):
         #    'get_end_date':self._get_end_date,
         #    'get_target_move': self._get_target_move,
         #})
+        self.localcontext.update({
+            'time': time,
+            'get_user_terminal': self._get_user_terminal,
+            'get_user_sales': self._get_user_sales,
+            'get_user_taxes': self._get_user_taxes,
+            'get_user_gratuities': self._get_user_gratuities,
+            'get_user_gratuities_perc': self._get_user_gratuities_perc,
+            'get_user_number_of_tables': self._get_user_number_of_tables,
+            'get_user_number_of_covers': self._get_user_number_of_covers,
+            'get_user_average_check': self._get_user_average_check,
+        })
         self.context = context
 
     def set_context(self, objects, data, ids, report_type=None):
@@ -58,73 +69,109 @@ class server_closing(report_sxw.rml_parse):
             objects = self.pool.get('account.account').browse(self.cr, self.uid, new_ids)
         return super(server_closing, self).set_context(objects, data, new_ids, report_type=report_type)
 
-    def _get_account(self, data):
-        if data['model']=='account.account':
-            return self.pool.get('account.account').browse(self.cr, self.uid, data['form']['id']).company_id.name
-        return super(server_closing ,self)._get_account(data)
+    def _get_user_terminal(self, form):
+        user_id = form['user_id'][0]
+        date_start = form['date_start']
+        date_end = form ['date_end']
 
-    def lines(self, form, ids=None, done=None):
-        def _process_child(accounts, disp_acc, parent):
-                account_rec = [acct for acct in accounts if acct['id']==parent][0]
-                currency_obj = self.pool.get('res.currency')
-                acc_id = self.pool.get('account.account').browse(self.cr, self.uid, account_rec['id'])
-                currency = acc_id.currency_id and acc_id.currency_id or acc_id.company_id.currency_id
-                res = {
-                    'id': account_rec['id'],
-                    'type': account_rec['type'],
-                    'code': account_rec['code'],
-                    'name': account_rec['name'],
-                    'level': account_rec['level'],
-                    'debit': account_rec['debit'],
-                    'credit': account_rec['credit'],
-                    'balance': account_rec['balance'],
-                    'parent_id': account_rec['parent_id'],
-                    'bal_type': '',
-                }
-                self.sum_debit += account_rec['debit']
-                self.sum_credit += account_rec['credit']
-                if disp_acc == 'movement':
-                    if not currency_obj.is_zero(self.cr, self.uid, currency, res['credit']) or not currency_obj.is_zero(self.cr, self.uid, currency, res['debit']) or not currency_obj.is_zero(self.cr, self.uid, currency, res['balance']):
-                        self.result_acc.append(res)
-                elif disp_acc == 'not_zero':
-                    if not currency_obj.is_zero(self.cr, self.uid, currency, res['balance']):
-                        self.result_acc.append(res)
+        terminals = []
+        terminal_names = ''
+
+        pos_order_obj = self.pool.get('pos.order')
+        order_ids = pos_order_obj.search(self.cr, self.uid, [('user_id','=',user_id),('date_order','>=',date_start),('date_order','<=',date_end),('state','in',['paid','invoiced'])])
+        for order in pos_order_obj.browse(self.cr, self.uid, order_ids):
+            terminal_id = order.session_id.user_id.id
+            if terminal_id not in terminals:
+                terminals.append(terminal_id)
+
+        if terminals:
+            for terminal in self.pool.get('res.users').browse(self.cr, self.uid, terminals):
+                if terminal_names=='':
+                    terminal_names=terminal.name
                 else:
-                    self.result_acc.append(res)
-                if account_rec['child_id']:
-                    for child in account_rec['child_id']:
-                        _process_child(accounts,disp_acc,child)
+                    terminal_names+=' '+terminal.name
 
-        obj_account = self.pool.get('account.account')
-        if not ids:
-            ids = self.ids
-        if not ids:
-            return []
-        if not done:
-            done={}
+        return terminal_names
 
-        ctx = self.context.copy()
+    def _get_user_taxes(self, form):
+        user_id = form['user_id'][0]
+        date_start = form['date_start']
+        date_end = form ['date_end']
+        taxes_total = 0.0
 
-        ctx['fiscalyear'] = form['fiscalyear_id']
-        if form['filter'] == 'filter_period':
-            ctx['period_from'] = form['period_from']
-            ctx['period_to'] = form['period_to']
-        elif form['filter'] == 'filter_date':
-            ctx['date_from'] = form['date_from']
-            ctx['date_to'] =  form['date_to']
-        ctx['state'] = form['target_move']
-        parents = ids
-        child_ids = obj_account._get_children_and_consol(self.cr, self.uid, ids, ctx)
-        if child_ids:
-            ids = child_ids
-        accounts = obj_account.read(self.cr, self.uid, ids, ['type','code','name','debit','credit','balance','parent_id','level','child_id'], ctx)
+        pos_order_obj = self.pool.get('pos.order')
+        order_ids = pos_order_obj.search(self.cr, self.uid, [('user_id','=',user_id),('date_order','>=',date_start),('date_order','<=',date_end),('state','in',['paid','invoiced'])])
+        for order in pos_order_obj.browse(self.cr, self.uid, order_ids):
+            taxes_total+=order.amount_tax
 
-        for parent in parents:
-                if parent in done:
-                    continue
-                done[parent] = 1
-                _process_child(accounts,form['display_account'],parent)
-        return self.result_acc
+        return taxes_total
+
+    def _get_user_gratuities(self, form):
+        user_id = form['user_id'][0]
+        date_start = form['date_start']
+        date_end = form ['date_end']
+        gratuities_total = 0.0
+
+        pos_order_obj = self.pool.get('pos.order')
+        order_ids = pos_order_obj.search(self.cr, self.uid, [('user_id','=',user_id),('date_order','>=',date_start),('date_order','<=',date_end),('state','in',['paid','invoiced'])])
+        for order in pos_order_obj.browse(self.cr, self.uid, order_ids):
+            for line in order.lines:
+                if line.product_id.id == 5401:
+                    gratuities_total+=line.price_subtotal
+
+        return gratuities_total
+
+    def _get_user_gratuities_perc(self, form):
+        gratuities = self._get_user_gratuities(form)
+        sales = self._get_user_sales(form)
+        return round(gratuities*100/sales,2)
+
+    def _get_user_sales(self, form):
+        user_id = form['user_id'][0]
+        date_start = form['date_start']
+        date_end = form ['date_end']
+        sales_total = 0.0
+
+        pos_order_obj = self.pool.get('pos.order')
+        order_ids = pos_order_obj.search(self.cr, self.uid, [('user_id','=',user_id),('date_order','>=',date_start),('date_order','<=',date_end),('state','in',['paid','invoiced'])])
+        for order in pos_order_obj.browse(self.cr, self.uid, order_ids):
+            sales_total+=order.amount_total
+
+        gratuities_total = self._get_user_gratuities(form)
+        taxes_total = self._get_user_taxes(form)
+
+        return sales_total - gratuities_total - taxes_total
+
+
+    def _get_user_number_of_tables(self, form):
+        user_id = form['user_id'][0]
+        date_start = form['date_start']
+        date_end = form ['date_end']
+        number_of_tables = 0
+
+        pos_order_obj = self.pool.get('pos.order')
+        order_ids = pos_order_obj.search(self.cr, self.uid, [('user_id','=',user_id),('date_order','>=',date_start),('date_order','<=',date_end),('state','in',['paid','invoiced'])])
+        for order in pos_order_obj.browse(self.cr, self.uid, order_ids):
+            number_of_tables+=len(order.table_ids)
+        return number_of_tables
+
+    def _get_user_number_of_covers(self, form):
+        user_id = form['user_id'][0]
+        date_start = form['date_start']
+        date_end = form ['date_end']
+        number_of_covers = 0
+
+        pos_order_obj = self.pool.get('pos.order')
+        order_ids = pos_order_obj.search(self.cr, self.uid, [('user_id','=',user_id),('date_order','>=',date_start),('date_order','<=',date_end),('state','in',['paid','invoiced'])])
+        for order in pos_order_obj.browse(self.cr, self.uid, order_ids):
+            number_of_covers+=order.covers
+        return number_of_covers
+
+    def _get_user_average_check(self, form):
+        covers = self._get_user_number_of_covers(form)
+        sales = self._get_user_sales(form)
+
+        return round(sales/covers,2)
 
 
 class report_server_closing(osv.AbstractModel):
