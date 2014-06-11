@@ -1,0 +1,52 @@
+<openerp>
+    <data>
+        <record id="table_merge_wizard_view" model="ir.ui.view">
+            <field name="name">table.merge.wizard.form</field>
+            <field name="model">table.merge.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Merge Orders" version="7.0">
+                    <group colspan="4">
+                        <group cols="2">
+                            <field name="case" widget="radio"/>
+                            <field name="base_order_id"/>
+                        </group>
+                        <group cols="2">
+                            <label string="Merge From Orders" attrs="{'invisible': [('case','!=','from')]}"/>
+                            <label string="Merge Into Order (select 1 only)" attrs="{'invisible': [('case','!=','into')]}"/>
+                            <field name="target_order_ids" nolabel="1" readonly="1">
+                                <tree editable="top">
+                                    <field name="order_id"/>
+                                    <field name="apply"/>
+                                    <button name="toggle_apply" string="" type="object" icon="STOCK_APPLY"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="merge_orders" string="Merge" type="object" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel" />
+                    </footer>
+
+                </form>
+            </field>
+        </record>
+
+        <record id="action_table_merge_wizard" model="ir.actions.act_window">
+            <field name="name">Table Merging</field>
+            <field name="res_model">table.merge.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+        <act_window
+            id="act_table_merge_wizard"
+            name="Merge"
+            context="{'base_order_id':[active_id]}"
+            res_model="table.merge.wizard"
+            src_model="pos.order"
+            target="new"
+            view_type="form"
+            view_mode="form"/>
+    </data>
+</openerp>

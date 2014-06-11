@@ -22,5 +22,6 @@
 import waiting_queue_allow_state
 import table_assigner
 import table_menu
+import table_merge
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
