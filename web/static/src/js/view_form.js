@@ -1905,6 +1905,7 @@ instance.web.form.FormWidget = instance.web.Widget.extend(instance.web.form.Invi
 instance.web.form.WidgetButton = instance.web.form.FormWidget.extend({
     template: 'WidgetButton',
     init: function(field_manager, node) {
+        console.log('INITIALIZING BUTTON', field_manager, node);
         node.attrs.type = node.attrs['data-button-type'];
         this._super(field_manager, node);
         this.force_disabled = false;
