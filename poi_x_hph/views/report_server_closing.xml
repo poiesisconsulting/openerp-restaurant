@@ -3,7 +3,6 @@
 <data>
 <template id="report_serverclosing">
     <t t-call="report.html_container">
-        <t t-call="report.internal_layout">
             <div class="page">
 
                 <table class="table table-condensed">
@@ -155,7 +154,6 @@
                 </table>
                 -->
             </div>
-        </t>
     </t>
 </template>
 </data>

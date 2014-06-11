@@ -10,6 +10,9 @@
             name="poi_x_hph.report_server_closing"
             file="poi_x_hph.report_server_closing"
         />
+        <record id="action_report_server_closing" model="ir.actions.report.xml">
+            <field name="paperformat_id" ref="poi_x_hph.paperformat_printerreceipt"/>
+        </record>
 
     </data>
 
