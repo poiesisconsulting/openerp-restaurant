@@ -59,6 +59,7 @@ class server_closing(report_sxw.rml_parse):
             'get_user_number_of_tables': self._get_user_number_of_tables,
             'get_user_number_of_covers': self._get_user_number_of_covers,
             'get_user_average_check': self._get_user_average_check,
+            'get_user_method_payments': self._get_user_method_payments,
         })
         self.context = context
 
@@ -124,6 +125,8 @@ class server_closing(report_sxw.rml_parse):
     def _get_user_gratuities_perc(self, form):
         gratuities = self._get_user_gratuities(form)
         sales = self._get_user_sales(form)
+        if sales == 0:
+            return 0
         return round(gratuities*100/sales,2)
 
     def _get_user_sales(self, form):
@@ -170,8 +173,40 @@ class server_closing(report_sxw.rml_parse):
     def _get_user_average_check(self, form):
         covers = self._get_user_number_of_covers(form)
         sales = self._get_user_sales(form)
-
+        if covers == 0:
+            return 0
         return round(sales/covers,2)
+
+    def _get_user_method_payments(self, form):
+        user_id = form['user_id'][0]
+        date_start = form['date_start']
+        date_end = form ['date_end']
+        payment_methods = {}
+
+        pos_order_obj = self.pool.get('pos.order')
+        order_ids = pos_order_obj.search(self.cr, self.uid, [('user_id','=',user_id),('date_order','>=',date_start),('date_order','<=',date_end),('state','in',['paid','invoiced'])])
+        for order in pos_order_obj.browse(self.cr, self.uid, order_ids):
+            for statement in order.statement_ids:
+                journal = statement.journal_id.id
+                if payment_methods.get(journal):
+                    journal_data = {
+                        'name': statement.journal_id.name,
+                        'amount': statement.amount + payment_methods[journal]['amount'],
+                        'counter': payment_methods[journal]['counter'] + 1
+                    }
+                    payment_methods[journal] = journal_data
+                else:
+                    payment_methods[journal] = {
+                        'name': statement.journal_id.name,
+                        'amount': statement.amount,
+                        'counter': 1
+                    }
+
+        payment_methods_list = []
+        for key, value in payment_methods.iteritems():
+            payment_methods_list.append(value)
+
+        return payment_methods_list
 
 
 class report_server_closing(osv.AbstractModel):
