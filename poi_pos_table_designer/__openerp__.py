@@ -47,6 +47,7 @@ This allows to:
              'wizard/waiting_queue_allow_state_view.xml',
              'wizard/table_assigner_view.xml',
              'wizard/table_menu_view.xml',
+             'wizard/table_merge_view.xml',
              'reservation_view.xml',
              'point_of_sale_view.xml',
              'point_of_sale_table_data.xml',
