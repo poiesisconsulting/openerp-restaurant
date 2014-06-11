@@ -141,17 +141,6 @@ class pos_order(osv.osv):
         'internal_message':fields.text('Internal Message'),
     }
 
-    def sp_execute(self, cr, uid, order_id, sp_reason, context=None):
-        pos_orders = self.pool.get('pos.order')
-        current_order = pos_orders.browse(cr, uid, order_id, context=context)
-        current_order.write({
-            # 'state': 'paid',
-            'sal_prom': sp_reason,
-        })
-
-        return True
-
-
     def get_last_state_timestamp(self, cr, uid, ids, context=None):
 
         res = {}
@@ -190,6 +179,20 @@ class pos_order(osv.osv):
         dummy, sp_id = data_obj.get_object_reference(cr, uid, 'poi_pos_table_designer', 'journal_sp')
         return sp_id
 
+    def sp_execute(self, cr, uid, order_id, sp_reason, context=None):
+        pos_orders = self.pool.get('pos.order')
+        current_order = pos_orders.browse(cr, uid, order_id, context=context)
+        current_order.write({
+            'sal_prom': sp_reason,
+        })
+
+        return True
+
+    def sp_create_from_ui(self, cr, uid, order, context=None):
+        order['amount_paid'] = order['amount_total']
+        self.create_from_ui(cr, uid, [{'data': order, 'to_invoice': False}], context=None)
+
+        return True
 
     def create(self, cr, uid, vals, context=None):
 

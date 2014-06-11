@@ -701,15 +701,15 @@ function poi_pos_widgets(instance, module){
                         }
                     });
                 }).then (function(){
-                    self.pos.sp_cashregister_id = cashregister.id;
-                    current_order.addPaymentline(cashregister);
-                    self.pos_widget.screen_selector.set_current_screen('payment');
-                    //current_order.destroy({'reason':'abandon'}); //this will remove the order off from the POS UI
+                    return self.validate_order();
+                }).then (function(){
+                    if (self.pos.authorization.approved) {
+                        self.pos.sp_cashregister_id = cashregister.id;
+                        current_order.addPaymentline(cashregister);
+                        (new instance.web.Model('pos.order')).get_func('sp_create_from_ui')(current_order.export_as_JSON());
+                        current_order.destroy({'reason':'abandon'});
+                    }
                 });
-
-
-
-
                 self.pos_widget.screen_selector.close_popup();
             });
 
@@ -718,9 +718,32 @@ function poi_pos_widgets(instance, module){
             });
         },
 
+        validate_order: function() {
+            var self = this;
+            //var realvalidate = this._super;
+            var connection = new openerp.Session(self, null, {session_id: openerp.session.session_id});
+            var currentOrder = self.pos.get('selectedOrder');
+            return connection.rpc('/poi_pos_auth_approval/check_validate_order', {
+                    'config_id': self.pos.config.id,
+                    'order_id': currentOrder.get_order_id(),
+                    'current_order': [currentOrder.export_as_JSON()]
+                }
+                ).then(function(authorization){
+                    self.pos.authorization = authorization;
+                    console.log ("self.pos.authorization",self.pos.authorization);
+                    if(authorization.approved){
+                        //realvalidate.call(self);
+                    }else{
+                        self.pos_widget.screen_selector.show_popup('ApprovalPopup');
+
+                    }
+                }
+            );
+        },
+
         get_reasons: function(){
             var self = this;
-            var reasons = []
+            var reasons = [];
             var sp_load = self.pos.fetch(
                 'pos.sales.promotions',
                 ['reason'],
