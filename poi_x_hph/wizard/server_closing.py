@@ -20,15 +20,29 @@
 ##############################################################################
 
 from openerp.osv import fields, osv
+import time
+
+from datetime import date, timedelta, datetime
 
 
 class server_closing(osv.osv_memory):
     _name = 'hph.server.closing'
 
+    def _start_date(self, cr, uid, context=None):
+        if context is None:
+            context = {}
+        new_date = datetime.now() - timedelta(days=1)
+        return new_date.strftime('%Y-%m-%d %H:%M:%S')
+
     _columns = {
-        'user_id': fields.many2one('res.users', 'Server'),
-        'date_start': fields.datetime('Date Start'),
-        'date_end': fields.datetime('Date End')
+        'user_id': fields.many2one('res.users', 'Server', required=True),
+        'date_start': fields.datetime('Date Start', required=True),
+        'date_end': fields.datetime('Date End', required=True)
+    }
+
+    _defaults = {
+        'date_start': _start_date,
+        'date_end': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S')
     }
 
     _rec_name = 'user_id'
