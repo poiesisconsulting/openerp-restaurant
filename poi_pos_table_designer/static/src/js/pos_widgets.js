@@ -707,6 +707,18 @@ function poi_pos_widgets(instance, module){
                         self.pos.sp_cashregister_id = cashregister.id;
                         current_order.addPaymentline(cashregister);
                         (new instance.web.Model('pos.order')).get_func('sp_create_from_ui')(current_order.export_as_JSON());
+
+                        //++++++ PRINT CLOSE TICKET ++++++++++++++
+                         if(self.pos.config.iface_print_via_proxy){
+                            var receipt = current_order.export_for_printing();
+                            console.log('XmlReceipt', receipt);
+                            self.pos.proxy.print_receipt(QWeb.render('XmlReceipt',{
+                                receipt: receipt,
+                                widget: self
+                            }));
+                        }
+                        //+++++++++++++++++++++++++++++++++++++++++
+
                         current_order.set_order_tables_state('open');
                         current_order.destroy({'reason':'abandon'});
                     }
