@@ -256,11 +256,11 @@
 
     <t t-name="SetSeatPopup">
         <div class="modal-dialog">
-            <div class="popup set_seat_popup touch-scrollable" style="width:600px; min-height:330px;">
+            <div class="popup set_seat_popup touch-scrollable" style="width:600px; height:500px;">
                 <div class="popup_header" style="">
                     Set Seat Number
                 </div>
-                <div class="popup_body" style="min-height:155px;">
+                <div class="popup_body" style="height:320px;">
                     <table>
                         <tr>
                             <td valign="top">
