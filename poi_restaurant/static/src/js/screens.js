@@ -24,6 +24,7 @@ function openerp_restaurant_screens(instance, module) { //module is instance.poi
 
 
             _.each(this.pos.cashregisters, function (cashregister) {
+
                 var button = null;
                 if (cashregister.journal.code == 'CCM') {
                     button = $(QWeb.render('PaymentLineButtonCreditCard'));
@@ -51,7 +52,15 @@ function openerp_restaurant_screens(instance, module) { //module is instance.poi
                             line
                         );
                     });
-                } else {
+                }
+
+                // POIESIS CODE: hidding S&P button ///////////////
+                else if (cashregister.journal.code == 'S & P') {
+                    button = false;
+                }
+                ///////////////////////////////////////////////////
+
+                else {
                     button = $(QWeb.render('PaymentLineButtonOthers', {code: cashregister.journal.code}));
                     button.click(function () {
                         self.Onpaymentlinebuttonclick(self, {
@@ -66,8 +75,9 @@ function openerp_restaurant_screens(instance, module) { //module is instance.poi
                     });
                 }
 
-                button.appendTo(el_node.querySelector('.paymentline-buttons-extend'));
-
+                if (button){// POIESIS CODE: Validation to exclude S&P button ///////////////
+                    button.appendTo(el_node.querySelector('.paymentline-buttons-extend'));
+                }
             });
 
 
