@@ -12,6 +12,7 @@
                     <field name="average_price" type="measure"/>
                     <field name="total_discount" type="measure"/>
                     <field name="price_total" type="measure"/>
+                    <field name="total_incl" type="measure"/>
                 </graph>
             </field>
         </record>

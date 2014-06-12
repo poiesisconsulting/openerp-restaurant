@@ -36,6 +36,7 @@ class pos_rest_report(osv.osv):
                                   'Status'),
         'user_id':fields.many2one('res.users', 'Salesperson', readonly=True),
         'price_total':fields.float('Total Price', readonly=True),
+        'total_incl':fields.float('Total w/ Tax', readonly=True),
         'total_discount':fields.float('Total Discount', readonly=True),
         'average_price': fields.float('Average Price', readonly=True,group_operator="avg"),
         'warehouse_id':fields.many2one('stock.warehouse', 'Warehouse', readonly=True),
@@ -56,7 +57,8 @@ class pos_rest_report(osv.osv):
                     count(*) as nbr,
                     s.date_order as date,
                     sum(l.qty * u.factor) as product_qty,
-                    sum(l.qty * l.price_unit) as price_total,
+                    sum(price_subtotal) as price_total,
+                    sum(l.price_subtotal_incl) as total_incl,
                     sum((l.qty * l.price_unit) * (l.discount / 100)) as total_discount,
                     (sum(l.qty*l.price_unit)/sum(l.qty * u.factor))::decimal(16,2) as average_price,
                     sum(cast(to_char(date_trunc('day',s.date_order) - date_trunc('day',s.create_date),'DD') as int)) as delay_validation,
@@ -70,9 +72,10 @@ class pos_rest_report(osv.osv):
                     pt.categ_id,pc.parent_id as parent_categ_id
                 from pos_order_line as l
                     left join pos_order s on (s.id=l.order_id)
-                    left join product_template pt on (pt.id=l.product_id)
-                    left join product_uom u on (u.id=pt.uom_id)
+                    left join product_product pp on (pp.id=l.product_id)
+                    left join product_template pt on (pt.id=pp.product_tmpl_id)
                     left join product_category pc on (pc.id=pt.categ_id)
+                    left join product_uom u on (u.id=pt.uom_id)
                 group by
                     s.date_order, s.partner_id,s.state,
                     s.user_id,s.warehouse_id,s.company_id,s.sale_journal,l.product_id,pt.categ_id,pc.parent_id,s.create_date
