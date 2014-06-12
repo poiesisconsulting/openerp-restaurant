@@ -706,6 +706,9 @@ function poi_pos_widgets(instance, module){
                     if (self.pos.authorization.approved) {
                         self.pos.sp_cashregister_id = cashregister.id;
                         current_order.addPaymentline(cashregister);
+
+                        current_order.selected_paymentline.set_amount( Math.max(current_order.getDueLeft(),0) );
+
                         (new instance.web.Model('pos.order')).get_func('sp_create_from_ui')(current_order.export_as_JSON());
 
                         //++++++ PRINT CLOSE TICKET ++++++++++++++
