@@ -556,9 +556,26 @@ function poi_pos_models(instance, module){
                 table_ids: this.get_tables(),
                 order_id: this.get_order_id() ? this.get_order_id() : null,
                 number_of_seats: this.get_seats(),
+                covers: this.get_covers(),
                 courses: this.get_courses(),
                 internal_message: this.geT_internal_message()
             };
+        },
+
+        get_covers: function(){
+            var seats = [];
+            var covers =[];
+            (this.get('orderLines')).each(_.bind( function(item) {
+                return seats.push(item.get_seat());
+            }, this));
+            if (seats.length>0)
+            {
+                covers = $.unique(seats);
+                if ($.inArray('ALL', covers)>=0){
+                    covers.splice( $.inArray('ALL', covers), 1 );
+                }
+            }
+            return covers.length;
         },
 
         set_courses: function(courses){

@@ -22,7 +22,7 @@
             <t t-foreach="changes.areas" t-as="area">
                 <t t-esc="area"/>
             </t>
-             / Gst: <t t-esc="changes.number_of_seats" /></div>
+             / Gst: <t t-esc="changes.covers" /></div>
             <br />
             <div>User: <t t-esc="changes.user_name" />
                  /
