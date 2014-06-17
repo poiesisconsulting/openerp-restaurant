@@ -7,7 +7,7 @@
          <field name="arch" type="xml">
              <tree string="Daily Report">
              	<field name="order_id" invisible="1"/>
-				<field name="date_service"/>
+				<field name="date_start"/>
 				<field name="area"/>
                 <field name="tables"/>
                 <field name="covers"/>
@@ -37,7 +37,7 @@
                 <search string="Search Order">
                     <group col="10" colspan="4">
                         <field name="order_id" select='1' string="Order"/>
-                        <field name="date_service"/>
+                        <field name="date_start"/>
                         <field name="state"/>
                         <field name="user_id"/>
                         <field name="session_id" select="1" string="Fecha Factura"/>
@@ -47,7 +47,9 @@
                     </group>
                     <newline/>
                     <group expand="0" string="Group By...">
-                        <filter string="Service date" icon="terp-go-month" domain="[]" context="{'group_by':'date_service'}"/>
+                        <filter string="Service Date (day)" icon="terp-go-month" domain="[]" context="{'group_by':'date_start:day'}"/>
+                        <filter string="Service Date (month)" icon="terp-go-month" domain="[]" context="{'group_by':'date_start:month'}"/>
+                        <filter string="Service Date (year)" icon="terp-go-month" domain="[]" context="{'group_by':'date_start:year'}"/>
                         <filter string="Session" icon="terp-go-month" domain="[]" context="{'group_by':'session_id'}"/>
                         <filter name="group_area" string="Area" icon="terp-go-month" domain="[]"  context="{'group_by':'area'}"/>
                         <filter string="Status" icon="terp-go-month" domain="[]"  context="{'group_by':'state'}"/>
