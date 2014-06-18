@@ -3,49 +3,36 @@ function poi_pos_load_data(instance, module){
     var QWeb = instance.web.qweb;
 	_t = instance.web._t;
 
-	//Grover Notes:
-	//Widget created to try to pull data without copying entire PosModel
-	module.TableLoadData = module.PosBaseWidget.extend({
-		init: function(parent, options){
-        	var self = this;
-            var options = options || {};
-            this._super(parent,options);
 
-            this.pos.tables_loaded = $.Deferred();
+    var OldPosModel = module.PosModel;
 
-            $.when(this.load_server_data())
-                .done(function(){
-                    //self.log_loaded_data(); //Uncomment if you want to log the data to the console for easier debugging
-                	self.pos.tables_loaded.resolve();
-                }).fail(function(){
-                    //we failed to load some backend data, or the backend was badly configured.
-                    //the error messages will be displayed in PosWidget
-                    self.pos.tables_loaded.reject();
-                });
-
-        },
-
+    module.PosModel = module.PosModel.extend({
         load_server_data: function(){
             var self = this;
-			var loaded = self.pos.fetch(
+            this.tables_loaded = $.Deferred();
+
+            var loaded = OldPosModel.prototype.load_server_data.call(this).then(function(){
+                return self.fetch(
                     'table.area',
                     ['name','table_ids'],
                     []
-                ).then(function(areas_data){
-                    self.pos.areas_list=areas_data;
-                    return self.pos.fetch(
-                        'table.table',
-                        [],
-                        []
-                    );
-                }).then(function(tables_data){
-                    self.pos.tables_list=tables_data;
-                });
+                );
+            }).then(function(areas_data){
+                self.areas_list=areas_data;
+                return self.fetch(
+                    'table.table',
+                    [],
+                    []
+                );
+            }).then(function(tables_data){
+                self.tables_list=tables_data;
+                self.tables_loaded.resolve();
+            });
+
             return loaded;
-
         },
+    });
 
-	});
 
 	//Grover Notes:
 	//Widget created to try to pull data without copying entire PosModel

@@ -185,6 +185,7 @@ function openerp_restaurant_multiprint(instance,module){
                 'areas': this.pos.get_tables_area_name(json.table_ids),
                 'name': json.name  || 'unknown order',
                 'number_of_seats': json.number_of_seats || 0,
+                'covers': json.covers || 0,
                 'time': this.get_mytime(),
             };
             

@@ -52,6 +52,26 @@ function poi_pos_models(instance, module){
             });
             return tables;
         },
+        //Note: This function returns an array with table objects for some specific area_id
+        get_all_tables_from_area: function(area_id){
+            tables=[];
+            _.each(this.tables_list, function(table){
+                if (table.area_id){
+                    if (table.area_id[0]==area_id){
+                        tables.push(table);
+                    }
+                }
+            });
+            return tables;
+        },
+        //Note: This function returns an array with table objects
+        get_all_tables: function(area_id){
+            tables=[];
+            _.each(this.tables_list, function(table){
+                tables.push(table);
+            });
+            return tables;
+        },
         get_area_name: function(area_id){
             area_name = '';
             _.each(this.areas_list, function(area){
@@ -556,9 +576,26 @@ function poi_pos_models(instance, module){
                 table_ids: this.get_tables(),
                 order_id: this.get_order_id() ? this.get_order_id() : null,
                 number_of_seats: this.get_seats(),
+                covers: this.get_covers(),
                 courses: this.get_courses(),
                 internal_message: this.geT_internal_message()
             };
+        },
+
+        get_covers: function(){
+            var seats = [];
+            var covers =[];
+            (this.get('orderLines')).each(_.bind( function(item) {
+                return seats.push(item.get_seat());
+            }, this));
+            if (seats.length>0)
+            {
+                covers = $.unique(seats);
+                if ($.inArray('ALL', covers)>=0){
+                    covers.splice( $.inArray('ALL', covers), 1 );
+                }
+            }
+            return covers.length;
         },
 
         set_courses: function(courses){

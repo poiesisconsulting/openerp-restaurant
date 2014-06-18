@@ -1018,8 +1018,8 @@
                 col: col,
                 row: row
             };
-
-            this.empty_cells(col, row, size_x, size_y);
+            //ToDo: Check if this is not moving widgets
+            //this.empty_cells(col, row, size_x, size_y);
         }
         /* POIESIS MOD*/
         var $w = $(html).attr({
