@@ -341,7 +341,7 @@ function poi_extension_screens(instance, module){
             if (order_data.order_created)
             {
                 order = self.pos.get_order_by_id(self.order.id);
-                order.destroy({'reason':'synch'});
+                order.destroy();
             }
             this._super();
         },
