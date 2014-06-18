@@ -27,7 +27,7 @@ openerp.poi_web_alert = function(instance){
                             });
                         };
                     }).always(function(){
-                        setTimeout(load_messages,1000);
+                        setTimeout(load_messages,10000);
                     });
             };
             load_messages();
