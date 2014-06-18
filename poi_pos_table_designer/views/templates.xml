@@ -8,6 +8,7 @@
     <xpath expr="//link[@id='pos-stylesheet']" position="after">
         <link rel="stylesheet" href="/poi_pos_table_designer/static/lib/jquery.gridster.css" />
         <link rel="stylesheet" href="/poi_pos_table_designer/static/src/css/pos.css" />
+        <link rel="stylesheet" href="/web/static/src/css/base.css" />
     </xpath>
 </template>
 

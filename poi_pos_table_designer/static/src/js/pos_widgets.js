@@ -24,6 +24,24 @@ function poi_pos_widgets(instance, module){
             }
 
             $.when(this._super()).then(function(){
+                self.$el.find('.merge-orders').off('click').click(function(){
+                    var currentOrder = self.pos.get('selectedOrder');
+                    var action = {
+                        name: _t('Merge Orders'),
+                        type: 'ir.actions.act_window',
+                        res_model: 'table.merge.wizard',
+                        view_mode: 'form',
+                        view_type: 'form',
+                        views: [[false, 'form']],
+                        target: 'new',
+                        context: {'base_order_id': [currentOrder.get_order_id()]},
+                    };
+                    var am = new instance.web.ActionManager(self);
+
+                    am.do_action(action).done(function(){
+                        console.log('HACE ALGO?',am);
+                    });
+                });
                 self.$el.find('.assign-table').off('click').click(function(){
                      self.pos_widget.screen_selector.set_current_screen_no_close_popup('selecttable');
                      //self.pos_widget.screen_selector.show_popup('selecttablepopup');
@@ -651,6 +669,7 @@ function poi_pos_widgets(instance, module){
                 self.pos.synchorders.remove_orders()
             );
             this.pos.reload_user_tables(new_user);
+            this.pos_widget.select_table_screen.change_active_user(new_user);
         },
     });
 
@@ -706,6 +725,7 @@ function poi_pos_widgets(instance, module){
                     if (self.pos.authorization.approved) {
                         self.pos.sp_cashregister_id = cashregister.id;
                         current_order.addPaymentline(cashregister);
+                        current_order.selected_paymentline.set_amount( Math.max(current_order.getDueLeft(),0) );
                         (new instance.web.Model('pos.order')).get_func('sp_create_from_ui')(current_order.export_as_JSON());
 
                         //++++++ PRINT CLOSE TICKET ++++++++++++++
@@ -1204,7 +1224,6 @@ function poi_pos_widgets(instance, module){
 
             //this.screen_selector.set_current_screen('selecttable');
 
-            this.tableloaddata = new module.TableLoadData(this, {});
             this.propertiesloaddata = new module.PropertiesLoadData(this, {});
 
                 // Hide Tabs for orders and button to delete orders

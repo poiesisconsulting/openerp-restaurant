@@ -52,6 +52,26 @@ function poi_pos_models(instance, module){
             });
             return tables;
         },
+        //Note: This function returns an array with table objects for some specific area_id
+        get_all_tables_from_area: function(area_id){
+            tables=[];
+            _.each(this.tables_list, function(table){
+                if (table.area_id){
+                    if (table.area_id[0]==area_id){
+                        tables.push(table);
+                    }
+                }
+            });
+            return tables;
+        },
+        //Note: This function returns an array with table objects
+        get_all_tables: function(area_id){
+            tables=[];
+            _.each(this.tables_list, function(table){
+                tables.push(table);
+            });
+            return tables;
+        },
         get_area_name: function(area_id){
             area_name = '';
             _.each(this.areas_list, function(area){
