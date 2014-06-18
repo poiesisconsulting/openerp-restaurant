@@ -6,7 +6,7 @@
             <field name="model">report.pos.rest</field>
             <field name="arch" type="xml">
                 <graph string="Restaurant Analysis" type="pivot">
-                    <field name="date" interval="day" type="row"/>
+                    <field name="date_service" interval="day" type="row"/>
                     <field name="nbr" type="measure"/>
                     <field name="product_qty" type="measure"/>
                     <field name="average_price" type="measure"/>
@@ -41,9 +41,9 @@
                         <filter string="Product" icon="terp-accessories-archiver" context="{'group_by':'product_id'}"/>
                         <filter string="Category" icon="terp-accessories-archiver" context="{'group_by':'categ_id'}"/>
                         <filter string="Parent Category" icon="terp-accessories-archiver" context="{'group_by':'parent_categ_id'}"/>
-                        <filter string="Order Date (day)" icon="terp-go-today" context="{'group_by':'date:day'}" help="Day of order date"/>
-                        <filter string="Order Date (month)" icon="terp-go-month" context="{'group_by':'date:month'}" help="Month of order date"/>
-                        <filter string="Order Date (year)" icon="terp-go-year" context="{'group_by':'date:year'}" help="Year of order date"/>
+                        <filter string="Service Date (day)" icon="terp-go-today" context="{'group_by':'date_service:day'}" help="Day of order date"/>
+                        <filter string="Service Date (month)" icon="terp-go-month" context="{'group_by':'date_service:month'}" help="Month of order date"/>
+                        <filter string="Service Date (year)" icon="terp-go-year" context="{'group_by':'date_service:year'}" help="Year of order date"/>
                     </group>
                 </search>
             </field>

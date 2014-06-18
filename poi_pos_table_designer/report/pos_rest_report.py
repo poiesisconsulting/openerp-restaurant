@@ -28,6 +28,7 @@ class pos_rest_report(osv.osv):
     _auto = False
     _columns = {
         'date': fields.date('Date Order', readonly=True),
+        'date_service': fields.date('Date Service', readonly=True),
         'partner_id':fields.many2one('res.partner', 'Partner', readonly=True),
         'product_id':fields.many2one('product.product', 'Product', readonly=True),
         'categ_id':fields.many2one('product.category', 'Category', readonly=True),
@@ -56,6 +57,7 @@ class pos_rest_report(osv.osv):
                     min(l.id) as id,
                     count(*) as nbr,
                     s.date_order as date,
+                    ps.start_at as date_service,
                     sum(l.qty * u.factor) as product_qty,
                     sum(price_subtotal) as price_total,
                     sum(l.price_subtotal_incl) as total_incl,
@@ -72,12 +74,13 @@ class pos_rest_report(osv.osv):
                     pt.categ_id,pc.parent_id as parent_categ_id
                 from pos_order_line as l
                     left join pos_order s on (s.id=l.order_id)
+                    left join pos_session ps on (ps.id=s.session_id)
                     left join product_product pp on (pp.id=l.product_id)
                     left join product_template pt on (pt.id=pp.product_tmpl_id)
                     left join product_category pc on (pc.id=pt.categ_id)
                     left join product_uom u on (u.id=pt.uom_id)
                 group by
-                    s.date_order, s.partner_id,s.state,
+                    s.date_order,ps.start_at, s.partner_id,s.state,
                     s.user_id,s.warehouse_id,s.company_id,s.sale_journal,l.product_id,pt.categ_id,pc.parent_id,s.create_date
                 having
                     sum(l.qty * u.factor) != 0)""")
