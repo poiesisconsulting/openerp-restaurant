@@ -10,13 +10,14 @@ class res_users(osv.osv):
     def _check_unique_pin(self, cr, uid, ids, context=None):
 
         record = self.browse(cr, uid, ids, context=context)
+        pin_codes = []
 
         for data in record:
 
             if data.pos_pin > 999:
                 pin_codes = self.search(cr, uid, [('pos_pin', '=', data.pos_pin), ('id', '!=', data.id)])
 
-                if pin_codes.lenght > 0:
+                if len(pin_codes) > 0:
                     return False
                 else:
                     return True
