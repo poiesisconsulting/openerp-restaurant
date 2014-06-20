@@ -23,7 +23,7 @@
                 <div class='top-content'>
                     <h1>Select an Order</h1>
                 </div>
-                <div class='left-content touch-scrollable scrollable-y'>
+                <div class='full-content touch-scrollable scrollable-y'>
                     <div class='order-list'>
 
                     </div>
