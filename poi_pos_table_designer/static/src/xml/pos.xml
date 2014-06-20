@@ -91,8 +91,7 @@
                 <t t-esc='widget.order.internal_message'/>
             </t>
             <t t-if="widget.get_amount_total()">
-                <br/>
-                Total: <t t-esc='widget.get_amount_total()'/>
+                <h3>Total: <t t-esc='widget.get_amount_total()'/></h3>
             </t>
         </t>
     </t>
