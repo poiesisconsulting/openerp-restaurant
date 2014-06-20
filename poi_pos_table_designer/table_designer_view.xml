@@ -3,7 +3,9 @@
 
 
         <menuitem name="Table Manager" parent="point_of_sale.menu_point_root"
-            id="menu_point_table_manager" sequence="20" groups="point_of_sale.group_pos_manager"/>
+            id="menu_point_table_manager" sequence="20" groups="point_of_sale.group_pos_user"/>
+        <!--<menuitem name="Table Manager" parent="point_of_sale.menu_point_root"
+            id="menu_point_table_manager" sequence="20" groups="point_of_sale.group_pos_manager"/>-->
 
 
 
@@ -150,7 +152,9 @@
         </record>
 
         <menuitem action="table_table_action" id="menu_table_table"
-            parent="menu_point_table_manager" sequence="1" groups="point_of_sale.group_pos_manager"/>
+            parent="menu_point_table_manager" sequence="1" groups="point_of_sale.group_pos_user"/>
+        <!--<menuitem action="table_table_action" id="menu_table_table"
+            parent="menu_point_table_manager" sequence="1" groups="point_of_sale.group_pos_manager"/>-->
 
 
 
@@ -162,7 +166,7 @@
         </record>
 
         <menuitem action="view_table_designer_client_action"
-                  id="menu_table_designer" parent="menu_point_table_manager"/>
+                  id="menu_table_designer" parent="menu_point_table_manager" groups="point_of_sale.group_pos_manager"/>
 
         <!-- The table interface.xml -->
         <record model="ir.actions.client" id="view_table_hostess_client_action">
