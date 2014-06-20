@@ -3,6 +3,9 @@ function poi_pos_widgets(instance, module){
     var QWeb = instance.web.qweb;
 	_t = instance.web._t;
 
+    var round_di = instance.web.round_decimals;
+    var round_pr = instance.web.round_precision;
+
     module.TableHeaderWidget = module.PosBaseWidget.extend({
 	    template: 'TableHeaderWidget',
 	    init: function(parent, options){
@@ -1160,6 +1163,10 @@ function poi_pos_widgets(instance, module){
             this._super(order_id);
             var self = this;
             //$.when(this.pos.synchorders.set_flag_to_remove_other_orders(order_id)).then(self.pos.synchorders.remove_orders());
+        },
+        get_amount_total: function(){
+            var amount_total = parseFloat(this.order.amount_total)
+            return amount_total.toFixed(2) || 0;
         },
     });
 
