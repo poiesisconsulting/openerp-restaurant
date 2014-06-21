@@ -935,7 +935,7 @@ function poi_pos_widgets(instance, module){
 
                         ol_opts = {
                             quantity: dup_line.get_quantity(),
-                            price: dup_line.get_price_without_tax(),
+                            price: (dup_line.get_price_without_tax())/(dup_line.get_quantity()),
                             discount: dup_line.get_discount(),
                             descrip: dup_line.get_property_desc(),
                             order_line_notes: dup_line.get_notes(),
@@ -1011,7 +1011,7 @@ function poi_pos_widgets(instance, module){
 
                 ol_opts = {
                     quantity: line.get_quantity(),
-                    price: line.get_price_without_tax(),
+                    price: (line.get_price_without_tax())/(line.get_quantity()),
                     discount: line.get_discount(),
                     descrip: line.get_property_desc(),
                     order_line_notes: line.get_notes(),
