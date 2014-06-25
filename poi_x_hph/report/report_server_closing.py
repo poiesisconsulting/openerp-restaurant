@@ -79,7 +79,7 @@ class server_closing(report_sxw.rml_parse):
         terminal_names = ''
 
         pos_order_obj = self.pool.get('pos.order')
-        order_ids = pos_order_obj.search(self.cr, self.uid, [('user_id','=',user_id),('date_order','>=',date_start),('date_order','<=',date_end),('state','in',['paid','invoiced'])])
+        order_ids = pos_order_obj.search(self.cr, self.uid, [('user_id','=',user_id),('date_order','>=',date_start),('date_order','<=',date_end),('state','in',['paid','invoiced','done'])])
         for order in pos_order_obj.browse(self.cr, self.uid, order_ids):
             terminal_id = order.session_id.user_id.id
             if terminal_id not in terminals:
@@ -101,7 +101,7 @@ class server_closing(report_sxw.rml_parse):
         taxes_total = 0.0
 
         pos_order_obj = self.pool.get('pos.order')
-        order_ids = pos_order_obj.search(self.cr, self.uid, [('user_id','=',user_id),('date_order','>=',date_start),('date_order','<=',date_end),('state','in',['paid','invoiced'])])
+        order_ids = pos_order_obj.search(self.cr, self.uid, [('user_id','=',user_id),('date_order','>=',date_start),('date_order','<=',date_end),('state','in',['paid','invoiced','done'])])
         for order in pos_order_obj.browse(self.cr, self.uid, order_ids):
             taxes_total+=order.amount_tax
 
@@ -114,7 +114,7 @@ class server_closing(report_sxw.rml_parse):
         gratuities_total = 0.0
 
         pos_order_obj = self.pool.get('pos.order')
-        order_ids = pos_order_obj.search(self.cr, self.uid, [('user_id','=',user_id),('date_order','>=',date_start),('date_order','<=',date_end),('state','in',['paid','invoiced'])])
+        order_ids = pos_order_obj.search(self.cr, self.uid, [('user_id','=',user_id),('date_order','>=',date_start),('date_order','<=',date_end),('state','in',['paid','invoiced','done'])])
         for order in pos_order_obj.browse(self.cr, self.uid, order_ids):
             for line in order.lines:
                 if line.product_id.id == 5401:
@@ -136,7 +136,7 @@ class server_closing(report_sxw.rml_parse):
         sales_total = 0.0
 
         pos_order_obj = self.pool.get('pos.order')
-        order_ids = pos_order_obj.search(self.cr, self.uid, [('user_id','=',user_id),('date_order','>=',date_start),('date_order','<=',date_end),('state','in',['paid','invoiced'])])
+        order_ids = pos_order_obj.search(self.cr, self.uid, [('user_id','=',user_id),('date_order','>=',date_start),('date_order','<=',date_end),('state','in',['paid','invoiced','done'])])
         for order in pos_order_obj.browse(self.cr, self.uid, order_ids):
             sales_total+=order.amount_total
 
@@ -153,7 +153,7 @@ class server_closing(report_sxw.rml_parse):
         number_of_tables = 0
 
         pos_order_obj = self.pool.get('pos.order')
-        order_ids = pos_order_obj.search(self.cr, self.uid, [('user_id','=',user_id),('date_order','>=',date_start),('date_order','<=',date_end),('state','in',['paid','invoiced'])])
+        order_ids = pos_order_obj.search(self.cr, self.uid, [('user_id','=',user_id),('date_order','>=',date_start),('date_order','<=',date_end),('state','in',['paid','invoiced','done'])])
         for order in pos_order_obj.browse(self.cr, self.uid, order_ids):
             number_of_tables+=len(order.table_ids)
         return number_of_tables
@@ -165,7 +165,7 @@ class server_closing(report_sxw.rml_parse):
         number_of_covers = 0
 
         pos_order_obj = self.pool.get('pos.order')
-        order_ids = pos_order_obj.search(self.cr, self.uid, [('user_id','=',user_id),('date_order','>=',date_start),('date_order','<=',date_end),('state','in',['paid','invoiced'])])
+        order_ids = pos_order_obj.search(self.cr, self.uid, [('user_id','=',user_id),('date_order','>=',date_start),('date_order','<=',date_end),('state','in',['paid','invoiced','done'])])
         for order in pos_order_obj.browse(self.cr, self.uid, order_ids):
             number_of_covers+=order.covers
         return number_of_covers
@@ -184,7 +184,7 @@ class server_closing(report_sxw.rml_parse):
         payment_methods = {}
 
         pos_order_obj = self.pool.get('pos.order')
-        order_ids = pos_order_obj.search(self.cr, self.uid, [('user_id','=',user_id),('date_order','>=',date_start),('date_order','<=',date_end),('state','in',['paid','invoiced'])])
+        order_ids = pos_order_obj.search(self.cr, self.uid, [('user_id','=',user_id),('date_order','>=',date_start),('date_order','<=',date_end),('state','in',['paid','invoiced','done'])])
         for order in pos_order_obj.browse(self.cr, self.uid, order_ids):
             for statement in order.statement_ids:
                 journal = statement.journal_id.id
