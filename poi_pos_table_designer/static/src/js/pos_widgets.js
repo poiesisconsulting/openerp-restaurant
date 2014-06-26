@@ -685,7 +685,6 @@ function poi_pos_widgets(instance, module){
             var self = this;
 
             var current_order = self.pos.get('selectedOrder');
-            console.log("spsp current_order", current_order);
             if (current_order.sp_reason) {
                 self.pos_widget.screen_selector.close_popup();
                 self.validate_order().then (function(){
@@ -720,7 +719,6 @@ function poi_pos_widgets(instance, module){
 
                 _.each(self.$el.find(".tr_sel_true"), function(tr_found) {
                     reason_id = $(tr_found).attr('id');
-                    console.log("spsp self.pos", self.pos);
                     current_order.sp_reason = reason_id;
                 });
                 (new instance.web.Model('pos.order')).get_func('sp_execute')(current_order.get_order_id(), reason_id).then(function(){
@@ -1301,7 +1299,20 @@ function poi_pos_widgets(instance, module){
             var SPbutton = $(QWeb.render('SPbutton'));
 
             SPbutton.click(function(){
-                self.pos_widget.screen_selector.show_popup('sppopup');
+                var order_lines = self.pos.get('selectedOrder').get_all_lines();
+                var allow_popup = true;
+                 _.each(order_lines, function(line){
+                     if (!line.sent_to_kitchen){
+                         allow_popup = false
+                     }
+                 });
+
+                if (order_lines.length && allow_popup)
+                    self.pos_widget.screen_selector.show_popup('sppopup');
+                else if (!order_lines.length)
+                    alert("The order has no lines.");
+                else if (!allow_popup)
+                    alert("Some order-lines were not printed yet.");
             });
 
             SPbutton.appendTo(this.$('.control-buttons'));

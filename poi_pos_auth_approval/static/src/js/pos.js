@@ -38,6 +38,8 @@ openerp.poi_pos_auth_approval = function(instance){
         show: function(){
             var self = this;
 
+            console.log("self.pos.authorization", self.pos.authorization);
+
             self.messages = self.pos.authorization.messages;
             self.state = self.pos.authorization.state;
 
@@ -64,7 +66,7 @@ openerp.poi_pos_auth_approval = function(instance){
 
                 self.pos_widget.screen_selector.close_popup();
             });
-        },
+        }
     });
 
     module.PosWidget = module.PosWidget.extend({
@@ -79,6 +81,6 @@ openerp.poi_pos_auth_approval = function(instance){
             this.approval_popup = new module.ApprovalPopup(this, {});
             this.approval_popup.appendTo(this.$el);
             this.screen_selector.add_popup('ApprovalPopup',this.approval_popup);
-        },
+        }
     });
-}
+};

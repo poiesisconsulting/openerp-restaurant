@@ -145,7 +145,6 @@ function poi_pos_models(instance, module){
             this.pos_widget.order_selector_screen.set_domain([['state','=','draft'],['table_ids','in',tables]]);
         },
         push_order: function(order) {
-            console.log('PUSHING ORDER', order);
             order.set_order_tables_state('open');   //'paid' configurable?
             var self = this;
             this.proxy.log('push_order',order.export_as_JSON());

@@ -208,7 +208,6 @@ function poi_pos_screens(instance, module){
                     this.$el.find('.oe_table_select_area').val(this.selected_area);
                 }
                 //We don't have to choose if there is only one area
-                console.log('Valid Areas?', valid_areas);
                 if (valid_areas <= 1){
                     self.$el.find('.oe_table_select_area').hide();
                 }

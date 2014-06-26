@@ -10,7 +10,6 @@
             </field>
 	    </record>
 
-
         <record id='pos_auth_condition_tree' model='ir.ui.view'>
             <field name='name'>pos.auth.condition.tree</field>
             <field name='model'>pos.auth.condition</field>
@@ -87,7 +86,7 @@
                     <field name="auth_state" readonly="1"/>
                     <field name="auth_by" readonly="1"/>
                     <field name="auth_note" readonly="1" colspan="4"/>
-                    <field name="resp_note" readonly="1" colspan="4"/>
+                    <!--<field name="resp_note" readonly="1" colspan="4"/>-->
                 </xpath>
             </field>
         </record>

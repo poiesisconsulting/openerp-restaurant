@@ -10,9 +10,11 @@
                     Approval Request
                 </div>
                 <div class="popup_body" style="height:220px">
-                    <span>This order requires manager authorization:</span>
+                    <t t-if="widget.state != 'rejected'">
+                        <span>This order requires manager authorization:</span>
+                    </t>
                     <t t-if="widget.state == 'rejected'">
-                        <span>This order has been rejected for the following reason:</span>
+                        <span>The authorization request has been denied:</span>
                     </t>
                     <table class="approval_messages" border="0" width="100%" align="center">
                         <t t-foreach="widget.messages" t-as="message">
