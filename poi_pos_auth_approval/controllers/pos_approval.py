@@ -90,7 +90,7 @@ class OrderController(http.Controller):
                                 elif condition.operator == 'equal' or condition.operator == 'like':
                                     operator = '='
                                 elif condition.operator == 'inequal':
-                                    operator = '='
+                                    operator = '!='
                                 eval_condition = eval(str(value_to_compare)+operator+str(condition.condition_value))
                                 if eval_condition:
                                     res['approved'] = False

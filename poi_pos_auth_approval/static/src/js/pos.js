@@ -58,6 +58,10 @@ openerp.poi_pos_auth_approval = function(instance){
             });
 
             this.$el.find('#app_cancel').off('click').click(function(){
+
+                // if "cancel" authorization request then "remove S&P reason"
+                (new instance.web.Model('pos.order')).get_func('sp_execute')(currentOrder.get_order_id(), '');
+
                 self.pos_widget.screen_selector.close_popup();
             });
         },

@@ -675,15 +675,28 @@ function poi_pos_widgets(instance, module){
         init: function(parent, options) {
             this._super(parent, options);
             this.sp_reasons = this.get_reasons(); //this is for xml template
+            var self = this;
         },
 
         show: function(){
             this._super();
             this.renderElement();
 
+            var self = this;
+
+            var current_order = self.pos.get('selectedOrder');
+            console.log("spsp current_order", current_order);
+            if (current_order.sp_reason) {
+                self.pos_widget.screen_selector.close_popup();
+                self.validate_order().then (function(){
+                    if (self.pos.authorization.approved) {
+                        self.sp_close_order();
+                    }
+                });
+            }
+
             this.buttons_actions();
 
-            var self = this;
             this.$el.find('.tr_sel_false').off('click').click(function(){
 
                 // single choice:
@@ -704,13 +717,16 @@ function poi_pos_widgets(instance, module){
                 var current_order = self.pos.get('selectedOrder');
                 var reason_id = "";
 
+
                 _.each(self.$el.find(".tr_sel_true"), function(tr_found) {
                     reason_id = $(tr_found).attr('id');
+                    console.log("spsp self.pos", self.pos);
+                    current_order.sp_reason = reason_id;
                 });
-                (new instance.web.Model('pos.order')).get_func('sp_execute')(current_order.get_order_id(), reason_id);
-
-                var cashregister = [];
-                (new instance.web.Model('pos.order')).get_func('fetch_sp_journal_id')().then(function(sp_id) {
+                (new instance.web.Model('pos.order')).get_func('sp_execute')(current_order.get_order_id(), reason_id).then(function(){
+                    var cashregister = [];
+                    return (new instance.web.Model('pos.order')).get_func('fetch_sp_journal_id')();
+                }).then(function(sp_id) {
                     _.each(self.pos.bankstatements, function(bank_st){
                         if(bank_st.journal_id[0] == sp_id){
                             cashregister = bank_st;
@@ -720,24 +736,7 @@ function poi_pos_widgets(instance, module){
                     return self.validate_order();
                 }).then (function(){
                     if (self.pos.authorization.approved) {
-                        self.pos.sp_cashregister_id = cashregister.id;
-                        current_order.addPaymentline(cashregister);
-                        current_order.selected_paymentline.set_amount( Math.max(current_order.getDueLeft(),0) );
-                        (new instance.web.Model('pos.order')).get_func('sp_create_from_ui')(current_order.export_as_JSON());
-
-                        //++++++ PRINT CLOSE TICKET ++++++++++++++
-                         if(self.pos.config.iface_print_via_proxy){
-                            var receipt = current_order.export_for_printing();
-                            console.log('XmlReceipt', receipt);
-                            self.pos.proxy.print_receipt(QWeb.render('XmlReceipt',{
-                                receipt: receipt,
-                                widget: self
-                            }));
-                        }
-                        //+++++++++++++++++++++++++++++++++++++++++
-
-                        current_order.set_order_tables_state('open');
-                        current_order.destroy({'reason':'abandon'});
+                        self.sp_close_order();
                     }
                 });
                 self.pos_widget.screen_selector.close_popup();
@@ -750,6 +749,7 @@ function poi_pos_widgets(instance, module){
 
         validate_order: function() {
             var self = this;
+
             //var realvalidate = this._super;
             var connection = new openerp.Session(self, null, {session_id: openerp.session.session_id});
             var currentOrder = self.pos.get('selectedOrder');
@@ -760,15 +760,38 @@ function poi_pos_widgets(instance, module){
                 }
                 ).then(function(authorization){
                     self.pos.authorization = authorization;
-                    console.log ("self.pos.authorization",self.pos.authorization);
                     if(authorization.approved){
                         //realvalidate.call(self);
                     }else{
                         self.pos_widget.screen_selector.show_popup('ApprovalPopup');
-
                     }
                 }
             );
+        },
+
+        sp_close_order: function(){
+            var self = this;
+            var current_order = self.pos.get('selectedOrder');
+
+            self.pos.sp_cashregister_id = cashregister.id;
+            current_order.addPaymentline(cashregister);
+            current_order.selected_paymentline.set_amount( Math.max(current_order.getDueLeft(),0) );
+            (new instance.web.Model('pos.order')).get_func('sp_create_from_ui')(current_order.export_as_JSON());
+
+            //++++++ PRINT CLOSE TICKET ++++++++++++++
+             if(self.pos.config.iface_print_via_proxy){
+                var receipt = current_order.export_for_printing();
+                console.log('XmlReceipt', receipt);
+                self.pos.proxy.print_receipt(QWeb.render('XmlReceipt',{
+                    receipt: receipt,
+                    widget: self
+                }));
+            }
+            //+++++++++++++++++++++++++++++++++++++++++
+
+            //self.pos.authorization.approved = false;
+            current_order.set_order_tables_state('open');
+            current_order.destroy({'reason':'abandon'});
         },
 
         get_reasons: function(){

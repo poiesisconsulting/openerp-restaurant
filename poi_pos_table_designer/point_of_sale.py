@@ -181,6 +181,7 @@ class pos_order(osv.osv):
     def sp_execute(self, cr, uid, order_id, sp_reason, context=None):
         pos_orders = self.pool.get('pos.order')
         current_order = pos_orders.browse(cr, uid, order_id, context=context)
+
         current_order.write({
             'sal_prom': sp_reason,
         })

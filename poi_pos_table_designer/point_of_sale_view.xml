@@ -51,9 +51,9 @@
                     <field name="order_line_notes"/>
                     <field name="seat"/>
                 </xpath>
-                <xpath expr="//field[@name='lines']/tree/field[@name='price_subtotal_incl']" position="replace">
+                <!--<xpath expr="//field[@name='lines']/tree/field[@name='price_subtotal_incl']" position="replace">
                     <field name="unique_name" readonly="0"/>
-                </xpath>
+                </xpath>-->
                 <xpath expr="//field[@name='statement_ids']" position="after">
                     <separator string="Late Voids"/>
                     <field name="lines_rejected">
