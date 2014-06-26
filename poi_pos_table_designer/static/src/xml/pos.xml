@@ -38,8 +38,7 @@
                 <td>
                     <div class="table-header-buttons">
                         <span class="table-title"><t t-esc="widget.table_header"/></span>
-                        <!--<button class="merge-orders table-button">Merge</button>
-                        -->
+                        <button class="merge-orders table-button">Merge</button>
                         <button class="assign-table table-button">Reassign</button>
                         <button class="add-seat-button table-button">Add Seat</button>
                         <button class="internal-message-button table-button">Set Note</button>
@@ -92,6 +91,26 @@
             </t>
             <t t-if="widget.get_amount_total()">
                 <h3>Total: <t t-esc='widget.get_amount_total()'/></h3>
+            </t>
+        </t>
+    </t>
+
+    <t t-extend="MergeOrderButtonWidget">
+        <t t-jquery=".order_data" t-operation="inner">
+            <h1><t t-esc='widget.order.tables'/></h1>
+            <t t-if="widget.order.internal_message">
+                <t t-esc='widget.order.internal_message'/>
+            </t>
+            <t t-if="widget.get_amount_total()">
+                <h3>Total: <t t-esc='widget.get_amount_total()'/></h3>
+            </t>
+        </t>
+    </t>
+
+    <t t-extend="MergeOrdersScreenWidget">
+        <t t-jquery=".from-order" t-operation="inner">
+            <t t-if="widget.current_order">
+                <h2><t t-esc='widget.get_table_header()'/></h2>
             </t>
         </t>
     </t>

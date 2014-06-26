@@ -21,6 +21,38 @@ function poi_pos_screens(instance, module){
     });
 
 */
+    module.MergeOrdersScreenWidget = module.MergeOrdersScreenWidget.extend({
+        get_table_header: function(){
+            var currentOrder = this.pos.get('selectedOrder');
+
+            var tables=currentOrder.get_tables();
+
+            var name_header = '';
+            var order_name = '';
+            var count = 0;
+
+            _.each(this.pos.tables_list, function(table){
+                if ($.inArray(table.id,tables)>=0){
+                    if (count == 0){
+                        name_header=table.name;
+                        order_name=table.code;
+                        count++;
+                    }
+                    else{
+                        name_header+=' - '+table.name;
+                        order_name+=' - '+table.code;
+                        count++;
+                    }
+                }
+
+                //var find_table = _.filter(table.user_ids)
+                //var find_prop = _.filter(product.attributes.description_ids, function(num){ return num == table.id; });
+            });
+            currentOrder.set_order_name(order_name);
+            return name_header;
+        },
+    });
+
 	module.SelectTableScreenWidget = module.ScreenWidget.extend({
         template: 'SelectTableScreenWidget',
         back_screen: 'products',

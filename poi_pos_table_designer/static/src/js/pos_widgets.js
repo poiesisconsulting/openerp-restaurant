@@ -27,23 +27,17 @@ function poi_pos_widgets(instance, module){
             }
 
             $.when(this._super()).then(function(){
-                self.$el.find('.merge-orders').off('click').click(function(){
+                self.pos_widget.$el.find('.merge-orders.order-button').hide();
+                self.$el.find('.merge-orders.table-button').off('click').click(function(){
                     var currentOrder = self.pos.get('selectedOrder');
-                    var action = {
-                        name: _t('Merge Orders'),
-                        type: 'ir.actions.act_window',
-                        res_model: 'table.merge.wizard',
-                        view_mode: 'form',
-                        view_type: 'form',
-                        views: [[false, 'form']],
-                        target: 'new',
-                        context: {'base_order_id': [currentOrder.get_order_id()]},
-                    };
-                    var am = new instance.web.ActionManager(self);
-
-                    am.do_action(action).done(function(){
-                        console.log('HACE ALGO?',am);
-                    });
+                    if (currentOrder){
+                        if (currentOrder.get_order_id()){
+                            self.pos_widget.screen_selector.set_current_screen_no_close_popup('merge_orders_screen');
+                        }
+                        else{
+                            alert('This order does not exist on the database, you only can merge orders already saved on the database');
+                        }
+                    }
                 });
                 self.$el.find('.assign-table').off('click').click(function(){
                      self.pos_widget.screen_selector.set_current_screen_no_close_popup('selecttable');
@@ -1164,6 +1158,13 @@ function poi_pos_widgets(instance, module){
             var self = this;
             //$.when(this.pos.synchorders.set_flag_to_remove_other_orders(order_id)).then(self.pos.synchorders.remove_orders());
         },
+        get_amount_total: function(){
+            var amount_total = parseFloat(this.order.amount_total)
+            return amount_total.toFixed(2) || 0;
+        },
+    });
+
+    module.MergeOrderButtonWidget = module.MergeOrderButtonWidget.extend({
         get_amount_total: function(){
             var amount_total = parseFloat(this.order.amount_total)
             return amount_total.toFixed(2) || 0;

@@ -401,6 +401,16 @@ class pos_order(osv.osv):
             }
             pos_line_object.write(cr, uid, line.get('id'), line_properties, context=context)
 
+    def merge_orders(self, cr, uid, from_order, into_order):
+        res = super(pos_order, self).merge_orders(cr, uid, from_order, into_order)
+        merge_wizard_pool = self.pool.get('table.merge.wizard')
+        merge_wiz_id = merge_wizard_pool.create(cr, uid, {'base_order_id': from_order,
+                                           'case': 'into',
+                                           'backend': False,
+                                           'target_order_ids': [(0, 0,  {'order_id': into_order, 'apply': True})]})
+
+        return merge_wizard_pool.merge_orders(cr, uid, [merge_wiz_id])
+
 class pos_order_line_state(osv.osv):
     _name = "pos.order.line.state"
 
