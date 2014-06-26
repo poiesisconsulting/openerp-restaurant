@@ -56,6 +56,10 @@ class pos_order(osv.osv):
     #    company_id = self.pool.get('res.users').browse(cr, uid, uid, context=context).company_id.id
     #    res = self.pool.get('account.journal').search(cr, uid, [('type', '=', 'sale'), ('company_id', '=', company_id)], limit=1, context=context)
     #    return res and res[0] or False
+
+    def merge_orders(self, cr, uid, from_order, into_order):
+        #ToDo: Create a generic merge function
+        return True
     
     def _fetch_create_ui_values(self, cr, uid, order, context=None):
         values= {

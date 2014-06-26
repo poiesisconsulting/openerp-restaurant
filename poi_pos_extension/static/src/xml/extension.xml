@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates id="template" xml:space="preserve">
 
+    <!-- ORDERS SELECTOR -->
+
+    <!-- ORDERS SCREEN TRIGGER -->
+
     <t t-name="ShowOrdersButton">
         <span class="order-button show-orders">
             <i class="fa">Orders</i>
         </span>
     </t>
+
+    <!-- ORDERS SELECTOR BUTTON TEMPLATE -->
 
     <t t-name="OrderSelectorButtonWidget">
         <span class="order-selector-button select-order">
@@ -17,6 +23,8 @@
         </span>
     </t>
 
+    <!-- ORDERS SELECTOR SCREEN -->
+
     <t t-name="OrderSelectorScreenWidget">
         <div class='splitbill-screen screen'>
             <div class='screen-content'>
@@ -25,6 +33,58 @@
                 </div>
                 <div class='full-content touch-scrollable scrollable-y'>
                     <div class='order-list'>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+
+    <!-- END ORDERS SELECTOR -->
+
+
+    <!-- MERGE ORDERS -->
+
+    <!-- MERGE ORDERS BUTTON -->
+    <t t-name="MergeOrdersButton">
+        <span class="order-button merge-orders">
+            <i class="fa">Merge Orders</i>
+        </span>
+    </t>
+    <!-- END MERGE ORDERS -->
+
+    <!-- ORDERS MERGE BUTTON TEMPLATE -->
+
+    <t t-name="MergeOrderButtonWidget">
+        <span class="order-selector-button select-order">
+            <div t-att-order-id="widget.order.id">
+                <div class="order_data">
+
+                </div>
+            </div>
+        </span>
+    </t>
+
+    <t t-name="MergeOrdersScreenWidget">
+        <div class='merge-order-screen screen'>
+            <div class='screen-content'>
+                <div class='top-content'>
+                    <h1>Merge Orders</h1>
+                </div>
+                <div class='full-content touch-scrollable scrollable-y'>
+                    <h1>Merge</h1><div class="merge-orders">
+                        <span class="from-order order-selector-button">
+
+                        </span>
+                        <span class="order-selector-separator">
+                            <p>into</p>
+                        </span>
+                        <span class="into-order order-selector-button">
+                            <h2>No Order</h2>
+                        </span>
+                    </div>
+                    <h1>Select Order</h1>
+                    <div class="to-order-list">
 
                     </div>
                 </div>

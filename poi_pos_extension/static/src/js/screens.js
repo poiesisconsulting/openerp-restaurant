@@ -373,6 +373,126 @@ function poi_extension_screens(instance, module){
         },
     });
 
+
+    module.MergeOrdersScreenWidget = module.ScreenWidget.extend({
+        template: 'MergeOrdersScreenWidget',
+
+        show_leftpane: false,
+        previous_screen: 'products',
+        init: function (parent, options) {
+            this.current_order = false;
+            this._super(parent, options);
+        },
+        show: function(){
+            this.current_order = this.pos.get('selectedOrder');
+            this.renderElement();
+            this._super();
+            var self = this;
+            var currentOrder = this.pos.get('selectedOrder');
+
+            this.selected_order = false;
+
+            this.pos.fetch(
+                    'pos.order',
+                    [],
+                    [['state','=','draft'],['id','!=',currentOrder.get_order_id()]],
+                    {} //No Context
+            ).then(function(orders){
+                $.each(orders, function( index, order ) {
+                    console.log(index,order);
+                    var new_order_button = new module.MergeOrderButtonWidget(null, {
+                        order: order,
+                        pos: self.pos
+                    });
+                    new_order_button.appendTo(self.$('.to-order-list'));
+                });
+            });
+
+            //Buttons
+            this.back_button = this.add_action_button({
+                    label: 'Back',
+                    icon: '/point_of_sale/static/src/img/icons/png48/go-previous.png',
+                    click: function(){
+                        self.pos_widget.screen_selector.set_current_screen(self.previous_screen);
+                    },
+                });
+
+            this.validate_button = this.add_action_button({
+                label: 'Merge',
+                name: 'merging',
+                icon: '/point_of_sale/static/src/img/icons/png48/validate.png',
+                click: function(){
+                    self.merge_orders().then(function(){
+                        self.pos_widget.screen_selector.set_current_screen('order_selector_screen');
+                    })
+                },
+            });
+
+            this.pos_widget.action_bar.set_button_disabled('merging', true);
+
+        },
+        select_order: function(order_id){
+            var order_grid = this.$el.find('.order-selector-button');
+            var order_selected = this.$el.find('div[order-id='+order_id+']').parent();
+            order_grid.removeAttr('selected');
+            order_selected.attr('selected','selected');
+            self.$('.into-order').html("");
+            order_selected.find('.order_data:first').clone().appendTo(self.$('.into-order'));
+            this.pos_widget.action_bar.set_button_disabled('merging', false);
+        },
+        merge_orders: function(){
+            var order_from = this.pos.get('selectedOrder').get_order_id();
+            var order_to = this.selected_order;
+            var posOrderModel = new instance.web.Model('pos.order');
+            return posOrderModel.call('merge_orders',[order_from,order_to])
+        },
+
+    });
+
+    module.MergeOrderButtonWidget = module.PosBaseWidget.extend({
+        template:'MergeOrderButtonWidget',
+        init: function(parent, options) {
+            this._super(parent,options);
+            //var self = this;
+
+            this.order = options.order;
+            //this.order.bind('destroy',this.destroy, this );
+            //this.order.bind('change', this.renderElement, this );
+            //this.pos.bind('change:selectedOrder', this.renderElement,this );
+        },
+        renderElement:function(){
+            //this.selected = ( this.pos.get('selectedOrder') === this.order )
+            this._super();
+            var self = this;
+            var merge_screen = self.pos.pos_widget.merge_orders_screen;
+            this.$el.click(function(){
+                console.log('QUE TENIA',merge_screen.selected_order);
+                console.log('QUE ID ESTOY HACIENDO CLICK',self.order.id);
+                merge_screen.selected_order = self.order.id;
+                merge_screen.select_order(self.order.id);
+            });
+
+            /*
+            this.$el.click(function(){
+                if( self.pos.get('selectedOrder') === self.order ){
+                    var ss = self.pos.pos_widget.screen_selector;
+                    if(ss.get_current_screen() === 'clientlist'){
+                        ss.back();
+                    }else{
+                        ss.set_current_screen('clientlist');
+                    }
+                }else{
+                    self.selectOrder();
+                }
+            });
+            if( this.selected){
+                this.$el.addClass('selected');
+            }
+            */
+        },
+    });
+
+    /*THIS FIXES A BUG*/
     module.OrderWidget = module.OrderWidget.extend({
         change_selected_order: function() {
             this.unbind_all_orderline_events();
@@ -386,11 +506,14 @@ function poi_extension_screens(instance, module){
                 });
         },
     });
+    /*END FIX*/
 
     module.PosWidget.include({
         build_widgets: function(){
             var self = this;
             this._super();
+
+            //ORDER SELECTOR
 
             this.order_selector_screen = new module.OrderSelectorScreenWidget(this,{});
             this.order_selector_screen.appendTo(this.$('.screens'));
@@ -403,6 +526,29 @@ function poi_extension_screens(instance, module){
             });
 
             show_order_selector.prependTo(this.$('.order-selector'));
+
+            //MERGE SCREEN
+
+            this.merge_orders_screen = new module.MergeOrdersScreenWidget(this,{});
+            this.merge_orders_screen.appendTo(this.$('.screens'));
+            this.screen_selector.add_screen('merge_orders_screen',this.merge_orders_screen);
+
+            var show_merge_screen = $(QWeb.render('MergeOrdersButton'));
+
+            show_merge_screen.click(function(){
+                var currentOrder = self.pos.get('selectedOrder');
+                if (currentOrder){
+                    if (currentOrder.get_order_id()){
+                        self.pos_widget.screen_selector.set_current_screen_no_close_popup('merge_orders_screen');
+                    }
+                    else{
+                        alert('This order does not exist on the database, you only can merge orders already saved on the database');
+                    }
+                }
+
+            });
+
+            show_merge_screen.prependTo(this.$('.order-selector'));
 
         }
     });
