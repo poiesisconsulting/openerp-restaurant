@@ -14,7 +14,7 @@
                         <group cols="2">
                             <label string="Merge From Orders" attrs="{'invisible': [('case','!=','from')]}"/>
                             <label string="Merge Into Order (select 1 only)" attrs="{'invisible': [('case','!=','into')]}"/>
-                            <field name="target_order_ids" nolabel="1" readonly="1">
+                            <field name="target_order_ids" nolabel="1">
                                 <tree editable="top">
                                     <field name="order_id"/>
                                     <field name="apply"/>
