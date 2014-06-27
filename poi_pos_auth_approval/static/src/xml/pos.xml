@@ -10,24 +10,38 @@
                     Approval Request
                 </div>
                 <div class="popup_body" style="height:220px">
-                    <t t-if="widget.state != 'rejected'">
-                        <span>This order requires manager authorization:</span>
+
+                    <t t-if="widget.state == 'submit'">
+                        <span>Waiting for authorization response</span>
                     </t>
+
                     <t t-if="widget.state == 'rejected'">
                         <span>The authorization request has been denied:</span>
-                    </t>
-                    <table class="approval_messages" border="0" width="100%" align="center">
+                        <br/>
                         <t t-foreach="widget.messages" t-as="message">
-                            <tr class="">
-                                <td class="td_left" style="border: 1px solid gray; font-weight: normal">
-                                    - <t t-esc="message" />
-                                </td>
-                            </tr>
+                            <t t-if="message != false">
+                                <t t-esc="message" />
+                            </t>
                         </t>
-                    </table>
+                    </t>
+
+                    <t t-if="widget.state == ''">
+                        <span>This order requires manager authorization:</span>
+                        <table class="approval_messages" border="0" width="100%" align="center">
+                            <t t-foreach="widget.messages" t-as="message">
+                                <t t-if="message != false">
+                                    <tr class="">
+                                        <td class="td_left" style="border: 1px solid gray; font-weight: normal">
+                                            - <t t-esc="message" />
+                                        </td>
+                                    </tr>
+                                </t>
+                            </t>
+                        </table>
+                    </t>
                 </div>
                 <div class="popup_footer" style="">
-                    <t t-if="widget.state != 'rejected'">
+                    <t t-if="widget.state == ''">
                         <textarea id="request_text" placeholder="Write a message to the Manager here."/><br/>
                         <button id="app_send" class="popup_button" style="">Send</button>
                     </t>

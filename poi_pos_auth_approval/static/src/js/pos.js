@@ -9,15 +9,19 @@ openerp.poi_pos_auth_approval = function(instance){
 
         validate_order: function(options) {
             var self = this;
-
             var realvalidate = this._super;
-
 
             var connection = new openerp.Session(self, null, {session_id: openerp.session.session_id});
             var currentOrder = self.pos.get('selectedOrder');
-            connection.rpc('/poi_pos_auth_approval/check_validate_order',{'config_id': self.pos.config.id,
-                                                                                'order_id': currentOrder.get_order_id(),
-                                                                                'current_order': [currentOrder.export_as_JSON()]}).then(function(authorization){
+
+            // This is in case S&P was rejected before
+            // we're removing S&P reason to avoid false response from authorization
+            (new instance.web.Model('pos.order')).get_func('sp_execute')(currentOrder.get_order_id(), 'remove').then(function(){
+                return connection.rpc('/poi_pos_auth_approval/check_validate_order',{'config_id': self.pos.config.id,
+                                                                          'order_id': currentOrder.get_order_id(),
+                                                                          'current_order': [currentOrder.export_as_JSON()]
+                })
+            }).then(function(authorization){
                 self.pos.authorization = authorization;
                 if(authorization.approved){
                     realvalidate.call(self);
@@ -25,7 +29,7 @@ openerp.poi_pos_auth_approval = function(instance){
                     self.pos_widget.screen_selector.show_popup('ApprovalPopup');
                 }
             });
-        },
+        }
     });
 
     module.ApprovalPopup = module.PopUpWidget.extend({
@@ -38,10 +42,15 @@ openerp.poi_pos_auth_approval = function(instance){
         show: function(){
             var self = this;
 
-            console.log("self.pos.authorization", self.pos.authorization);
-
             self.messages = self.pos.authorization.messages;
-            self.state = self.pos.authorization.state;
+
+            console.log("SP_SP 1 self.pos.authorization.state", self.pos.authorization.state);
+            console.log("SP_SP 1 self.state", self.state);
+
+            if (self.pos.authorization.state == 'rejected')
+                self.state = self.pos.authorization.state;
+
+            console.log("SP_SP 2 self.state", self.state);
 
             self._super();
             self.renderElement();
@@ -50,19 +59,21 @@ openerp.poi_pos_auth_approval = function(instance){
             var usr_notif = self.pos.authorization.users_notified;
 
             this.$el.find('#app_send').off('click').click(function(){
+
                 (new instance.web.Model('pos.order')).get_func('send_approval_message')(
                     currentOrder.get_order_id(),
                     usr_notif,
                     self.messages,
                     self.$el.find('#request_text').val()
                 );
+                self.state = 'submit';
                 self.pos_widget.screen_selector.close_popup();
             });
 
             this.$el.find('#app_cancel').off('click').click(function(){
 
                 // if "cancel" authorization request then "remove S&P reason"
-                (new instance.web.Model('pos.order')).get_func('sp_execute')(currentOrder.get_order_id(), '');
+                //(new instance.web.Model('pos.order')).get_func('sp_execute')(currentOrder.get_order_id(), '');
 
                 self.pos_widget.screen_selector.close_popup();
             });

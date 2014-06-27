@@ -65,7 +65,7 @@ class OrderController(http.Controller):
         if not (config_id):
             raise osv.except_osv(_('Error!'), _('There is an error with the order, this does not have a POS config valid.'))
         else:
-            auth_ids = auth_pool.search(request.cr, request.uid, [('pos_config_ids','in',config_id)])
+            auth_ids = auth_pool.search(request.cr, request.uid, [('pos_config_ids', 'in', config_id)])
             if not auth_ids:
                 res['approved'] = True
                 return res

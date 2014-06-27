@@ -154,9 +154,6 @@ class pos_order(osv.osv):
 
         return res
 
-
-
-
     def avoid_write_fields(self, cr, uid, context = None):
         res = super(pos_order, self).avoid_write_fields(cr, uid)
         #ToDo: I'm not sure about table_ids
@@ -182,9 +179,19 @@ class pos_order(osv.osv):
         pos_orders = self.pool.get('pos.order')
         current_order = pos_orders.browse(cr, uid, order_id, context=context)
 
-        current_order.write({
-            'sal_prom': sp_reason,
-        })
+        if sp_reason == 'remove' and current_order['sal_prom']:
+            current_order.write({
+                'sal_prom': None,
+                'auth_note': None,
+                'auth_state': "none",
+                'auth_by': None,
+                'resp_note': None,
+                'sp_count': None
+            })
+        else:
+            current_order.write({
+                'sal_prom': sp_reason,
+            })
 
         return True
 

@@ -181,12 +181,12 @@ class pos_order(osv.osv):
         body += '</ul><br/>'+request_text
 
         post_values = {
-                                'subject': _('Authorization Request'),
-                                'body': body,
-                                'partner_ids': partners_dest,
-                                'notified_partner_ids': partners_dest,
-                                'attachments': [ ],
-                            }
+                        'subject': _('Authorization Request'),
+                        'body': body,
+                        'partner_ids': partners_dest,
+                        'notified_partner_ids': partners_dest,
+                        'attachments': [ ],
+        }
         subtype = 'mail.mt_comment'
 
         ref = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'mail', 'mt_comment')
