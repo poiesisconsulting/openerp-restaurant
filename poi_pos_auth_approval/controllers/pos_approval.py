@@ -39,7 +39,7 @@ _logger = logging.getLogger(__name__)
 class OrderController(http.Controller):
 
     @http.route('/poi_pos_auth_approval/check_validate_order', type='json', auth='user')
-    def check_validate_order(self, config_id = None, order_id = None, current_order=None):
+    def check_validate_order(self, config_id=None, order_id=None, current_order=None):
         order_pool = request.registry['pos.order']
 
         res = {'approved': False,
@@ -51,6 +51,9 @@ class OrderController(http.Controller):
 
         order_obj = order_pool.browse(request.cr, request.uid, order_id)
         print order_obj.auth_state
+
+        res['state'] = order_obj.auth_state
+
         if order_obj.auth_state == 'approved':
             print "app"
             res['approved'] = True
@@ -58,7 +61,6 @@ class OrderController(http.Controller):
         elif order_obj.auth_state == 'rejected':
             print "rej"
             res['approved'] = False
-            res['state'] = order_obj.auth_state
             res['messages'].append(order_obj.resp_note)
             return res
 
@@ -91,14 +93,14 @@ class OrderController(http.Controller):
                                     operator = '='
                                 elif condition.operator == 'inequal':
                                     operator = '!='
-                                eval_condition = eval(str(value_to_compare)+operator+str(condition.condition_value))
+                                eval_condition = eval(str(value_to_compare) + operator + str(condition.condition_value))
                                 if eval_condition:
                                     res['approved'] = False
                                     res['messages'].append(condition.message)
                                     users_notified.extend(auth_users_notified)
                         elif condition.field_name.ttype == 'many2one' or condition.field_name.ttype == 'char' or condition.field_name.ttype == 'text':
                             if order_obj.read([condition.field_name.name]):
-                                if condition.field_name.ttype == 'many2one' and condition.operator!="is_not_set":
+                                if condition.field_name.ttype == 'many2one' and condition.operator != "is_not_set":
                                     if order_obj.read([condition.field_name.name])[0][condition.field_name.name]:
                                         value_to_compare = order_obj.read([condition.field_name.name])[0][condition.field_name.name][1]
                                     else:
@@ -123,7 +125,7 @@ class OrderController(http.Controller):
                                         res['messages'].append(condition.message)
                                         users_notified.extend(auth_users_notified)
                                 elif condition.operator == 'is_not_set':
-                                    if value_to_compare == False:
+                                    if not value_to_compare:
                                         res['approved'] = False
                                         res['messages'].append(condition.message)
                                         users_notified.extend(auth_users_notified)
@@ -151,10 +153,8 @@ class OrderController(http.Controller):
                                         res['messages'].append(condition.message)
                                         users_notified.extend(auth_users_notified)
 
-
         if res['messages'] and not res['approved']:
-            users_notified = sorted(set(users_notified))
-            res['users_notified'] = users_notified
-
+            res['users_notified'] = sorted(set(users_notified))
+            res['auth_state'] = order_obj.auth_state
 
         return res

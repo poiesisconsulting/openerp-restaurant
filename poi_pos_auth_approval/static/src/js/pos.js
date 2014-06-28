@@ -15,15 +15,18 @@ openerp.poi_pos_auth_approval = function(instance){
             var currentOrder = self.pos.get('selectedOrder');
 
             // This is in case S&P was rejected before
-            // we're removing S&P reason to avoid false response from authorization
-            (new instance.web.Model('pos.order')).get_func('sp_execute')(currentOrder.get_order_id(), 'remove').then(function(){
-                return connection.rpc('/poi_pos_auth_approval/check_validate_order',{'config_id': self.pos.config.id,
-                                                                          'order_id': currentOrder.get_order_id(),
-                                                                          'current_order': [currentOrder.export_as_JSON()]
+            // we're removing S&P authorization fields to avoid false response
+            (new instance.web.Model('pos.order')).get_func('sp_execute')(currentOrder.get_order_id(), 'remove')
+            .then(function(){
+                return connection.rpc('/poi_pos_auth_approval/check_validate_order',
+                    {'config_id': self.pos.config.id,
+                     'order_id': currentOrder.get_order_id(),
+                     'current_order': [currentOrder.export_as_JSON()]
                 })
             }).then(function(authorization){
-                self.pos.authorization = authorization;
-                if(authorization.approved){
+                currentOrder.authorization = authorization;
+            }).then(function(){
+                if(currentOrder.authorization.approved){
                     realvalidate.call(self);
                 }else{
                     self.pos_widget.screen_selector.show_popup('ApprovalPopup');
@@ -33,51 +36,58 @@ openerp.poi_pos_auth_approval = function(instance){
     });
 
     module.ApprovalPopup = module.PopUpWidget.extend({
-        template:'ApprovalPopup',
-        init: function(parent, options) {
+        template: 'ApprovalPopup',
+        init: function (parent, options) {
             this._super(parent, options);
             this.messages = [];
             this.state = '';
         },
-        show: function(){
+        show: function () {
             var self = this;
+            var currentOrder = self.pos.get('selectedOrder');
 
-            self.messages = self.pos.authorization.messages;
+            if (currentOrder.authorization.auth_state == undefined)
+                currentOrder.authorization.auth_state = 'rejected';
 
-            console.log("SP_SP 1 self.pos.authorization.state", self.pos.authorization.state);
-            console.log("SP_SP 1 self.state", self.state);
-
-            if (self.pos.authorization.state == 'rejected')
-                self.state = self.pos.authorization.state;
-
-            console.log("SP_SP 2 self.state", self.state);
+            self.messages = currentOrder.authorization.messages;
+            self.state = currentOrder.authorization.auth_state;
 
             self._super();
             self.renderElement();
 
-            var currentOrder = this.pos.get('selectedOrder');
-            var usr_notif = self.pos.authorization.users_notified;
+            console.log("MRC currentOrder", currentOrder);
+            console.log("MRC self.messages", self.messages);
+            console.log("MRC self.state", self.state);
 
-            this.$el.find('#app_send').off('click').click(function(){
-
-                (new instance.web.Model('pos.order')).get_func('send_approval_message')(
+            this.$el.find('#app_send').off('click').click(function () {
+                self.pos_widget.screen_selector.close_popup();
+                return (new instance.web.Model('pos.order')).get_func('send_approval_message')(
                     currentOrder.get_order_id(),
-                    usr_notif,
-                    self.messages,
+                    currentOrder.authorization.users_notified,
+                    currentOrder.authorization.messages,
                     self.$el.find('#request_text').val()
                 );
-                self.state = 'submit';
-                self.pos_widget.screen_selector.close_popup();
             });
 
-            this.$el.find('#app_cancel').off('click').click(function(){
-
-                // if "cancel" authorization request then "remove S&P reason"
-                //(new instance.web.Model('pos.order')).get_func('sp_execute')(currentOrder.get_order_id(), '');
+            this.$el.find('#app_cancel').off('click').click(function () {
 
                 self.pos_widget.screen_selector.close_popup();
+
+                if (self.state !== 'submit') {
+                    if (self.state == 'rejected')
+                        (new instance.web.Model('pos.order')).get_func('sp_execute')(currentOrder.get_order_id(), 'reject_notified');
+
+                    if (self.state == 'none')
+                        (new instance.web.Model('pos.order')).get_func('sp_execute')(currentOrder.get_order_id(), 'remove');
+
+                    currentOrder.sp_reason = false;
+                    currentOrder.authorization.messages = [];
+                    currentOrder.authorization.auth_state = '';
+                }
             });
-        }
+        },
+
+
     });
 
     module.PosWidget = module.PosWidget.extend({

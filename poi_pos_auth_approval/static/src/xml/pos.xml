@@ -5,43 +5,39 @@
 
     <t t-name="ApprovalPopup">
         <div class="modal-dialog">
-            <div class="popup approval_popup touch-scrollable" style="width:600px; height:400px">
+            <div class="popup approval_popup touch-scrollable" style="width:600px; height:600px">
                 <div class="popup_header" style="">
                     Approval Request
                 </div>
-                <div class="popup_body" style="height:220px">
+                <div class="popup_body" style="height:420px">
 
                     <t t-if="widget.state == 'submit'">
-                        <span>Waiting for authorization response</span>
+                        <span>Awaiting for manager approval</span>
                     </t>
 
                     <t t-if="widget.state == 'rejected'">
-                        <span>The authorization request has been denied:</span>
-                        <br/>
+                        <span>Previous request has been denied</span>
+                        <br/><br/>
                         <t t-foreach="widget.messages" t-as="message">
                             <t t-if="message != false">
-                                <t t-esc="message" />
+                                <span class="auth_text"><b>Manager response: </b><t t-esc="message" /></span>
                             </t>
                         </t>
                     </t>
 
-                    <t t-if="widget.state == ''">
-                        <span>This order requires manager authorization:</span>
-                        <table class="approval_messages" border="0" width="100%" align="center">
-                            <t t-foreach="widget.messages" t-as="message">
-                                <t t-if="message != false">
-                                    <tr class="">
-                                        <td class="td_left" style="border: 1px solid gray; font-weight: normal">
-                                            - <t t-esc="message" />
-                                        </td>
-                                    </tr>
-                                </t>
+                    <t t-if="widget.state == 'none'">
+                        <span>This order needs manager approval</span>
+                        <br/>
+                        <br/><span class="auth_text"><b>Reason:</b></span>
+                        <t t-foreach="widget.messages" t-as="message">
+                            <t t-if="message != false">
+                                <br/><br/><span class="auth_text">- <t t-esc="message" /></span>
                             </t>
-                        </table>
+                        </t>
                     </t>
                 </div>
                 <div class="popup_footer" style="">
-                    <t t-if="widget.state == ''">
+                    <t t-if="widget.state == 'none'">
                         <textarea id="request_text" placeholder="Write a message to the Manager here."/><br/>
                         <button id="app_send" class="popup_button" style="">Send</button>
                     </t>

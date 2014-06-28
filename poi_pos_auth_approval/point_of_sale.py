@@ -30,7 +30,7 @@ class pos_order(osv.osv):
     _inherit = 'pos.order'
 
     _columns = {
-        'auth_state': fields.selection([('none','Not Applicable'), ('submit', 'Submit'), ('approved', 'Approved'), ('rejected', 'Rejected')], string='Authorization State'),
+        'auth_state': fields.selection([('none', 'Not Applicable'), ('submit', 'Submit'), ('approved', 'Approved'), ('rejected', 'Rejected')], string='Authorization State'),
         'auth_note': fields.text('Submit Note'),
         'resp_note': fields.text('Response Note'),
         'auth_by': fields.many2one('res.users', 'Authorizing User'),

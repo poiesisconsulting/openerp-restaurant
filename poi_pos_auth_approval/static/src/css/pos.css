@@ -1,0 +1,11 @@
+.pos .modal-dialog .approval_popup {
+    position: absolute;
+    top: 30%;
+}
+
+.auth_text {
+    position: absolute;
+    left: 5px;
+    font-weight: normal;
+    text-align: left;
+}

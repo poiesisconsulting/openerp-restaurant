@@ -59,8 +59,8 @@ class pos_order(osv.osv):
 
 
     _columns = {
-        'count_rejects': fields.function(_calc_lines, multi="line_calc", type='integer', string='Rejected Void Count', store=True),
-        'max_discount': fields.function(_calc_lines, multi="line_calc", type='float', string='Top Discount', store=True),
-        'sp_count': fields.function(_calc_lines, multi="line_calc", type='integer', string='S&P Payments', store=True),
+        'count_rejects': fields.function(_calc_lines, multi="line_calc", type='integer', string='Rejected Void Count'),
+        'max_discount': fields.function(_calc_lines, multi="line_calc", type='float', string='Top Discount'),
+        'sp_count': fields.function(_calc_lines, multi="line_calc", type='integer', string='S&P Payments'),
 
     }

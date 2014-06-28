@@ -73,11 +73,11 @@ function poi_pos_widgets(instance, module){
                 });
 
                 self.$el.find('.add-seat-button').off('click').click(function(){
-                    var current_order = self.pos.get('selectedOrder');
+                    var currentOrder = self.pos.get('selectedOrder');
 
-                    var last_seats = current_order.get_seats();
-                    current_order.set_seats(parseInt(last_seats) + 1);
-                    current_order.reassign_table();
+                    var last_seats = currentOrder.get_seats();
+                    currentOrder.set_seats(parseInt(last_seats) + 1);
+                    currentOrder.reassign_table();
 
                     self.reset_table_header();
                 });
@@ -89,7 +89,7 @@ function poi_pos_widgets(instance, module){
                 });
 
                 self.$el.find('#course_add').off('click').click(function(){
-                    var current_order = self.pos.get('selectedOrder');
+                    var currentOrder = self.pos.get('selectedOrder');
                     var current_courses = self.$el.find('.course-button');
                     var last_course = current_courses.get( -1 );
                     var last_course_val = last_course.attributes.course.nodeValue;
@@ -98,14 +98,14 @@ function poi_pos_widgets(instance, module){
                     var new_button = '<button class="course-button table-button" course='+new_course_val+'>'+ new_course_val +'</button>';
 
                     $( new_button ).insertAfter( last_course );
-                    current_order.set_courses(new_course_val);
-                    current_order.reassign_table();
+                    currentOrder.set_courses(new_course_val);
+                    currentOrder.reassign_table();
 
                     self.set_course_button_click();
                 });
 
                 self.$el.find('#course_rem').off('click').click(function(){
-                    var current_order = self.pos.get('selectedOrder');
+                    var currentOrder = self.pos.get('selectedOrder');
                     var current_courses = self.$el.find('.course-button');
                     var last_course = current_courses.get( -1 );
                     var last_course_val = last_course.attributes.course.nodeValue;
@@ -113,8 +113,8 @@ function poi_pos_widgets(instance, module){
 
                     if ( parseInt(last_course_val) > 1 ){
                         $( last_course ).remove();
-                        current_order.set_courses(new_course_val);
-                        current_order.reassign_table();
+                        currentOrder.set_courses(new_course_val);
+                        currentOrder.reassign_table();
                     }
                 });
                 self.set_course_button_click();
@@ -190,13 +190,13 @@ function poi_pos_widgets(instance, module){
             this.renderElement();
         },
         get_curr_courses: function(){
-            var current_order = this.pos.get('selectedOrder');
-            var current_courses = current_order.get_courses();
+            var currentOrder = this.pos.get('selectedOrder');
+            var current_courses = currentOrder.get_courses();
 
             if (current_courses > 1){
                 var courses = "";
                 for ( var course = 1; course <= current_courses; course++ ) {
-                    if (course == current_order.get_current_course()) {
+                    if (course == currentOrder.get_current_course()) {
                         courses += '<button class="course-button table-button course_selected" course='+ course +'>'+ course +'</button>';
                     } else {
                         courses += '<button class="course-button table-button" course='+ course +'>'+ course +'</button>';
@@ -206,7 +206,7 @@ function poi_pos_widgets(instance, module){
             }
             else{
                 return '<button class="course-button table-button course_selected" course=1>1</button>';
-                current_order.set_current_course(1);
+                currentOrder.set_current_course(1);
             }
         },
         get_table_header: function(){
@@ -675,7 +675,6 @@ function poi_pos_widgets(instance, module){
         init: function(parent, options) {
             this._super(parent, options);
             this.sp_reasons = this.get_reasons(); //this is for xml template
-            var self = this;
         },
 
         show: function(){
@@ -684,17 +683,18 @@ function poi_pos_widgets(instance, module){
 
             var self = this;
 
-            var current_order = self.pos.get('selectedOrder');
-            if (current_order.sp_reason) {
+            var currentOrder = self.pos.get('selectedOrder');
+
+            if (currentOrder.sp_reason) {
                 self.pos_widget.screen_selector.close_popup();
                 self.validate_order().then (function(){
-                    if (self.pos.authorization.approved) {
+                    if (currentOrder.authorization.approved) {
                         self.sp_close_order();
                     }
                 });
             }
 
-            this.buttons_actions();
+            self.buttons_actions();
 
             this.$el.find('.tr_sel_false').off('click').click(function(){
 
@@ -707,21 +707,20 @@ function poi_pos_widgets(instance, module){
                 $(this).toggleClass("tr_sel_true");
                 $(this).toggleClass("tr_sel_false");
             });
-        },
 
+        },
         buttons_actions: function(){
             var self = this;
 
             self.$el.find('#sp_apply').off('click').click(function(){
-                var current_order = self.pos.get('selectedOrder');
+                var currentOrder = self.pos.get('selectedOrder');
                 var reason_id = "";
-
 
                 _.each(self.$el.find(".tr_sel_true"), function(tr_found) {
                     reason_id = $(tr_found).attr('id');
-                    current_order.sp_reason = reason_id;
+                    currentOrder.sp_reason = reason_id;
                 });
-                (new instance.web.Model('pos.order')).get_func('sp_execute')(current_order.get_order_id(), reason_id).then(function(){
+                (new instance.web.Model('pos.order')).get_func('sp_execute')(currentOrder.get_order_id(), reason_id).then(function(){
                     var cashregister = [];
                     return (new instance.web.Model('pos.order')).get_func('fetch_sp_journal_id')();
                 }).then(function(sp_id) {
@@ -733,7 +732,7 @@ function poi_pos_widgets(instance, module){
                 }).then (function(){
                     return self.validate_order();
                 }).then (function(){
-                    if (self.pos.authorization.approved) {
+                    if (currentOrder.authorization.approved) {
                         self.sp_close_order();
                     }
                 });
@@ -751,16 +750,14 @@ function poi_pos_widgets(instance, module){
             //var realvalidate = this._super;
             var connection = new openerp.Session(self, null, {session_id: openerp.session.session_id});
             var currentOrder = self.pos.get('selectedOrder');
-            return connection.rpc('/poi_pos_auth_approval/check_validate_order', {
+            return connection.rpc('/poi_pos_auth_approval/check_validate_order',
+                {
                     'config_id': self.pos.config.id,
                     'order_id': currentOrder.get_order_id(),
                     'current_order': [currentOrder.export_as_JSON()]
-                }
-                ).then(function(authorization){
-                    self.pos.authorization = authorization;
-                    if(authorization.approved){
-                        //realvalidate.call(self);
-                    }else{
+                }).then(function(authorization){
+                    currentOrder.authorization = authorization;
+                    if(!authorization.approved){
                         self.pos_widget.screen_selector.show_popup('ApprovalPopup');
                     }
                 }
@@ -769,16 +766,16 @@ function poi_pos_widgets(instance, module){
 
         sp_close_order: function(){
             var self = this;
-            var current_order = self.pos.get('selectedOrder');
+            var currentOrder = self.pos.get('selectedOrder');
 
             self.pos.sp_cashregister_id = cashregister.id;
-            current_order.addPaymentline(cashregister);
-            current_order.selected_paymentline.set_amount( Math.max(current_order.getDueLeft(),0) );
-            (new instance.web.Model('pos.order')).get_func('sp_create_from_ui')(current_order.export_as_JSON());
+            currentOrder.addPaymentline(cashregister);
+            currentOrder.selected_paymentline.set_amount( Math.max(currentOrder.getDueLeft(),0) );
+            (new instance.web.Model('pos.order')).get_func('sp_create_from_ui')(currentOrder.export_as_JSON());
 
             //++++++ PRINT CLOSE TICKET ++++++++++++++
              if(self.pos.config.iface_print_via_proxy){
-                var receipt = current_order.export_for_printing();
+                var receipt = currentOrder.export_for_printing();
                 console.log('XmlReceipt', receipt);
                 self.pos.proxy.print_receipt(QWeb.render('XmlReceipt',{
                     receipt: receipt,
@@ -788,8 +785,8 @@ function poi_pos_widgets(instance, module){
             //+++++++++++++++++++++++++++++++++++++++++
 
             //self.pos.authorization.approved = false;
-            current_order.set_order_tables_state('open');
-            current_order.destroy({'reason':'abandon'});
+            currentOrder.set_order_tables_state('open');
+            currentOrder.destroy({'reason':'abandon'});
         },
 
         get_reasons: function(){
@@ -805,7 +802,7 @@ function poi_pos_widgets(instance, module){
                 });
             });
             return reasons;
-        },
+        }
     });
 
     module.MultipleWidget = module.PopUpWidget.extend({
@@ -941,7 +938,7 @@ function poi_pos_widgets(instance, module){
             }); */
 
             this.$el.find('#multiDuplicate').off('click').click(function(){
-                var current_order = self.pos.get('selectedOrder');
+                var currentOrder = self.pos.get('selectedOrder');
                 var selected_tr = self.$el.find('.tr_sel_true');
 
                 if (selected_tr.length > 0){
@@ -958,7 +955,7 @@ function poi_pos_widgets(instance, module){
                             seat: dup_line.get_seat(),
                             course: dup_line.get_sequence()
                         }
-                        current_order.addProduct(dup_line.product, ol_opts);
+                        currentOrder.addProduct(dup_line.product, ol_opts);
                     });
                 }
                 self.pos_widget.screen_selector.close_popup();
@@ -1317,7 +1314,6 @@ function poi_pos_widgets(instance, module){
 
             SPbutton.appendTo(this.$('.control-buttons'));
 
-
             this.$('.control-buttons').removeClass('oe_hidden');
 
             $.when(self.pos.synchorders.set_flag_to_remove_all_orders()).then(function(){
@@ -1326,6 +1322,6 @@ function poi_pos_widgets(instance, module){
                 //self.pos.synchorders.connect();
                 self.pos_widget.order_selector_screen.connect();
             });
-        },
+        }
     });
 }
