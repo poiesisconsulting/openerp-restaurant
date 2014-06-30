@@ -82,12 +82,10 @@ openerp.poi_pos_auth_approval = function(instance){
 
                     currentOrder.sp_reason = false;
                     currentOrder.authorization.messages = [];
-                    currentOrder.authorization.auth_state = '';
+                    currentOrder.authorization.auth_state = 'none';
                 }
             });
-        },
-
-
+        }
     });
 
     module.PosWidget = module.PosWidget.extend({
