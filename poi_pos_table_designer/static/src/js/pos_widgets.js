@@ -720,6 +720,12 @@ function poi_pos_widgets(instance, module){
                     reason_id = $(tr_found).attr('id');
                     currentOrder.sp_reason = reason_id;
                 });
+
+                if (reason_id == ""){
+                    alert ("You need to specify a reson for S&P");
+                    return;
+                }
+
                 (new instance.web.Model('pos.order')).get_func('sp_execute')(currentOrder.get_order_id(), reason_id).then(function(){
                     var cashregister = [];
                     return (new instance.web.Model('pos.order')).get_func('fetch_sp_journal_id')();
