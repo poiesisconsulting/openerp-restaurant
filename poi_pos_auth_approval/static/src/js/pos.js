@@ -14,10 +14,11 @@ openerp.poi_pos_auth_approval = function(instance){
             var connection = new openerp.Session(self, null, {session_id: openerp.session.session_id});
             var currentOrder = self.pos.get('selectedOrder');
 
-            // This is in case S&P was rejected before
-            // we're removing S&P authorization fields to avoid false response
-            (new instance.web.Model('pos.order')).get_func('sp_execute')(currentOrder.get_order_id(), 'remove')
-            .then(function(){
+            currentOrder.save_lines_on_db().then(function(){
+                // This is in case S&P was rejected before
+                // we're removing S&P authorization fields to avoid false response
+                (new instance.web.Model('pos.order')).get_func('sp_execute')(currentOrder.get_order_id(), 'remove')
+            }).then(function(){
                 return connection.rpc('/poi_pos_auth_approval/check_validate_order',
                     {'config_id': self.pos.config.id,
                      'order_id': currentOrder.get_order_id(),
