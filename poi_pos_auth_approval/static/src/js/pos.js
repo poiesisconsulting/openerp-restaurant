@@ -56,10 +56,6 @@ openerp.poi_pos_auth_approval = function(instance){
             self._super();
             self.renderElement();
 
-            console.log("MRC currentOrder", currentOrder);
-            console.log("MRC self.messages", self.messages);
-            console.log("MRC self.state", self.state);
-
             this.$el.find('#app_send').off('click').click(function () {
                 self.pos_widget.screen_selector.close_popup();
                 return (new instance.web.Model('pos.order')).get_func('send_approval_message')(
