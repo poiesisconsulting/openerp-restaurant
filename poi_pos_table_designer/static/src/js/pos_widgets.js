@@ -1183,14 +1183,14 @@ function poi_pos_widgets(instance, module){
             //$.when(this.pos.synchorders.set_flag_to_remove_other_orders(order_id)).then(self.pos.synchorders.remove_orders());
         },
         get_amount_total: function(){
-            var amount_total = parseFloat(this.order.amount_total)
+            var amount_total = parseFloat(this.order.amount_total);
             return amount_total.toFixed(2) || 0;
         },
     });
 
     module.MergeOrderButtonWidget = module.MergeOrderButtonWidget.extend({
         get_amount_total: function(){
-            var amount_total = parseFloat(this.order.amount_total)
+            var amount_total = parseFloat(this.order.amount_total);
             return amount_total.toFixed(2) || 0;
         },
     });

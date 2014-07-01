@@ -412,6 +412,16 @@ function openerp_restaurant_multiprint(instance,module){
             }
         },
         hasChangesToPrint: function(){
+
+            var currentOrder = this.pos.get('selectedOrder');
+            var orderLines = currentOrder.get_all_lines();
+
+            var not_kitchen = _.filter(orderLines, function(orLn){return orLn.sent_to_kitchen == false });
+
+            if (not_kitchen.length == 0){
+                this.old_resume = this.lineResume();
+            }
+
             var printers = this.pos.printers;
             for(var i = 0; i < printers.length; i++){
                 var changes = this.computeChanges(printers[i].config.product_categories_ids);
@@ -420,7 +430,7 @@ function openerp_restaurant_multiprint(instance,module){
                 }
             }
             return false;
-        },
+        }
     });
 
     module.PosWidget.include({
