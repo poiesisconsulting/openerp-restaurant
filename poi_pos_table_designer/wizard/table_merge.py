@@ -121,6 +121,10 @@ class table_merge_wizard(osv.osv_memory):
                     #Write both printing and courses information into target order
                     order_pool.write(cr, uid, [target_order_id], {'resume_print': new_print, 'fired_courses': new_course})
 
+                    #Free tables
+                    tables_to_free = order_pool.read(cr, uid, base_order.id, ['table_ids'])['table_ids']
+                    self.pool.get('table.table').write(cr, uid, tables_to_free, {'state': 'open'})
+
                     #Delete base order
                     order_pool.unlink(cr, uid, [base_order.id])
 
