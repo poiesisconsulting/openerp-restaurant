@@ -418,7 +418,7 @@ function poi_extension_screens(instance, module){
                 });
 
             this.validate_button = this.add_action_button({
-                label: 'Merge',
+                label: 'Transfer',
                 name: 'merging',
                 icon: '/point_of_sale/static/src/img/icons/png48/validate.png',
                 click: function(){
@@ -466,8 +466,6 @@ function poi_extension_screens(instance, module){
             var self = this;
             var merge_screen = self.pos.pos_widget.merge_orders_screen;
             this.$el.click(function(){
-                console.log('QUE TENIA',merge_screen.selected_order);
-                console.log('QUE ID ESTOY HACIENDO CLICK',self.order.id);
                 merge_screen.selected_order = self.order.id;
                 merge_screen.select_order(self.order.id);
             });
