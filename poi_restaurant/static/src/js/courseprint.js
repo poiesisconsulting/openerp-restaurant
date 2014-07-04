@@ -43,12 +43,17 @@ function openerp_restaurant_courseprint(instance,module){
             _.each(this.$el.find('.fire-course-button'), function(button_found){
                 _.each(order.get_fired_courses().split('|'), function(f_course) {
                     if (parseInt(f_course.split('-')[0]) === parseInt($(button_found).attr('data-course'))) {
-
                         var time = f_course.split('-')[1];
                         var hour = time.split(':')[0];
-                        var mins = time.split(':')[1];
+                        var mins = time.split(':')[1].substr(0, 2);
+                        var day_time = time.split(':')[1].substr(2, 2);
 
-                        fire_times.push(self.set_time_format(hour, mins));
+                        console.log("time",time);
+                        console.log("hour",hour);
+                        console.log("mins",mins);
+                        console.log("day_time",day_time);
+
+                        fire_times.push(self.set_time_format(hour, mins, day_time));
 
                         $(button_found).addClass("fired");
                     }
@@ -63,7 +68,7 @@ function openerp_restaurant_courseprint(instance,module){
                         }
 
                     });
-                    fire_times_str = fire_times_str.slice(-17); //shows last three times
+                    fire_times_str = fire_times_str.slice(-15); //shows last three times
                 }
                 var id_times = "times_" + $(button_found).attr('data-course')
                 $(button_found).html($(button_found).html() + '<br><span id="'+ id_times +'" style="font-size:24px;">' + fire_times_str + '</span>');
@@ -101,11 +106,11 @@ function openerp_restaurant_courseprint(instance,module){
 
                     $(this).addClass("fired");
 
-                    var id_span = "#times_" + $(this_button).attr('data-course')
+                    var id_span = "#times_" + $(this_button).attr('data-course');
                     if ($(id_span).html() == ''){
-                        $(id_span).html((current_time).slice(-17));
+                        $(id_span).html((current_time).slice(-15));
                     } else {
-                        $(id_span).html(($(id_span).html() + '|' + current_time).slice(-17));
+                        $(id_span).html(($(id_span).html() + '|' + current_time).slice(-15));
                     }
 
                     order.set_fired_courses_no_synch(course_to_print);
@@ -123,18 +128,28 @@ function openerp_restaurant_courseprint(instance,module){
             });
         },
 
-        set_time_format: function(hr, mn){
-            var hour = hr || (new Date().getHours()).toString();
-            var minutes = mn || (new Date().getMinutes()).toString();
+        set_time_format: function(hr, mn, day_time){
+            var hour = parseInt(hr) || (new Date().getHours()).toString();
+            var minutes = parseInt(mn) || (new Date().getMinutes()).toString();
 
+            console.log("set_time_format hour", hour);
+            if (hour > 12){
+                hour = hour - 12;
+                day_time = 'pm';
+            }
+            console.log("set_time_format hour a", hour);
+            hour = hour.toString();
             if (hour.length < 2){
                 hour = '0' + hour;
+                console.log("set_time_format hour b", hour);
             }
+
+            minutes = minutes.toString();
             if (minutes.length < 2){
                 minutes = '0' + minutes;
             }
-            return hour + ':' + minutes;
-        },
+            return hour + ':' + minutes + day_time;
+        }
     });
 
 
