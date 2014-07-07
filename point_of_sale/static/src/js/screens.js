@@ -815,7 +815,6 @@ function openerp_pos_screens(instance, module){ //module is instance.point_of_sa
             };
 
             this.line_change_handler = function(event){
-                //console.log('DAO line_change_handler')
                 var node = this;
                 while(node && !node.classList.contains('paymentline')){
                     node = node.parentNode;
@@ -825,21 +824,7 @@ function openerp_pos_screens(instance, module){ //module is instance.point_of_sa
                 }
             };
 
-            // DAO SYSTEMS
-            this.line_change_tips_handler = function(event){
-                //console.log('DAO line_change_tips_handler');
-                var node = this;
-                while(node && !node.classList.contains('paymentline')){
-                    node = node.parentNode;
-                }
-                if(node){
-                    node.line.set_tips(this.value);
-                }
-            };
-            //**********************************************
-
             this.line_click_handler = function(event){
-                //console.log('DAO line_click_handler');
                 var node = this;
                 while(node && !node.classList.contains('paymentline')){
                     node = node.parentNode;
@@ -949,19 +934,6 @@ function openerp_pos_screens(instance, module){ //module is instance.point_of_sa
                         }
                         this.update_payment_summary();
                     },this);
-
-                //DAO SYSTEMS LA
-                //.bind es de backbone, y atacha un evento change, cuando se cambie el valor de la propiedad 'tips' del modelo
-                paymentlines.bind('change:tips', function(line){
-                        //console.log('AUX LINE',line);
-                        if(!line.selected && line.node){
-                            //line.node.value = line.tips.toFixed(2);
-                            var aux =line.tips.toFixed(2);
-                            //console.log("AUX.LINE.NODE 2+", line.node);
-                        }
-                        this.update_payment_summary();
-                    },this);
-
                 paymentlines.bind('remove', this.remove_paymentline, this);
                 paymentlines.bind('all', this.update_payment_summary, this);
 
@@ -978,50 +950,22 @@ function openerp_pos_screens(instance, module){ //module is instance.point_of_sa
         focus_selected_line: function(){
             var line = this.pos.get('selectedOrder').selected_paymentline;
             if(line){
-                // DAO SYSTEMS LA
-                //var input = line.node.querySelector('input');
-                var input = line.node.querySelector('input.dao-amount');
-                //*************************************************************
-                //console.log('line.node.querySelector("input.dao-amount");',input);
+                var input = line.node.querySelector('input');
                 if(!input){
                     return;
                 }
                 var value = input.value;
-                //input.focus();
+                input.focus();
 
-                //console.log('VALUE FOCUS NEW',value);
                 if(this.numpad_state){
                     this.numpad_state.reset();
                 }
 
                 if(Number(value) === 0){
-                    //console.log('ENTRE Number(VALUE)=0');
                     input.value = '';
                 }else{
-                    //console.log('ENTRE input.value');
                     input.value = value;
-                    //input.select();
-                }
-
-                var inputTips = line.node.querySelector('input.dao-tips');
-                //*************************************************************
-
-                if(!inputTips){
-                    return;
-                }
-                var valueTips = inputTips.value;
-
-
-                //console.log('VALUE FOCUS TIPS',valueTips);
-
-
-                if(Number(valueTips) === 0){
-                    //console.log('ENTRE Number(valueTips)=0');
-                    inputTips.value = '';
-                }else{
-                    //console.log('ENTRE input.valueTips');
-                    inputTips.value = valueTips;
-
+                    input.select();
                 }
             }
         },
@@ -1044,16 +988,8 @@ function openerp_pos_screens(instance, module){ //module is instance.point_of_sa
                 el_node.querySelector('.paymentline-delete')
                     .addEventListener('click', this.line_delete_handler);
                 el_node.addEventListener('click', this.line_click_handler);
-                //DAO SYSTEMS LA
-                /*
                 el_node.querySelector('input')
-                     .addEventListener('keyup', this.line_change_handler);
-                */
-                el_node.querySelector('input.dao-amount')
-                     .addEventListener('keyup', this.line_change_handler);
-
-                el_node.querySelector('input.dao-tips')
-                     .addEventListener('keyup', this.line_change_tips_handler);
+                    .addEventListener('keyup', this.line_change_handler);
 
             line.node = el_node;
 

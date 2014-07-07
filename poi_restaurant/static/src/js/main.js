@@ -10,8 +10,4 @@ openerp.poi_restaurant = function(instance){
 
     openerp_restaurant_printbill(instance,module);
 
-    openerp_restaurant_screens(instance,module);
-
-    openerp_restaurant_widgets(instance,module);
-
 };

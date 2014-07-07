@@ -779,29 +779,16 @@ function openerp_pos_models(instance, module){ //module is instance.point_of_sal
             this.cashregister = options.cashregister;
             this.name = this.cashregister.journal_id[1];
             this.selected = false;
-            // DAO SYSTEMS LA
-            this.tips =0;
-            //****************************
         },
         //sets the amount of money on this payment line
         set_amount: function(value){
             this.amount = round_di(parseFloat(value) || 0, 2);
             this.trigger('change:amount',this);
         },
-        // // DAO SYSTEMS LA Establece el monto de la propina para la linea de pago.
-        set_tips: function(value){
-            this.tips = round_di(parseFloat(value) || 0, 2);
-            this.trigger('change:tips',this);
-        },
 
         // returns the amount of money on this paymentline
         get_amount: function(){
-            //// DAO SYSTEMS
-            return (this.amount + this.tips);
-        },
-        //// DAO SYSTEMS LA Obtiene el monto de la propina de la linea de pago
-        get_tips: function(){
-            return this.tips;
+            return this.amount;
         },
 
         set_selected: function(selected){
@@ -819,8 +806,6 @@ function openerp_pos_models(instance, module){ //module is instance.point_of_sal
                 account_id: this.cashregister.account_id[0],
                 journal_id: this.cashregister.journal_id[0],
                 amount: this.get_amount(),
-                // DAO SYSTEMS LA
-                tips: this.get_tips(),
             };
         },
         //exports as JSON for receipt printing
@@ -828,9 +813,6 @@ function openerp_pos_models(instance, module){ //module is instance.point_of_sal
             return {
                 amount: this.get_amount(),
                 journal: this.cashregister.journal_id[1],
-                //DAO SYSTEMS LA
-                tips:this.get_tips(),
-                //*************************
             };
         },
     });
@@ -993,21 +975,9 @@ function openerp_pos_models(instance, module){ //module is instance.point_of_sal
             return (this.get('paymentLines')).reduce((function(sum, paymentLine) {
                 return sum + paymentLine.get_amount();
             }), 0);
-            /* DAO SYSTEMS
-            var total =(this.get('paymentLines')).reduce((function(sum, paymentLine) {
-                            return sum + paymentLine.get_amount();
-                        }), 0);
-
-            //No tomar en cuenta los TIPS, xq se agrega un producto de tips al final.
-            total -= this.getTipsTotal();
-
-            return total;
-            */
         },
         getTipsTotal: function() {
-            //console.log('THIS MODEL.JS', this);
             return (this.get('paymentLines')).reduce((function(sum, paymentLine) {
-                //console.log('PAYMENTE LINE', paymentLine);
                 return sum + paymentLine.get_tips();
             }), 0);
         },
@@ -1076,9 +1046,6 @@ function openerp_pos_models(instance, module){ //module is instance.point_of_sal
                 total_without_tax: this.getTotalTaxExcluded(),
                 total_tax: this.getTax(),
                 total_paid: this.getPaidTotal(),
-                //DAO SYSTEMS LA
-                total_tips:this.getTipsTotal(),
-                //*************************************
                 total_discount: this.getDiscountTotal(),
                 tax_details: this.getTaxDetails(),
                 change: this.getChange(),
@@ -1132,9 +1099,6 @@ function openerp_pos_models(instance, module){ //module is instance.point_of_sal
             return {
                 name: this.getName(),
                 amount_paid: this.getPaidTotal(),
-                //DAO SYSTEMS LA
-                tips_total: this.getTipsTotal(),
-                //***************************************
                 amount_total: this.getTotalTaxIncluded(),
                 amount_tax: this.getTax(),
                 amount_return: this.getChange(),

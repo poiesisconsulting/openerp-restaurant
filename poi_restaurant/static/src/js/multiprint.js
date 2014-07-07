@@ -191,129 +191,6 @@ function openerp_restaurant_multiprint(instance,module){
             
         },
 
-        //*********************DAO-SYSTEMS********************************************************
-        get_DAO_structure: function(add,rem){
-            var aux ={'new': this.get_DAO_GroupBy(add, function(item){
-                                                    return [parseInt(item.sequence)];
-                                                }),
-                    'cancelled': this.get_DAO_GroupBy(rem, function(item){
-                                                    return [parseInt(item.sequence)];
-                                                })
-                    };
-			var arr=[];
-			if (aux.new && aux.new.length>0){
-				for (var i = aux.new.length - 1; i >= 0; i--) {
-                    aux.new[i] = this.get_DAO_GroupBy(aux.new[i], function(item){
-                                                        return [item.name];
-                                                    });
-                };
-                
-			};
-
-			if (aux.cancelled && aux.cancelled.length>0){
-                for (var i = aux.cancelled.length - 1; i >= 0; i--) {
-                    aux.cancelled[i] = this.get_DAO_GroupBy(aux.cancelled[i], function(item){
-                                                        return [item.name];
-                                                    });
-                };
-            };
-
-        	aux.new = this.get_DAO_Rearrange(aux.new);
-            aux.cancelled = this.get_DAO_Rearrange(aux.cancelled);
-
-            return aux
-
-
-                    
-        },
-
-        get_DAO_GroupBy: function(array , f ){
-            var groups = {};
-            if (array && array.length >0){
-                            array.forEach( function( o )
-              {
-                var group = JSON.stringify( f(o) );
-                groups[group] = groups[group] || [];
-                groups[group].push( o );  
-              });
-              return Object.keys(groups).map( function( group )
-              {
-                return groups[group]; 
-              })
-
-            };
-        }, 
-
-        get_DAO_Rearrange:function(array){
-            var resp =[];
-            if (array && array.length>0) {
-                for (var i =0; i < array.length; i++) {
-                    resp.push({
-                                'Course': parseInt(array[i][0][0].sequence),
-                                'Items': this.get_DAO_RearrangeItems(array[i])
-                              }
-                            ); 
-                };
-            };
-            return resp
-        },
-        
-
-		
-		get_DAO_RearrangeItems:function(array){
-            var resp =[];
-            
-            
-            if (array && array.length>0) {
-                for (var i =0; i < array.length; i++) {
-                    var subArray = array[i];
-                    var obj = {
-                                'sequence': parseInt(subArray[0].sequence),
-                                'name': subArray[0].name,
-                                'qty': subArray.map(function(item){
-                                                        return item.qty;
-                                                    }).reduce(function(a,b){
-                                                                return a+b;
-                                                            },0),
-                                'seats':[]
-                                };
-                    var arrModificadores = this.get_DAO_GroupBy(subArray, function(item){
-                                                                return ['[' + item.modifiers.join() + ']' + item.order_line_notes];
-                                                                });
-
-                    for (var k = 0; k < arrModificadores.length; k++) {
-                        obj.seats.push({
-                                        'Numbers': arrModificadores[k].map(function(item){
-                                                                                var full_seat = item.seat.toString();
-                                                                                if (full_seat == '0') {
-                                                                                    full_seat = 'TBL';
-                                                                                }
-                                                                                else {
-                                                                                    full_seat = full_seat;
-                                                                                    if (item.lady) {
-                                                                                        full_seat += 'L';
-                                                                                    }
-                                                                                }
-                                                                                return full_seat
-                                                                            }).join(),
-                                        'modifiers': arrModificadores[k][0].modifiers,
-                                        'order_line_notes': arrModificadores[k][0].order_line_notes,
-                                        'sub_qty': arrModificadores[k].length,
-                                        }
-                                      );
-                         
-                    };
-
-                    resp.push(obj);     
-                };
-            };
-
-            
-            return resp
-        },
-
-        //*****************************************************************************
-
         dynamicSort: function(property){
             return function (obj1,obj2) {
                 return obj1[property] > obj2[property] ? 1
@@ -340,8 +217,7 @@ function openerp_restaurant_multiprint(instance,module){
                 return result;
             }
         },
-        /*
-        Comentado, xq no queremos items que se llamen '-----------------------'
+
         sort_kitchen_receipt: function(list_to_sort){
             var self=this;
             var courses_list = [];
@@ -367,12 +243,6 @@ function openerp_restaurant_multiprint(instance,module){
                                     })
             }
 
-            list_to_sort.sort(self.dynamicSortMultiple("sequence","product_id","seat"));
-
-            return list_to_sort;
-        },*/
-        sort_kitchen_receipt: function(list_to_sort){
-            var self=this;
             list_to_sort.sort(self.dynamicSortMultiple("sequence","product_id","seat"));
 
             return list_to_sort;
@@ -403,9 +273,6 @@ function openerp_restaurant_multiprint(instance,module){
             for(var i = 0; i < printers.length; i++){
                 var changes = this.computeChanges(printers[i].config.product_categories_ids);
                 if ( changes['new'].length > 0 || changes['cancelled'].length > 0){
-
-                    changes.DAO = this.get_DAO_structure(changes.new,changes.cancelled);
-                    
                     var receipt = QWeb.render('OrderChangeReceipt',{changes:changes, widget:this});
                     printers[i].print(receipt);
                 }

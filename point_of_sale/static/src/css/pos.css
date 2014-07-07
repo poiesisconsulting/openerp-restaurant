@@ -1024,11 +1024,6 @@ td {
     box-sizing: border-box;
     -moz-box-sizing: border-box;
     position: absolute;
-    /*DAO SYSTEMS
-    bottom: 10px; como se adiciono el DIV de BOTONES AHORA debe ir al TOP no al BOTOM
-    */
-    top: 35px;
-    /************************/
     left: 8px;
     cursor: pointer;
 }
