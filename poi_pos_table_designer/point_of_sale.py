@@ -188,11 +188,18 @@ class pos_order(osv.osv):
                 'resp_note': None,
             })
 
-        elif sp_reason != 'remove':
+        elif sp_reason == 'back':
+            current_order.write({
+                'auth_note': None,
+                'auth_state': "none",
+                'auth_by': None,
+                'resp_note': None,
+            })
+
+        elif sp_reason != 'remove' and sp_reason != 'back':
             current_order.write({
                 'sal_prom': sp_reason,
             })
-
         return True
 
     def sp_create_from_ui(self, cr, uid, order, context=None):
