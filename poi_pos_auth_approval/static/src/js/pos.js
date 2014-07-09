@@ -10,10 +10,14 @@ openerp.poi_pos_auth_approval = function(instance){
         show: function(){
             var self = this;
             var currentOrder = self.pos.get('selectedOrder');
-            (new instance.web.Model('pos.order')).get_func('sp_execute')(currentOrder.get_order_id(), 'back');
-            //.then(function(){
-                self._super();
-            //});
+
+            self.get_auth().then(function(){
+                console.log("MRC currentOrder.authorization", currentOrder.authorization);
+                if (currentOrder.authorization.state == 'approved') {
+                    (new instance.web.Model('pos.order')).get_func('sp_execute')(currentOrder.get_order_id(), 'back');
+                }
+            });
+            self._super();
         },
 
         get_auth: function(){
@@ -42,7 +46,7 @@ openerp.poi_pos_auth_approval = function(instance){
                         alert("Cannot go back before manager sends a response.");
                     break;
                     case 'approved':
-                        if(confirm("The manager approved previous requirement. This authorization will be lost if you go back.")) {
+                        if(confirm("Manager approved previous requirement. This authorization will be lost if you go back.")) {
                             return (new instance.web.Model('pos.order')).get_func('sp_execute')(currentOrder.get_order_id(), 'back')
                             .then(function(){
                                 self.remove_empty_lines();
