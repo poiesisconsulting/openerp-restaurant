@@ -104,11 +104,11 @@ class table_merge_wizard(osv.osv_memory):
                         target_print = target_read and target_read[0] and target_read[0]['print_resume'] or False
 
                         if target_print and len(target_print) > 0:
-                            target_dict = eval(target_print.replace('true','True').replace('false','False'))
-                            base_dict = eval(base_print.replace('true','True').replace('false','False'))
+                            target_dict = eval(target_print.replace('true','True').replace('false','False').replace('null','False'))
+                            base_dict = eval(base_print.replace('true','True').replace('false','False').replace('null','False'))
                             if isinstance (target_dict,dict) and isinstance(base_dict,dict):
                                 target_dict.update(base_dict)
-                                new_print = str(target_dict).replace('True','true').replace('False','false')
+                                new_print = str(target_dict).replace('True','true').replace('False','false').replace('null','False')
                         else:
                             new_print = base_print
 
