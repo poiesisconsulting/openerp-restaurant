@@ -7,6 +7,68 @@ openerp.poi_pos_auth_approval = function(instance){
 
     module.PaymentScreenWidget = module.PaymentScreenWidget.extend({
 
+        show: function(){
+            var self = this;
+            var currentOrder = self.pos.get('selectedOrder');
+
+            self.get_auth().then(function(){
+                console.log("MRC currentOrder.authorization", currentOrder.authorization);
+                if (currentOrder.authorization.state == 'approved') {
+                    (new instance.web.Model('pos.order')).get_func('sp_execute')(currentOrder.get_order_id(), 'back');
+                }
+            });
+            self._super();
+        },
+
+        get_auth: function(){
+            var self = this;
+            var currentOrder = self.pos.get('selectedOrder');
+
+            var connection = new openerp.Session(self, null, {session_id: openerp.session.session_id});
+
+            return connection.rpc('/poi_pos_auth_approval/check_validate_order', {
+                'config_id': self.pos.config.id,
+                'order_id': currentOrder.get_order_id(),
+                'current_order': [currentOrder.export_as_JSON()]
+            }).then(function(authorization){
+                currentOrder.authorization = authorization;
+            });
+        },
+
+        back: function() {
+            var self = this;
+            var currentOrder = self.pos.get('selectedOrder');
+            console.log("MRC currentOrder.authorization.state", currentOrder.authorization.state);
+
+            self.get_auth().then(function(){
+                switch (currentOrder.authorization.state){
+                    case 'submit':
+                        alert("Cannot go back before manager sends a response.");
+                    break;
+                    case 'approved':
+                        if(confirm("Manager approved previous requirement. This authorization will be lost if you go back.")) {
+                            return (new instance.web.Model('pos.order')).get_func('sp_execute')(currentOrder.get_order_id(), 'back')
+                            .then(function(){
+                                self.remove_empty_lines();
+                                self.pos_widget.screen_selector.set_current_screen(self.back_screen);
+                            });
+                        }
+                    break;
+                    case 'rejected':
+                        alert("Manager rejected previous request.");
+                        return (new instance.web.Model('pos.order')).get_func('sp_execute')(currentOrder.get_order_id(), 'back')
+                        .then(function(){
+                            self.remove_empty_lines();
+                            self.pos_widget.screen_selector.set_current_screen(self.back_screen);
+                        });
+                    break;
+                    default:
+                        self.remove_empty_lines();
+                        self.pos_widget.screen_selector.set_current_screen(self.back_screen);
+                    break;
+                }
+            });
+        },
         validate_order: function(options) {
             var self = this;
             var realvalidate = this._super;
@@ -15,8 +77,8 @@ openerp.poi_pos_auth_approval = function(instance){
             var currentOrder = self.pos.get('selectedOrder');
 
             currentOrder.save_lines_on_db().then(function(){
-                // This is in case S&P was rejected before
-                // we're removing S&P authorization fields to avoid false response
+                //      This is in case S&P was rejected before
+                //      we're removing S&P authorization fields to avoid false response
                 (new instance.web.Model('pos.order')).get_func('sp_execute')(currentOrder.get_order_id(), 'remove')
             }).then(function(){
                 return connection.rpc('/poi_pos_auth_approval/check_validate_order',
@@ -90,6 +152,7 @@ openerp.poi_pos_auth_approval = function(instance){
             this._super(parent, options);
             var  self = this;
         },
+
         build_widgets: function() {
             this._super();
 
@@ -97,6 +160,31 @@ openerp.poi_pos_auth_approval = function(instance){
             this.approval_popup = new module.ApprovalPopup(this, {});
             this.approval_popup.appendTo(this.$el);
             this.screen_selector.add_popup('ApprovalPopup',this.approval_popup);
+        }
+    });
+
+    module.ProductScreenWidget = module.ProductScreenWidget.extend({
+        show: function () {
+            var self = this;
+            var connection = new openerp.Session(self, null, {session_id: openerp.session.session_id});
+            var currentOrder = self.pos.get('selectedOrder');
+
+            if (currentOrder.get_order_id()){
+                connection.rpc('/poi_pos_auth_approval/check_validate_order',{
+                    'config_id': self.pos.config.id,
+                    'order_id': currentOrder.get_order_id(),
+                    'current_order': [currentOrder.export_as_JSON()]
+                }).then(function(authorization){
+                    currentOrder.authorization = authorization;
+                }).then(function(){
+                    console.log("MRC currentOrder.authorization", currentOrder.authorization);
+
+                    if(currentOrder.authorization.state == 'submit' || currentOrder.authorization.state == 'approved'){
+                        self.pos_widget.screen_selector.set_current_screen('payment');
+                    }
+                });
+            }
+            self._super();
         }
     });
 };
