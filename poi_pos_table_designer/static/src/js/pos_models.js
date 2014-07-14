@@ -805,20 +805,6 @@ function poi_pos_models(instance, module){
 
 	module.NumpadWidget = module.NumpadWidget.extend({
 
-        set_value: function(val) {
-        	var order = this.pos.get('selectedOrder');
-        	if (this.editable && order.getSelectedLine()) {
-                var mode = this.numpad_state.get('mode');
-                if( mode === 'quantity'){
-                    order.getSelectedLine().set_quantity(val);
-                }else if( mode === 'discount'){
-                    order.getSelectedLine().set_discount(val);
-                }else if( mode === 'price'){
-                    order.getSelectedLine().set_unit_price(val);
-                }
-        	}
-        },
-
         clickAppendNewChar: function(event) {
             var self = this;
             var current_order = this.pos.get('selectedOrder');
@@ -831,17 +817,25 @@ function poi_pos_models(instance, module){
                     if (current_line.get_sent_to_kitchen()){
                         if(current_line.order_line_state_id[0] > 1){
                             allow_change = false;
+                            alert ("Line has been printed already.\n " +
+                                   "Please use 'Duplicate' button to create an identical new order-line.");
                         }
                     }
                 }
             }
 
-            if (allow_change){
-                this._super(event);
-            } else {
-                alert ("Line has been printed already.\n " +
-                    "Please use 'Duplicate' button to create an identical new order-line.");
+            if (mode == 'price'){
+
+                if (mode == 'price') {
+                    if (current_line && current_line.product.list_price > 0) {
+                        allow_change = false;
+                        alert("Cannot change price for this product.");
+                    }
+                }
             }
+
+            if (allow_change)
+                this._super(event);
         },
 
         // backspace button: Avoid deletion of lines
@@ -857,15 +851,20 @@ function poi_pos_models(instance, module){
                 if (current_line) {
                     if (current_line.quantity == 0){
                         allow_change = false;
+                        alert ("Please use 'Void' button to remove the line.");
                     }
                 }
             }
 
-            if (allow_change){
-                this._super();
-            } else {
-                alert ("Please use 'Void' button to remove the line.");
+            if (mode == 'price') {
+                if (current_line && current_line.product.list_price > 0) {
+                    allow_change = false;
+                    alert("Cannot change price for this product.");
+                }
             }
+
+            if (allow_change)
+                this._super();
         }
     });
 

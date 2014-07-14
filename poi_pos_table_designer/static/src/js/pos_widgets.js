@@ -1216,7 +1216,7 @@ function poi_pos_widgets(instance, module){
             this._super();
 
             //hide button [+/-] of numpad
-            $(".numpad-minus").css("visibility", "hidden");
+            $(".data-mode-minus").css("visibility", "hidden");
 
 
             this.select_sequence_popup = new module.SelectSequenceWidget(this, {});
