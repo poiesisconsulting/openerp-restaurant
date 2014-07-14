@@ -715,14 +715,18 @@ function poi_pos_widgets(instance, module){
             self.$el.find('#sp_apply').off('click').click(function(){
                 var currentOrder = self.pos.get('selectedOrder');
                 var reason_id = "";
+                var reason_txt = "";
+                currentOrder.sp_reason_txt = false;
 
                 _.each(self.$el.find(".tr_sel_true"), function(tr_found) {
                     reason_id = $(tr_found).attr('id');
+                    reason_txt = $(tr_found).attr('txt');
                     currentOrder.sp_reason = reason_id;
+                    currentOrder.sp_reason_txt = reason_txt;
                 });
 
                 if (reason_id == ""){
-                    alert ("You need to specify a reson for S&P");
+                    alert ("You need to specify a reason for S&P");
                     return;
                 }
 
@@ -765,6 +769,7 @@ function poi_pos_widgets(instance, module){
                     currentOrder.authorization = authorization;
                     if(!authorization.approved){
                         self.pos_widget.screen_selector.show_popup('ApprovalPopup');
+                        $("input[id=sp_reason_txt]").val(currentOrder.sp_reason_txt);
                     }
                 }
             );

@@ -12,7 +12,6 @@ openerp.poi_pos_auth_approval = function(instance){
             var currentOrder = self.pos.get('selectedOrder');
 
             self.get_auth().then(function(){
-                console.log("MRC currentOrder.authorization", currentOrder.authorization);
                 if (currentOrder.authorization.state == 'approved') {
                     (new instance.web.Model('pos.order')).get_func('sp_execute')(currentOrder.get_order_id(), 'back');
                 }
@@ -38,7 +37,6 @@ openerp.poi_pos_auth_approval = function(instance){
         back: function() {
             var self = this;
             var currentOrder = self.pos.get('selectedOrder');
-            console.log("MRC currentOrder.authorization.state", currentOrder.authorization.state);
 
             self.get_auth().then(function(){
                 switch (currentOrder.authorization.state){
@@ -120,11 +118,17 @@ openerp.poi_pos_auth_approval = function(instance){
 
             this.$el.find('#app_send').off('click').click(function () {
                 self.pos_widget.screen_selector.close_popup();
+
+                var req_msg = self.$el.find('#request_text').val();
+
+                if (currentOrder.sp_reason_txt)
+                    req_msg = 'S&P Reason: ' + currentOrder.sp_reason_txt + '<br/>' + req_msg
+
                 return (new instance.web.Model('pos.order')).get_func('send_approval_message')(
                     currentOrder.get_order_id(),
                     currentOrder.authorization.users_notified,
                     currentOrder.authorization.messages,
-                    self.$el.find('#request_text').val()
+                    req_msg
                 );
             });
 
@@ -177,8 +181,6 @@ openerp.poi_pos_auth_approval = function(instance){
                 }).then(function(authorization){
                     currentOrder.authorization = authorization;
                 }).then(function(){
-                    console.log("MRC currentOrder.authorization", currentOrder.authorization);
-
                     if(currentOrder.authorization.state == 'submit' || currentOrder.authorization.state == 'approved'){
                         self.pos_widget.screen_selector.set_current_screen('payment');
                     }

@@ -378,7 +378,7 @@
                 <div class="popup_body" style="height:220px">
                     <table class="sp_rows" border="0" width="100%" align="center">
                         <t t-foreach="widget.sp_reasons" t-as="reason">
-                            <tr class="tr_sel_false" t-att-id="reason.id">
+                            <tr class="tr_sel_false" t-att-id="reason.id" t-att-txt="reason.reason">
                                 <td class="sp_td td_left">
                                     <t t-esc="reason.reason" />
                                 </td>
