@@ -199,7 +199,6 @@ function openerp_restaurant_splitbill(instance, module){
 
                     if(currentOrder.get('orderLines').models.length > 0){
                         //Authorizations: Remove auth. state first and then go with the split process
-                        console.log("MRC currentOrder.authorization", currentOrder.authorization);
                         if (currentOrder.authorization.state != 'none'){
                             if (confirm("Your authorization process will be lost. Continue?")){
                                 (new instance.web.Model('pos.order')).get_func('sp_execute')(currentOrder.get_order_id(), 'back')
