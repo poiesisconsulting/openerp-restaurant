@@ -53,7 +53,7 @@ class pos_order(osv.osv):
             open_prod = 0
 
             for line in order.lines:
-                if line.product_id.product_tmpl_id.list_price == 0:
+                if line.product_id.product_tmpl_id.list_price == 0 and line.price_unit > 0:
                     open_prod += 1
 
             res_order['count_rejects'] = count

@@ -12,7 +12,6 @@ openerp.poi_pos_auth_approval = function(instance){
             var currentOrder = self.pos.get('selectedOrder');
 
             self.get_auth().then(function(){
-                console.log("MRC currentOrder.keep_approved", currentOrder.keep_approved);
                 if (currentOrder.authorization.state == 'approved' && !currentOrder.keep_approved) {
                     (new instance.web.Model('pos.order')).get_func('sp_execute')(currentOrder.get_order_id(), 'back');
                 }

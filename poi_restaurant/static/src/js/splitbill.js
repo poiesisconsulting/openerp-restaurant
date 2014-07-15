@@ -195,8 +195,14 @@ function openerp_restaurant_splitbill(instance, module){
                 var splitbill = $(QWeb.render('SplitbillButton'));
 
                 splitbill.click(function(){
-                    if(self.pos.get('selectedOrder').get('orderLines').models.length > 0){
-                        self.pos_widget.screen_selector.set_current_screen('splitbill');
+                    var currentOrder = self.pos.get('selectedOrder');
+
+                    if(currentOrder.get('orderLines').models.length > 0){
+                        //Authorizations: Remove auth. state first and then go with the split process
+                        (new instance.web.Model('pos.order')).get_func('sp_execute')(currentOrder.get_order_id(), 'back')
+                        .then(function(){
+                            self.pos_widget.screen_selector.set_current_screen('splitbill');
+                        });
                     }
                 });
                 
