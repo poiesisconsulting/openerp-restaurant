@@ -50,17 +50,23 @@ class pos_order(osv.osv):
                     if payment.journal_id.id==sp_id:
                         sp += 1
 
+            open_prod = 0
+
+            for line in order.lines:
+                if line.product_id.product_tmpl_id.list_price == 0:
+                    open_prod += 1
+
             res_order['count_rejects'] = count
             res_order['max_discount'] = disc
             res_order['sp_count'] = sp
+            res_order['open_prod'] = open_prod
             res[order.id] = res_order
 
         return res
-
 
     _columns = {
         'count_rejects': fields.function(_calc_lines, multi="line_calc", type='integer', string='Rejected Void Count'),
         'max_discount': fields.function(_calc_lines, multi="line_calc", type='float', string='Top Discount'),
         'sp_count': fields.function(_calc_lines, multi="line_calc", type='integer', string='S&P Payments'),
-
+        'open_prod': fields.function(_calc_lines, multi="line_calc", type='integer', string='Open Products'),
     }
