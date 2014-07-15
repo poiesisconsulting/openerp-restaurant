@@ -197,18 +197,20 @@ function openerp_restaurant_splitbill(instance, module){
                 splitbill.click(function(){
                     var currentOrder = self.pos.get('selectedOrder');
 
-                    if(currentOrder.get('orderLines').models.length > 0){
-                        //Authorizations: Remove auth. state first and then go with the split process
-                        if (currentOrder.authorization.state != 'none'){
-                            if (confirm("Your authorization process will be lost. Continue?")){
-                                (new instance.web.Model('pos.order')).get_func('sp_execute')(currentOrder.get_order_id(), 'back')
-                                .then(function(){
-                                    self.pos_widget.screen_selector.set_current_screen('splitbill');
-                                });
-                            }
-                        } else {
-                            self.pos_widget.screen_selector.set_current_screen('splitbill');
-                        }
+                    if(currentOrder.get('orderLines').models.length > 0) {
+                        self.get_auth().then(function() {
+
+                                //Authorizations: Remove auth. state first and then go with the split process
+                                if (currentOrder.authorization.state != 'none') {
+                                    if (confirm("Your authorization process will be lost. Continue?")) {
+                                        (new instance.web.Model('pos.order')).get_func('sp_execute')(currentOrder.get_order_id(), 'back')
+                                            .then(function () {
+                                                self.pos_widget.screen_selector.set_current_screen('splitbill');
+                                            });
+                                    }
+                                } else self.pos_widget.screen_selector.set_current_screen('splitbill');
+
+                        });
                     }
                 });
                 
@@ -216,5 +218,19 @@ function openerp_restaurant_splitbill(instance, module){
                 this.$('.control-buttons').removeClass('oe_hidden');
             }
         },
+        get_auth: function(){
+            var self = this;
+            var currentOrder = self.pos.get('selectedOrder');
+
+            var connection = new openerp.Session(self, null, {session_id: openerp.session.session_id});
+
+            return connection.rpc('/poi_pos_auth_approval/check_validate_order', {
+                'config_id': self.pos.config.id,
+                'order_id': currentOrder.get_order_id(),
+                'current_order': [currentOrder.export_as_JSON()]
+            }).then(function(authorization){
+                currentOrder.authorization = authorization;
+            });
+        }
     });
 }

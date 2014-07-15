@@ -609,4 +609,7 @@ button.deleteorder-button{
     height: 120px !important;
 }
 
+.pos .numpad-minus{
+    visibility: hidden;
+}
 

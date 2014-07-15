@@ -1315,8 +1315,21 @@ function poi_pos_widgets(instance, module){
                      }
                  });
 
-                if (order_lines.length && allow_popup)
-                    self.pos_widget.screen_selector.show_popup('sppopup');
+                if (order_lines.length && allow_popup) {
+                    var currentOrder = self.pos.get('selectedOrder');
+                    self.get_auth().then(function() {
+
+                            if (currentOrder.authorization.state != 'none') {
+                                if (confirm("Your authorization process will be lost. Continue?")) {
+                                    (new instance.web.Model('pos.order')).get_func('sp_execute')(currentOrder.get_order_id(), 'back')
+                                        .then(function () {
+                                            self.pos_widget.screen_selector.show_popup('sppopup');
+                                        });
+                                }
+                            } else self.pos_widget.screen_selector.show_popup('sppopup');
+
+                    });
+                }
                 else if (!order_lines.length)
                     alert("The order has no lines.");
                 else if (!allow_popup)
@@ -1332,6 +1345,21 @@ function poi_pos_widgets(instance, module){
                 self.pos_widget.order_selector_screen.set_domain([['id','<',0]]);
                 //self.pos.synchorders.connect();
                 self.pos_widget.order_selector_screen.connect();
+            });
+        },
+
+        get_auth: function(){
+            var self = this;
+            var currentOrder = self.pos.get('selectedOrder');
+
+            var connection = new openerp.Session(self, null, {session_id: openerp.session.session_id});
+
+            return connection.rpc('/poi_pos_auth_approval/check_validate_order', {
+                'config_id': self.pos.config.id,
+                'order_id': currentOrder.get_order_id(),
+                'current_order': [currentOrder.export_as_JSON()]
+            }).then(function(authorization){
+                currentOrder.authorization = authorization;
             });
         }
     });
