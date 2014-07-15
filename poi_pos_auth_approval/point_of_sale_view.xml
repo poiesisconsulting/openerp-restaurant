@@ -84,7 +84,7 @@
                 <xpath expr="//field[@name='note']" position="after">
                     <separator string="Authorization"/>
                     <field name="auth_state" readonly="1"/>
-                    <field name="auth_by" readonly="1"/>
+                    <!--<field name="auth_by" readonly="1"/>-->
                     <field name="auth_note" readonly="1" colspan="4"/>
                     <!--<field name="resp_note" readonly="1" colspan="4"/>-->
                 </xpath>
