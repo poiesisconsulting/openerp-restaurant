@@ -40,6 +40,7 @@ class OrderController(http.Controller):
 
     @http.route('/poi_pos_auth_approval/check_validate_order', type='json', auth='user')
     def check_validate_order(self, config_id=None, order_id=None, current_order=None):
+
         order_pool = request.registry['pos.order']
 
         res = {'approved': False,
@@ -77,8 +78,14 @@ class OrderController(http.Controller):
                 #We're getting all the conditions for our pos config
                 for auth in auth_pool.browse(request.cr, request.uid, auth_ids):
                     auth_users_notified = []
+                    server = current_order[0]['user_id']
                     for user in auth.users_notified:
                         auth_users_notified.append(user.id)
+
+                        # If user is an authorized manager - return true
+                        if user.id == current_order[0]['user_id']:
+                            res['approved'] = True
+                            return res
 
                     #We're going through condition lines
                     for condition in auth.condition_lines:
