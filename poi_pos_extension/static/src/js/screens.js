@@ -304,7 +304,7 @@ function poi_extension_screens(instance, module){
             {
                 order = self.pos.get_order_by_id(order_id);
                 actual_screen = order.get_screen_data('screen');
-
+                order.keep_approved = true;
                 self.pos.set('selectedOrder', order);
 
                 var ss = self.pos.pos_widget.screen_selector;
