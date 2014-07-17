@@ -121,8 +121,14 @@ openerp.poi_pos_auth_approval = function(instance){
 
                 var req_msg = self.$el.find('#request_text').val();
 
-                if (currentOrder.sp_reason_txt)
-                    req_msg = 'S&P Reason: ' + currentOrder.sp_reason_txt + '<br/>' + req_msg
+                if (currentOrder.sp_reason_txt){
+                    req_msg = 'S&P Reason: ' + currentOrder.sp_reason_txt + '<br/>' + req_msg;
+
+                    _.each(currentOrder.get_all_lines(), function(line) {
+                        line.sp_sent = true;
+                    });
+                }
+
 
                 return (new instance.web.Model('pos.order')).get_func('send_approval_message')(
                     currentOrder.get_order_id(),

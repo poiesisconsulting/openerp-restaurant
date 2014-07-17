@@ -179,7 +179,10 @@ class pos_order(osv.osv):
         pos_orders = self.pool.get('pos.order')
         current_order = pos_orders.browse(cr, uid, order_id, context=context)
 
-        if (sp_reason == 'remove' and current_order['sal_prom']) or sp_reason == 'reject_notified':
+        if (sp_reason == 'remove' and current_order['sal_prom']) \
+                or sp_reason == 'reject_notified' \
+                or sp_reason == 'new_line':
+
             current_order.write({
                 'sal_prom': None,
                 'auth_note': None,

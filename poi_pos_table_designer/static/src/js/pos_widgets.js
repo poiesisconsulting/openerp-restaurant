@@ -685,6 +685,8 @@ function poi_pos_widgets(instance, module){
 
             var currentOrder = self.pos.get('selectedOrder');
 
+            console.log("MRC SP REASON", currentOrder.sp_reason);
+
             if (currentOrder.sp_reason) {
                 self.pos_widget.screen_selector.close_popup();
                 self.validate_order().then (function(){
@@ -1317,17 +1319,38 @@ function poi_pos_widgets(instance, module){
 
                 if (order_lines.length && allow_popup) {
                     var currentOrder = self.pos.get('selectedOrder');
-                    self.get_auth().then(function() {
+                    var order_has_new_lines = false;
 
-                            if (currentOrder.authorization.state != 'none') {
-                                if (confirm("Your authorization process will be lost. Continue?")) {
-                                    (new instance.web.Model('pos.order')).get_func('sp_execute')(currentOrder.get_order_id(), 'back')
-                                        .then(function () {
-                                            self.pos_widget.screen_selector.show_popup('sppopup');
-                                        });
+                    self.get_auth().then(function() {
+                        var authState = currentOrder.authorization.state;
+
+                        if (authState == 'submit' || (authState == 'approved' && !currentOrder.sp_reason_txt)) {
+                            if (confirm("Previous authorization request will be canceled.")) {
+                                (new instance.web.Model('pos.order')).get_func('sp_execute')(currentOrder.get_order_id(), 'back')
+                                    .then(function () {
+                                        self.pos_widget.screen_selector.show_popup('sppopup');
+                                    });
+                            }
+                        } else if (authState == 'approved' && currentOrder.sp_reason_txt){
+                            _.each(currentOrder.get_all_lines(), function(line) {
+                                if (line.sp_sent == undefined) {
+                                    order_has_new_lines = true
+                                }
+                            });
+
+                            if (order_has_new_lines == true){
+                                if (confirm("New lines have been added to the order. \n" +
+                                            "A new authorization request will be sent.")){
+
+                                    return (new instance.web.Model('pos.order')).get_func('sp_execute')(currentOrder.get_order_id(), 'new_line')
+                                    .then(function(){
+                                        console.log("MRC AUTHORIZATION REMOVED");
+                                        currentOrder.sp_reason = false;
+                                        self.pos_widget.screen_selector.show_popup('sppopup');
+                                    });
                                 }
                             } else self.pos_widget.screen_selector.show_popup('sppopup');
-
+                        } else self.pos_widget.screen_selector.show_popup('sppopup');
                     });
                 }
                 else if (!order_lines.length)
