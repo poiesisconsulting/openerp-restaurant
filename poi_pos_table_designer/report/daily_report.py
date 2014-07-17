@@ -38,6 +38,7 @@ class pos_table_daily_report(osv.osv):
         'area': fields.char('Area', readonly=True),
         'tables': fields.char('Tables', readonly=True),
         'total': fields.float('Total w/o Tax', readonly=True),
+        'tax': fields.float('Tax', readonly=True),
         'total_incl': fields.float('Total', readonly=True),
         'tips': fields.float('Gratuity', readonly=True),
         'revenue': fields.float('Revenue', readonly=True),
@@ -62,7 +63,7 @@ class pos_table_daily_report(osv.osv):
         query_to_exe = """
             CREATE or replace view pos_table_daily_report as (
                 select ps.start_at as date_start,to_char(ps.start_at,'MM/DD/YYYY') as date_service,area.name as area
-                    ,tot.total,tot.total_incl,tot.tip as tips,(tot.total-tot.tip) as revenue,ps.state as state_session,pay.*,po.*
+                    ,tot.total,(tot.total_incl - tot.total) as tax,tot.total_incl,tot.tip as tips,(tot.total-tot.tip) as revenue,ps.state as state_session,pay.*,po.*
                 from pos_order po inner join pos_session ps on ps.id=po.session_id
                  left outer join (select pol.order_id,sum(pol.price_subtotal) as total,sum(pol.price_subtotal_incl) as total_incl,sum(case when pol.product_id=5401 then pol.price_subtotal else 0 end) as tip
                         from pos_order_line pol

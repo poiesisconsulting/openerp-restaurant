@@ -12,6 +12,7 @@
                 <field name="tables"/>
                 <field name="covers"/>
 				<field name="total" sum="total"/>
+                 <field name="tax" sum="tax"/>
 				<field name="total_incl" sum="total_incl"/>
 				<field name="tips" sum="tips"/>
                 <field name="revenue" sum="rev"/>
