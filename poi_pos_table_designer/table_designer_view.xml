@@ -4,10 +4,6 @@
 
         <menuitem name="Table Manager" parent="point_of_sale.menu_point_root"
             id="menu_point_table_manager" sequence="20" groups="point_of_sale.group_pos_user"/>
-        <!--<menuitem name="Table Manager" parent="point_of_sale.menu_point_root"
-            id="menu_point_table_manager" sequence="20" groups="point_of_sale.group_pos_manager"/>-->
-
-
 
         <!--Table Area view -->
         <record id="table_area_form_view" model="ir.ui.view">
@@ -91,6 +87,7 @@
                     	<group col="4">
 		                    <field name="code"/>
                             <field name="area_id"/>
+                            <field name="sector"/>
 		                    <field name="number_of_seats"/>
                             <field name="max_number_of_seats"/>
                             <field name="only_free_state"/>
@@ -133,6 +130,7 @@
             <field name="arch" type="xml">
                 <tree string="Tables">
                     <field name="area_id"/>
+                    <field name="sector"/>
                     <field name="name" />
                     <field name="code" />
                     <field name="number_of_seats"/>
@@ -140,6 +138,28 @@
                     <field name="only_free_state"/>
                 </tree>
             </field>
+        </record>
+
+        <record id="view_table_table_search" model="ir.ui.view">
+            <field name="name">view.table.table.search</field>
+            <field name="model">table.table</field>
+            <field name="arch" type="xml">
+                <search string="Tables">
+                    <group expand="0" string="Group By...">
+                        <filter string="Sector" icon="terp-gtk-jump-to-rtl" name="sector" domain="[]" context="{'group_by':'sector'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_table_table_all" model="ir.actions.act_window">
+            <field name="name">Tables</field>
+            <field name="res_model">table.table</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">graph</field>
+            <field name="search_view_id" ref="view_table_table_search"/>
+            <!--<field name="context">{'search_default_sector': 1, 'group_by':['sector']}</field>-->
+            <field name="context">{'search_default_sector': 1}</field>
         </record>
 
         <record id="table_table_action" model="ir.actions.act_window">
@@ -153,9 +173,6 @@
 
         <menuitem action="table_table_action" id="menu_table_table"
             parent="menu_point_table_manager" sequence="1" groups="point_of_sale.group_pos_user"/>
-        <!--<menuitem action="table_table_action" id="menu_table_table"
-            parent="menu_point_table_manager" sequence="1" groups="point_of_sale.group_pos_manager"/>-->
-
 
 
         <!-- The table interface.xml -->
@@ -191,6 +208,61 @@
                 </xpath>
             </field>
         </record>
+
+        <!-- TABLE ASSIGNMENT FROM POS-->
+        <record id="view_table_users_tree" model="ir.ui.view">
+            <field name="name">res.users.tree</field>
+            <field name="model">res.users</field>
+            <field name="arch" type="xml">
+                <tree string="Users">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_table_users_form" model="ir.ui.view">
+            <field name="name">res.users.form</field>
+            <field name="model">res.users</field>
+            <field name="arch" type="xml">
+                <form string="Users" version="7.0">
+                    <sheet>
+                        <field name="id" invisible="1"/>
+                        <field name="image" widget='image' class="oe_avatar oe_left" options='{"preview_image": "image_medium"}'/>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1><field name="name"/></h1>
+                        </div>
+                        <group>
+                            <field name="table_ids"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="table_usr_assign_action" model="ir.actions.act_window">
+            <field name="name">User-Table assignment</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.users</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="view_table_users_tree"/>
+        </record>
+
+        <record id="action_table_res_users_view1" model="ir.actions.act_window.view">
+            <field eval="10" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_table_users_tree"/>
+            <field name="act_window_id" ref="table_usr_assign_action"/>
+        </record>
+        <record id="action_table_res_users_view2" model="ir.actions.act_window.view">
+            <field eval="20" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_table_users_form"/>
+            <field name="act_window_id" ref="table_usr_assign_action"/>
+        </record>
+
+        <menuitem action="table_usr_assign_action" id="table_usr_assign_menu"
+            parent="menu_point_table_manager" groups="point_of_sale.group_pos_manager"/>
 
     </data>
 </openerp>

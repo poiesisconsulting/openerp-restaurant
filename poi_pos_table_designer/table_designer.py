@@ -67,6 +67,7 @@ class table_table(osv.osv):
         'row': fields.integer('Grid Row'),
         'size_x': fields.integer('Grid Size X'),
         'size_y': fields.integer('Grid Size Y'),
+        'sector': fields.char('Sector', size=64),
     }
 
     _defaults = {

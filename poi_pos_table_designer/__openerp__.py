@@ -54,7 +54,8 @@ This allows to:
              'security/ir.model.access.csv',
              'views/templates.xml',
              'report/daily_report_view.xml',
-             'report/pos_rest_report_view.xml'
+             'report/pos_rest_report_view.xml',
+             'table_designer_view.xml',
              ],
     'js': ['static/lib/jquery.gridster.js',
            'static/src/js/main.js',
