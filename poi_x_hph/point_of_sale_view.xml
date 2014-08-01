@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_pos_order_max_discount_tree">
+            <field name="name">Orders</field>
+            <field name="model">pos.order</field>
+            <field name="inherit_id" ref="point_of_sale.view_pos_order_tree" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='session_id']" position="after">
+                    <field name="max_discount" string="Max Discount"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>

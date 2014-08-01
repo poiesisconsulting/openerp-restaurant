@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+<template id="sp_report">
+    <t t-call="report.html_container">
+        <div class="page">
+            <table width="100%">
+                <tr>
+                    <td align="left"><b>S&amp;P REPORT</b></td>
+                    <td align="left">
+                        <span t-if="data['form']['start_date'] == data['form']['end_date']">
+                            <b>Date:</b> <span t-esc="data['form']['start_date']"/>
+                        </span>
+                        <span t-if="data['form']['start_date'] != data['form']['end_date']">
+                            <b>Period:</b> <span t-esc="data['form']['start_date']"/> -- <span t-esc="data['form']['end_date']"/>
+                        </span>
+                    </td>
+                </tr>
+            </table>
+            <hr></hr>
+            <table class="table table-condensed">
+                <tr><td align="left"><b>Total Food S&amp;P: </b> <span t-esc="get_total_food_sp(data['form'])"/></td></tr>
+                <tr><td align="left"><b>Total Liquor S&amp;P: </b> <span t-esc="get_total_liquor_sp(data['form'])"/></td></tr>
+                <tr><td align="left"><b>Total Wine S&amp;P: </b> <span t-esc="get_total_wine_sp(data['form'])"/></td></tr>
+                <tr><td align="left"><b>Total Beer S&amp;P: </b> <span t-esc="get_total_beer_sp(data['form'])"/></td></tr>
+                <tr><td align="left"><b>Total Beverage S&amp;P: </b> <span t-esc="get_total_beverage_sp(data['form'])"/></td></tr>
+                <tr><td align="left"><b>Total Misc S&amp;P: </b> <span t-esc="get_total_misc_sp(data['form'])"/></td></tr>
+                <tr><td align="left"><b>Total Sales &amp; Promotions: </b> <span t-esc="get_total_sales_sp(data['form'])"/></td></tr>
+                <tr><td align="left"><b>Total Taxes: </b> <span t-esc="get_total_taxes(data['form'])"/></td></tr>
+                <tr><td align="left"><b>Total Gratuities: </b> <span t-esc="get_total_gratuities(data['form'])"/></td></tr>
+                <tr><td align="left"><b>Total Collected: </b> <span t-esc="get_total_collected(data['form'])"/></td></tr>
+                <tr><td align="left"><b># of Checks: </b> <span t-esc="get_n_of_checks(data['form'])"/></td></tr>
+                <tr><td align="left"><b># of Covers: </b> <span t-esc="get_n_of_covers(data['form'])"/></td></tr>
+                <tr><td align="left"><b>Average per Check: </b> <span t-esc="get_average_check(data['form'])"/></td></tr>
+                <tr><td align="left"><b>Average per Cover: </b> <span t-esc="get_average_cover(data['form'])"/></td></tr>
+            </table>
+            <br></br><br></br>
+            <table class="table table-bordered">
+                <tr>
+                    <td><b>Session Date</b></td>
+                    <td><b>Order</b></td>
+                    <td><b>Tables</b></td>
+                    <td><b>Check Amount</b></td>
+                    <td><b>Closed by</b></td>
+                    <td><b>Reason</b></td>
+                    <td width="100"><b>Explanation</b></td>
+                </tr>
+                <t t-foreach="get_sp_orders(data['form'])" t-as="order">
+                    <tr>
+                        <td><span t-esc="order['session_date']"/></td>
+                        <td><span t-esc="order['order_name']"/></td>
+                        <td><span t-esc="order['tables']"/></td>
+                        <td><span t-esc="get_total_order(order['id'])"/></td>
+                        <td><span t-esc="order['closed_by']"/></td>
+                        <td><span t-esc="order['sp_reason']"/></td>
+                        <td><span t-esc="order['auth_note']"/></td>
+                    </tr>
+                </t>
+            </table>
+        </div>
+    </t>
+</template>
+</data>
+</openerp>

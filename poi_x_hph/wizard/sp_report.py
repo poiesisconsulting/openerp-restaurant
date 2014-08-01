@@ -19,5 +19,30 @@
 #
 ##############################################################################
 
-import report_server_closing
-import sp_report
+from openerp.osv import fields, osv
+import time
+
+from datetime import date, timedelta, datetime
+
+class sp_report(osv.osv_memory):
+    _name = 'sp.report'
+
+    _columns = {
+        'start_date': fields.date('Start date', required=True),
+        'end_date': fields.date('End date', required=True),
+    }
+
+    _defaults = {
+        'start_date': fields.date.context_today,
+        'end_date': fields.date.context_today,
+    }
+
+    def print_report(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
+        data = {
+            'ids': context.get('active_ids', []),
+            'model': context.get('active_model', 'ir.ui.menu'),
+            'form': self.read(cr, uid, ids, ['start_date', 'end_date'], context=context)[0]
+        }
+        return self.pool['report'].get_action(cr, uid, ids, 'poi_x_hph.sp_report', data=data, context=context)

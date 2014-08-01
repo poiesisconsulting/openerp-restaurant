@@ -35,11 +35,14 @@ This module adds some custom parameters to HPH
     """,
     'author': 'Poiesis Consulting',
     'depends': ['point_of_sale','poi_pos_extension','poi_pos_cashier_lock','poi_pos_table_designer'],
-    'data': ['data/report_paperformat.xml',
+    'data': ['point_of_sale_view.xml',
+             'data/report_paperformat.xml',
              'views/templates.xml',
              'wizard/server_closing_view.xml',
              'poi_x_hph_report.xml',
-             'views/report_server_closing.xml'
+             'views/report_server_closing.xml',
+             'wizard/sp_report_view.xml',
+             'views/sp_report.xml'
     ],
     'installable': True,
     'application': True,

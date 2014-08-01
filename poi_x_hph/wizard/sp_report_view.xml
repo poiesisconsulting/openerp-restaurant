@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="sp_report_view" model="ir.ui.view">
+            <field name="name">S&amp;P Report</field>
+            <field name="model">sp.report</field>
+            <field name="arch" type="xml">
+            <form string="Report Options" version="7.0">
+                <group col="4">
+                   <field name="start_date"/>
+                   <field name="end_date"/>
+                </group>
+                <footer>
+                    <button name="print_report" string="Print" type="object" default_focus="1" class="oe_highlight"/>
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+            </field>
+        </record>
+
+        <record id='sp_report_action' model='ir.actions.act_window'>
+            <field name='name'>S&amp;P Report</field>
+            <field name='res_model'>sp.report</field>
+            <field name='view_type'>form</field>
+            <field name='view_mode'>form</field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem parent="point_of_sale.menu_point_of_sale" id="sp_report_menu" action="sp_report_action" sequence="11"/>
+    </data>
+</openerp>

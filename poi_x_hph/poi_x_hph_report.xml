@@ -14,6 +14,19 @@
             <field name="paperformat_id" ref="poi_x_hph.paperformat_printerreceipt"/>
         </record>
 
+
+        <report
+            id="sp_report_action"
+            model="sp.report"
+            string="S&amp;P report"
+            report_type="qweb-pdf"
+            name="poi_x_hph.sp_report"
+            file="poi_x_hph.sp_report"
+        />
+        <record id="sp_report_action" model="ir.actions.report.xml">
+            <field name="paperformat_id" ref="report.paperformat_us"/>
+        </record>
+
     </data>
 
 </openerp>
