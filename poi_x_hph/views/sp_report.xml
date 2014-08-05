@@ -42,8 +42,7 @@
                     <td><b>Tables</b></td>
                     <td><b>Check Amount</b></td>
                     <td><b>Closed by</b></td>
-                    <td><b>Reason</b></td>
-                    <td width="100"><b>Explanation</b></td>
+
                 </tr>
                 <t t-foreach="get_sp_orders(data['form'])" t-as="order">
                     <tr>
@@ -52,8 +51,7 @@
                         <td><span t-esc="order['tables']"/></td>
                         <td><span t-esc="get_total_order(order['id'])"/></td>
                         <td><span t-esc="order['closed_by']"/></td>
-                        <td><span t-esc="order['sp_reason']"/></td>
-                        <td><span t-esc="order['auth_note']"/></td>
+
                     </tr>
                 </t>
             </table>

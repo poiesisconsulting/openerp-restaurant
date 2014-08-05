@@ -55,7 +55,16 @@ except OSError:
     _logger.error('You need wkhtmltopdf to print a pdf version of the reports.')
 else:
     out, err = process.communicate()
-    version = out.splitlines()[1].strip()
+
+    #Poiesis correction
+    try:
+        out.splitlines()[1].strip()
+    except:
+        version = out.splitlines()[0].strip()
+    else:
+        version = out.splitlines()[1].strip()
+    ###################
+
     version = version.split(' ')[1]
     if LooseVersion(version) < LooseVersion('0.12.0'):
         _logger.warning('Upgrade wkhtmltopdf to (at least) 0.12.0')

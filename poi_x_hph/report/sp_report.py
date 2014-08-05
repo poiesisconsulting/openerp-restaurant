@@ -33,10 +33,10 @@ PRODUCT_TEMPLATE_OBJ = []
 PRODUCT_PUBLIC_CATEGORY_OBJ = []
 
 TOTAL_SP = 0.00  # => subtotal --> at pos_order_line
-TOTAL_SP_TAX = 0.00  # => subtotal - subtotal_incl --> at pos_order_line
+TOT_SP_TAX = 0.00  # => subtotal - subtotal_incl --> at pos_order_line
 
-TOTAL_SP_CHECKS = 0.00
-TOTAL_SP_COVERS = 0.00
+TOT_SP_CHECKS = 0.00
+TOT_SP_COVERS = 0.00
 ###################################################
 
 class sp_report_functions(report_sxw.rml_parse):
@@ -80,12 +80,12 @@ class sp_report_functions(report_sxw.rml_parse):
         PRODUCT_PUBLIC_CATEGORY_OBJ = self.pool.get('product.public.category')
 
         # reset globals
-        global TOTAL_SP, TOTAL_SP_TAX, TOTAL_SP_CHECKS, TOTAL_SP_COVERS
+        global TOTAL_SP, TOT_SP_TAX, TOT_SP_CHECKS, TOT_SP_COVERS
         TOTAL_SP = 0.00
-        TOTAL_SP_TAX = 0.00
+        TOT_SP_TAX = 0.00
 
-        TOTAL_SP_CHECKS = 0.00
-        TOTAL_SP_COVERS = 0.00
+        TOT_SP_CHECKS = 0.00
+        TOT_SP_COVERS = 0.00
 
     def set_context(self, objects, data, ids, report_type=None):
         new_ids = ids
@@ -95,27 +95,34 @@ class sp_report_functions(report_sxw.rml_parse):
         return super(sp_report_functions, self).set_context(objects, data, new_ids, report_type=report_type)
 
     def get_sp_orders(self, cr, uid, start_date, end_date, context=None):
-        global POS_ORDER_OBJ
-        global POS_SESSION_OBJ
+        start_date += ' 00:00:00'
+        end_date += ' 23:59:59'
+        sp_journal_id = self.pool.get("pos.order").fetch_sp_journal_id(cr, uid)  # at Bacchanal --> 12
 
-        sp_ids = POS_ORDER_OBJ.search(cr, uid, [('sal_prom', '!=', None)])
-        sp_orders = POS_ORDER_OBJ.browse(cr, uid, sp_ids, context=context)
+        cr.execute("""
+        SELECT DISTINCT ord.*
 
-        session_ids = POS_SESSION_OBJ.search(cr, uid, [('start_at', '>', start_date + ' 00:00:00'),
-                                                       ('start_at', '<', end_date + ' 23:59:59')])
-        sessions = POS_SESSION_OBJ.browse(cr, uid, session_ids, context=context)
+        FROM account_bank_statement bs
 
-        sp_orders_in_range = []
-        for session in sessions:
-            for sp_order in sp_orders:
-                if session.id == sp_order.session_id.id:
-                    sp_orders_in_range.append(sp_order)
+        JOIN account_bank_statement_line bsl
+            ON bs.journal_id = '%s'
+            AND bsl.statement_id = bs.id
 
-        return sp_orders_in_range
+        JOIN pos_order ord
+            ON bsl.pos_statement_id = ord.id
+
+        JOIN pos_session ses
+            ON ses.id = ord.session_id
+            AND ses.start_at >= '%s' AND ses.start_at <= '%s'
+        """ % (sp_journal_id, start_date, end_date))
+
+        orders = self.cr.dictfetchall()
+
+        return orders
 
     def get_lines_in_order(self, cr, uid, order, context=None):
         global POS_ORDER_LINE_OBJ
-        order_lines_ids = POS_ORDER_LINE_OBJ.search(cr, uid, [('order_id', '=', order.id)])
+        order_lines_ids = POS_ORDER_LINE_OBJ.search(cr, uid, [('order_id', '=', order['id'])])
         order_lines = POS_ORDER_LINE_OBJ.browse(cr, uid, order_lines_ids, context=context)
 
         return order_lines
@@ -167,9 +174,9 @@ class sp_report_functions(report_sxw.rml_parse):
 
     def _get_total_food_sp(self, form):
         totals = self.get_total_category(self.cr, self.uid, form, "food")
-        global TOTAL_SP, TOTAL_SP_TAX
+        global TOTAL_SP, TOT_SP_TAX
         TOTAL_SP += totals[0]
-        TOTAL_SP_TAX += totals[1]
+        TOT_SP_TAX += totals[1]
         return "%.2f" % totals[0]
 
     def _get_total_liquor_sp(self, form):
@@ -186,16 +193,16 @@ class sp_report_functions(report_sxw.rml_parse):
 
     def _get_total_beverage_sp(self, form):
         totals = self.get_total_category(self.cr, self.uid, form, "beverage")
-        global TOTAL_SP, TOTAL_SP_TAX
+        global TOTAL_SP, TOT_SP_TAX
         TOTAL_SP += totals[0]
-        TOTAL_SP_TAX += totals[1]
+        TOT_SP_TAX += totals[1]
         return "%.2f" % totals[0]
 
     def _get_total_misc_sp(self, form):
         totals = self.get_total_category(self.cr, self.uid, form, "misc")
-        global TOTAL_SP, TOTAL_SP_TAX
+        global TOTAL_SP, TOT_SP_TAX
         TOTAL_SP += totals[0]
-        TOTAL_SP_TAX += totals[1]
+        TOT_SP_TAX += totals[1]
         return "%.2f" % totals[0]
 
     def _get_total_sales_sp(self, form):
@@ -203,8 +210,8 @@ class sp_report_functions(report_sxw.rml_parse):
         return "%.2f" % TOTAL_SP
 
     def _get_total_taxes(self, form):
-        global TOTAL_SP_TAX
-        return "%.2f" % TOTAL_SP_TAX
+        global TOT_SP_TAX
+        return "%.2f" % TOT_SP_TAX
 
     def _get_total_gratuities(self, form):
         total_gratuities = 0.00
@@ -217,63 +224,69 @@ class sp_report_functions(report_sxw.rml_parse):
         return total_gratuities
 
     def _get_total_collected(self, form):
-        global TOTAL_SP, TOTAL_SP_TAX
-        return "%.2f" % (TOTAL_SP + TOTAL_SP_TAX)
+        global TOTAL_SP, TOT_SP_TAX
+        return "%.2f" % (TOTAL_SP + TOT_SP_TAX)
 
     def _get_n_of_checks(self, form):
         sp_orders = self.get_sp_orders(self.cr, self.uid, form['start_date'], form['end_date'])
-        global TOTAL_SP_CHECKS
-        TOTAL_SP_CHECKS = sp_orders.__len__()
-        return "%.2f" % TOTAL_SP_CHECKS
+        global TOT_SP_CHECKS
+        TOT_SP_CHECKS = sp_orders.__len__()
+        return "%.2f" % TOT_SP_CHECKS
 
     def _get_n_of_covers(self, form):
         sp_orders = self.get_sp_orders(self.cr, self.uid, form['start_date'], form['end_date'])
-        global TOTAL_SP_COVERS
+        global TOT_SP_COVERS
         for order in sp_orders:
-            TOTAL_SP_COVERS += order.covers
-        return "%.2f" % TOTAL_SP_COVERS
+            TOT_SP_COVERS += order['covers']
+        return "%.2f" % TOT_SP_COVERS
 
     def _get_average_check(self, form):
-        global TOTAL_SP, TOTAL_SP_CHECKS
-        if TOTAL_SP_CHECKS > 0:
-            return "%.2f" % (TOTAL_SP / TOTAL_SP_CHECKS)
+        global TOTAL_SP, TOT_SP_CHECKS
+        if TOT_SP_CHECKS > 0:
+            return "%.2f" % (TOTAL_SP / TOT_SP_CHECKS)
         else:
             return "%.2f" % 0.00
 
     def _get_average_cover(self, form):
-        global TOTAL_SP, TOTAL_SP_COVERS
-        if TOTAL_SP_COVERS > 0:
-            return "%.2f" % (TOTAL_SP / TOTAL_SP_COVERS)
+        global TOTAL_SP, TOT_SP_COVERS
+        if TOT_SP_COVERS > 0:
+            return "%.2f" % (TOTAL_SP / TOT_SP_COVERS)
         else:
             return "%.2f" % 0.00
 
     def _get_sp_orders(self, form):
         start_date = form['start_date'] + ' 00:00:00'
         end_date = form['end_date'] + ' 23:59:59'
+        sp_journal_id = self.pool.get("pos.order").fetch_sp_journal_id(self.cr, self.uid)  # at Bacchanal --> 12
+
         self.cr.execute("""
-            SELECT
-                ord.id as "id",
+            SELECT DISTINCT ord.id as "id",
                 date(ses.start_at) as "session_date",
                 ord.name as "order_name",
                 usr_close.name as "closed_by",
-                ord.tables as "tables",
-                sp.reason as "sp_reason",
-                ord.auth_note as "auth_note"
+                ord.tables as "tables"
 
-            FROM pos_order ord
+            FROM account_bank_statement bs
+
+            JOIN account_bank_statement_line bsl
+                ON bs.journal_id = '%s'
+                AND bsl.statement_id = bs.id
+
+            JOIN pos_order ord
+                ON bsl.pos_statement_id = ord.id
+
             JOIN pos_session ses
-                ON ord.sal_prom > 0
-                AND ses.id = ord.session_id
+                ON ses.id = ord.session_id
                 AND ses.start_at >= '%s' AND ses.start_at <= '%s'
+
             JOIN res_users usrs
                 ON usrs.id = ord.user_id
+
             JOIN res_partner usr_close
                 ON usr_close.id = usrs.partner_id
-            JOIN pos_sales_promotions sp
-                ON sp.id = ord.sal_prom
 
             ORDER BY "session_date" asc
-        """ % (start_date, end_date))
+        """ % (sp_journal_id, start_date, end_date))
 
         orders = self.cr.dictfetchall()
 
@@ -284,8 +297,7 @@ class sp_report_functions(report_sxw.rml_parse):
         global POS_ORDER_OBJ
         order = POS_ORDER_OBJ.browse(self.cr, self.uid, order_id)
         for line in self.get_lines_in_order(self.cr, self.uid, order):
-            # todo: if product = GRATUTY ???
-            product = self.get_product_in_line(cr, uid, line)
+            product = self.get_product_in_line(self.cr, self.uid, line)
             if product[1].name.upper() != 'GRATUITY':
                 total += line.price_subtotal  # This is the amount without tax
         return "%.2f" % total
