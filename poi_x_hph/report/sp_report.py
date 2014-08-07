@@ -264,7 +264,8 @@ class sp_report_functions(report_sxw.rml_parse):
                 date(ses.start_at) as "session_date",
                 ord.name as "order_name",
                 usr_close.name as "closed_by",
-                ord.tables as "tables"
+                ord.tables as "tables",
+                sp.reason as "sp_reason"
 
             FROM account_bank_statement bs
 
@@ -284,6 +285,9 @@ class sp_report_functions(report_sxw.rml_parse):
 
             JOIN res_partner usr_close
                 ON usr_close.id = usrs.partner_id
+
+            left outer JOIN pos_sales_promotions sp
+                ON sp.id = ord.sal_prom
 
             ORDER BY "session_date" asc
         """ % (sp_journal_id, start_date, end_date))
