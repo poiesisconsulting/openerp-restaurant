@@ -21,8 +21,10 @@
             <table class="table table-condensed">
                 <tr><td align="left"><b>Total Food S&amp;P: </b> <span t-esc="get_total_food_sp(data['form'])"/></td></tr>
                 <tr><td align="left"><b>Total Liquor S&amp;P: </b> <span t-esc="get_total_liquor_sp(data['form'])"/></td></tr>
+                <tr><td align="left"><b>Total Cocktail S&amp;P: </b> <span t-esc="get_total_cocktail_sp(data['form'])"/></td></tr>
                 <tr><td align="left"><b>Total Wine S&amp;P: </b> <span t-esc="get_total_wine_sp(data['form'])"/></td></tr>
                 <tr><td align="left"><b>Total Beer S&amp;P: </b> <span t-esc="get_total_beer_sp(data['form'])"/></td></tr>
+                <tr><td align="left"><b>Total Non Alcoholic S&amp;P: </b> <span t-esc="get_total_nonalcoholic_sp(data['form'])"/></td></tr>
                 <tr><td align="left"><b>Total Beverage S&amp;P: </b> <span t-esc="get_total_beverage_sp(data['form'])"/></td></tr>
                 <tr><td align="left"><b>Total Misc S&amp;P: </b> <span t-esc="get_total_misc_sp(data['form'])"/></td></tr>
                 <tr><td align="left"><b>Total Sales &amp; Promotions: </b> <span t-esc="get_total_sales_sp(data['form'])"/></td></tr>
@@ -34,25 +36,43 @@
                 <tr><td align="left"><b>Average per Check: </b> <span t-esc="get_average_check(data['form'])"/></td></tr>
                 <tr><td align="left"><b>Average per Cover: </b> <span t-esc="get_average_cover(data['form'])"/></td></tr>
             </table>
-            <br></br><br></br>
+
             <table class="table table-bordered">
-                <tr>
+                <tr style="border: 2px solid black">
                     <td><b>Session Date</b></td>
                     <td><b>Order</b></td>
                     <td><b>Tables</b></td>
+                    <td><b>S&amp;P %</b></td>
+                    <td><b>S&amp;P Amount</b></td>
                     <td><b>Check Amount</b></td>
                     <td><b>Closed by</b></td>
                     <td><b>Reason</b></td>
                 </tr>
                 <t t-foreach="get_sp_orders(data['form'])" t-as="order">
-                    <tr>
-                        <td><span t-esc="order['session_date']"/></td>
-                        <td><span t-esc="order['order_name']"/></td>
-                        <td><span t-esc="order['tables']"/></td>
-                        <td><span t-esc="get_total_order(order['id'])"/></td>
-                        <td><span t-esc="order['closed_by']"/></td>
-                        <td><span t-esc="order['sp_reason']"/></td>
-                    </tr>
+                    <t t-if="order['sp_percentage'] != '100.00'">
+                        <tr style="background-color: lightgray">
+                            <td><span t-esc="order['session_date']"/></td>
+                            <td><span t-esc="order['order_name']"/></td>
+                            <td><span t-esc="order['tables']"/></td>
+                            <td><span t-esc="order['sp_percentage']"/></td>
+                            <td><span t-esc="order['sp_amount']"/></td>
+                            <td><span t-esc="order['tot_w_tax_rnd']"/></td>
+                            <td><span t-esc="order['closed_by']"/></td>
+                            <td><span t-esc="order['sp_reason']"/></td>
+                        </tr>
+                    </t>
+                    <t t-if="order['sp_percentage'] == '100.00'">
+                        <tr>
+                            <td><span t-esc="order['session_date']"/></td>
+                            <td><span t-esc="order['order_name']"/></td>
+                            <td><span t-esc="order['tables']"/></td>
+                            <td><span t-esc="order['sp_percentage']"/></td>
+                            <td><span t-esc="order['sp_amount']"/></td>
+                            <td><span t-esc="order['tot_w_tax_rnd']"/></td>
+                            <td><span t-esc="order['closed_by']"/></td>
+                            <td><span t-esc="order['sp_reason']"/></td>
+                        </tr>
+                    </t>
                 </t>
             </table>
         </div>

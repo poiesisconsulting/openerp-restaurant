@@ -34,6 +34,7 @@ PRODUCT_PUBLIC_CATEGORY_OBJ = []
 
 TOTAL_SP = 0.00  # => subtotal --> at pos_order_line
 TOT_SP_TAX = 0.00  # => subtotal - subtotal_incl --> at pos_order_line
+TOT_SP_GRATUITIES = 0.00
 
 TOT_SP_CHECKS = 0.00
 TOT_SP_COVERS = 0.00
@@ -48,8 +49,10 @@ class sp_report_functions(report_sxw.rml_parse):
         self.localcontext.update({
             'get_total_food_sp': self._get_total_food_sp,
             'get_total_liquor_sp': self._get_total_liquor_sp,
+            'get_total_cocktail_sp': self._get_total_cocktail_sp,
             'get_total_wine_sp': self._get_total_wine_sp,
             'get_total_beer_sp': self._get_total_beer_sp,
+            'get_total_nonalcoholic_sp': self._get_total_nonalcoholic_sp,
             'get_total_beverage_sp': self._get_total_beverage_sp,
             'get_total_misc_sp': self._get_total_misc_sp,
             'get_total_sales_sp': self._get_total_sales_sp,
@@ -94,31 +97,74 @@ class sp_report_functions(report_sxw.rml_parse):
             objects = self.pool.get('account.account').browse(self.cr, self.uid, new_ids)
         return super(sp_report_functions, self).set_context(objects, data, new_ids, report_type=report_type)
 
-    def get_sp_orders(self, cr, uid, start_date, end_date, context=None):
-        start_date += ' 00:00:00'
-        end_date += ' 23:59:59'
-        sp_journal_id = self.pool.get("pos.order").fetch_sp_journal_id(cr, uid)  # at Bacchanal --> 12
+    def _get_sp_orders(self, form):
+        start_date = form['start_date'] + ' 00:00:00'
+        end_date = form['end_date'] + ' 23:59:59'
+        sp_journal_id = self.pool.get("pos.order").fetch_sp_journal_id(self.cr, self.uid)  # at Bacchanal --> 12
 
-        cr.execute("""
-        SELECT DISTINCT ord.*
+        self.cr.execute("""
+            SELECT DISTINCT ord.id as "id",
+                date(ses.start_at) as "session_date",
+                ord.name as "order_name",
+                ord.covers as "covers",
+                usr_close.name as "closed_by",
+                ord.tables as "tables",
+                sp.reason as "sp_reason",
+                bsl.amount as "sp_amount"
 
-        FROM account_bank_statement bs
+            FROM account_bank_statement bs
 
-        JOIN account_bank_statement_line bsl
-            ON bs.journal_id = '%s'
-            AND bsl.statement_id = bs.id
+            JOIN account_bank_statement_line bsl
+                ON bs.journal_id = '%s'
+                AND bsl.statement_id = bs.id
+                AND bsl.amount > 0
 
-        JOIN pos_order ord
-            ON bsl.pos_statement_id = ord.id
+            JOIN pos_order ord
+                ON bsl.pos_statement_id = ord.id
 
-        JOIN pos_session ses
-            ON ses.id = ord.session_id
-            AND ses.start_at >= '%s' AND ses.start_at <= '%s'
+            JOIN pos_session ses
+                ON ses.id = ord.session_id
+                AND ses.start_at >= '%s' AND ses.start_at <= '%s'
+
+            JOIN res_users usrs
+                ON usrs.id = ord.user_id
+
+            JOIN res_partner usr_close
+                ON usr_close.id = usrs.partner_id
+
+            left outer JOIN pos_sales_promotions sp
+                ON sp.id = ord.sal_prom
+
+            ORDER BY "session_date" asc
         """ % (sp_journal_id, start_date, end_date))
 
         orders = self.cr.dictfetchall()
-
+        for order in orders:
+            if self._get_total_order(order['id'])['tot_no_tax'] < 0:
+                orders.remove(order)
+            else:
+                order['tot_no_tax'] = self._get_total_order(order['id'])['tot_no_tax']
+                order['tot_w_tax'] = self._get_total_order(order['id'])['tot_w_tax']
+                order['tot_no_tax_rnd'] = self._get_total_order(order['id'])['tot_no_tax_rnd']
+                order['tot_w_tax_rnd'] = self._get_total_order(order['id'])['tot_w_tax_rnd']
+                order['sp_percentage'] = "%.2f" % ((order['sp_amount'] / order['tot_w_tax']) * 100)
         return orders
+
+    def _get_total_order(self, order_id):
+        tot_no_tax = 0.00
+        tot_w_tax = 0.00
+        global POS_ORDER_OBJ
+        order = POS_ORDER_OBJ.browse(self.cr, self.uid, order_id)
+        for line in self.get_lines_in_order(self.cr, self.uid, order):
+            tot_no_tax += line.price_subtotal
+            tot_w_tax += line.price_subtotal_incl
+
+        return {
+            'tot_no_tax': tot_no_tax,
+            'tot_w_tax': tot_w_tax,
+            'tot_no_tax_rnd': "%.2f" % tot_no_tax,
+            'tot_w_tax_rnd': "%.2f" % tot_w_tax
+        }
 
     def get_lines_in_order(self, cr, uid, order, context=None):
         global POS_ORDER_LINE_OBJ
@@ -160,17 +206,21 @@ class sp_report_functions(report_sxw.rml_parse):
 
     def get_total_category(self, cr, uid, form, cat_name, context=None):
         totals = [0.00, 0.00]
-        for order in self.get_sp_orders(cr, uid, form['start_date'], form['end_date']):
+        for order in self._get_sp_orders(form):
             for line in self.get_lines_in_order(cr, uid, order):
                 product = self.get_product_in_line(cr, uid, line)
+                percentage = float(order['sp_percentage']) / 100
                 if self.has_category(cr, uid, product, cat_name):
-                    totals[0] += line.price_subtotal  # This is the amount without tax
-                    totals[1] += line.price_subtotal_incl - line.price_subtotal  # This is the tax
+                    #totals[0] += line.price_subtotal * percentage  # amount without tax
+                    #totals[1] += (line.price_subtotal_incl * percentage) - (line.price_subtotal * percentage)  # the tax
+                    totals[0] += line.price_subtotal  # amount without tax
+                    totals[1] += line.price_subtotal_incl - line.price_subtotal  # the tax
         return totals
 
-    ###### localcontext functions ##########################################
-    # name of category can be upper-lower case (nevermind)
-    # "%.2f" % total >> always shows 'total' with two decimals
+###########################################################
+###### local context functions ############################
+# name of category can be upper-lower case (nevermind)
+# "%.2f" % total >> always shows 'total' with two decimals
 
     def _get_total_food_sp(self, form):
         totals = self.get_total_category(self.cr, self.uid, form, "food")
@@ -183,12 +233,20 @@ class sp_report_functions(report_sxw.rml_parse):
         totals = self.get_total_category(self.cr, self.uid, form, "liquor")
         return "%.2f" % totals[0]
 
+    def _get_total_cocktail_sp(self, form):
+        totals = self.get_total_category(self.cr, self.uid, form, "cocktails")
+        return "%.2f" % totals[0]
+
     def _get_total_wine_sp(self, form):
         totals = self.get_total_category(self.cr, self.uid, form, "wine")
         return "%.2f" % totals[0]
 
     def _get_total_beer_sp(self, form):
         totals = self.get_total_category(self.cr, self.uid, form, "beer")
+        return "%.2f" % totals[0]
+
+    def _get_total_nonalcoholic_sp(self, form):
+        totals = self.get_total_category(self.cr, self.uid, form, "non alcoholic")
         return "%.2f" % totals[0]
 
     def _get_total_beverage_sp(self, form):
@@ -214,27 +272,28 @@ class sp_report_functions(report_sxw.rml_parse):
         return "%.2f" % TOT_SP_TAX
 
     def _get_total_gratuities(self, form):
-        total_gratuities = 0.00
-        for order in self.get_sp_orders(self.cr, self.uid, form['start_date'], form['end_date']):
+        global TOT_SP_GRATUITIES
+        TOT_SP_GRATUITIES = 0.00
+        for order in self._get_sp_orders(form):
             for line in self.get_lines_in_order(self.cr, self.uid, order):
                 product = self.get_product_in_line(self.cr, self.uid, line)
-                if product[1].name.upper() == 'GRATUITY':
-                    total_gratuities += line.price_subtotal
+                if product[1].name.upper() == 'GRATUITY' and line.price_subtotal >= 0:
+                    TOT_SP_GRATUITIES += line.price_subtotal
 
-        return total_gratuities
+        return TOT_SP_GRATUITIES
 
     def _get_total_collected(self, form):
-        global TOTAL_SP, TOT_SP_TAX
-        return "%.2f" % (TOTAL_SP + TOT_SP_TAX)
+        global TOTAL_SP, TOT_SP_TAX, TOT_SP_GRATUITIES
+        return "%.2f" % (TOTAL_SP + TOT_SP_TAX + TOT_SP_GRATUITIES)
 
     def _get_n_of_checks(self, form):
-        sp_orders = self.get_sp_orders(self.cr, self.uid, form['start_date'], form['end_date'])
+        sp_orders = self._get_sp_orders(form)
         global TOT_SP_CHECKS
         TOT_SP_CHECKS = sp_orders.__len__()
         return "%.2f" % TOT_SP_CHECKS
 
     def _get_n_of_covers(self, form):
-        sp_orders = self.get_sp_orders(self.cr, self.uid, form['start_date'], form['end_date'])
+        sp_orders = self._get_sp_orders(form)
         global TOT_SP_COVERS
         for order in sp_orders:
             TOT_SP_COVERS += order['covers']
@@ -253,58 +312,6 @@ class sp_report_functions(report_sxw.rml_parse):
             return "%.2f" % (TOTAL_SP / TOT_SP_COVERS)
         else:
             return "%.2f" % 0.00
-
-    def _get_sp_orders(self, form):
-        start_date = form['start_date'] + ' 00:00:00'
-        end_date = form['end_date'] + ' 23:59:59'
-        sp_journal_id = self.pool.get("pos.order").fetch_sp_journal_id(self.cr, self.uid)  # at Bacchanal --> 12
-
-        self.cr.execute("""
-            SELECT DISTINCT ord.id as "id",
-                date(ses.start_at) as "session_date",
-                ord.name as "order_name",
-                usr_close.name as "closed_by",
-                ord.tables as "tables",
-                sp.reason as "sp_reason"
-
-            FROM account_bank_statement bs
-
-            JOIN account_bank_statement_line bsl
-                ON bs.journal_id = '%s'
-                AND bsl.statement_id = bs.id
-
-            JOIN pos_order ord
-                ON bsl.pos_statement_id = ord.id
-
-            JOIN pos_session ses
-                ON ses.id = ord.session_id
-                AND ses.start_at >= '%s' AND ses.start_at <= '%s'
-
-            JOIN res_users usrs
-                ON usrs.id = ord.user_id
-
-            JOIN res_partner usr_close
-                ON usr_close.id = usrs.partner_id
-
-            left outer JOIN pos_sales_promotions sp
-                ON sp.id = ord.sal_prom
-
-            ORDER BY "session_date" asc
-        """ % (sp_journal_id, start_date, end_date))
-
-        orders = self.cr.dictfetchall()
-
-        return orders
-
-    def _get_total_order(self, order_id):
-        total = 0.00
-        global POS_ORDER_OBJ
-        order = POS_ORDER_OBJ.browse(self.cr, self.uid, order_id)
-        for line in self.get_lines_in_order(self.cr, self.uid, order):
-            product = self.get_product_in_line(self.cr, self.uid, line)
-            if product[1].name.upper() != 'GRATUITY':
-                total += line.price_subtotal  # This is the amount without tax
-        return "%.2f" % total
 
 class sp_report(osv.AbstractModel):
     _name = 'report.poi_x_hph.sp_report'
