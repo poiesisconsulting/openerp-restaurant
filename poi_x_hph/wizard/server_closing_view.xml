@@ -29,10 +29,7 @@
             <field name="target">new</field>
         </record>
 
-        <menuitem parent="point_of_sale.menu_point_of_sale" id="menu_hph_server_closing_report" action="hph_server_closing_report_action" sequence="10"/>
-
-
-
+        <menuitem parent="point_of_sale.menu_point_rep" id="menu_hph_server_closing_report" action="hph_server_closing_report_action" sequence="10"/>
 
     </data>
 </openerp>
