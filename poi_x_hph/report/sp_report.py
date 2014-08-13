@@ -246,8 +246,6 @@ class sp_report_functions(report_sxw.rml_parse):
 
     def _get_total_gratuities(self, form):
         total = self._get_total(form, "gratuities")
-        if total < 0:
-            total = 0.00
         return "%.2f" % total
 
     def _get_total_collected(self, form):
