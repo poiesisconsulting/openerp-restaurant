@@ -189,7 +189,8 @@ function poi_extension_screens(instance, module){
             var self = this;
             this.pos.get_order_sys(order_id).then(function(order_data){
                 order_button = self.find_order_button(order_id);
-                order_button.refresh_button(order_data);
+                if (order_button)
+                    order_button.refresh_button(order_data);
             })
 
         },
