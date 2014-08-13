@@ -5,7 +5,7 @@
 # Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
 #
 # This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
+# it under the terms of the GNU Affero General Public License as
 #    published by the Free Software Foundation, either version 3 of the
 #    License, or (at your option) any later version.
 #
@@ -24,21 +24,6 @@ import time
 from openerp.osv import osv
 from openerp.report import report_sxw
 
-# Global Variables to be used in various functions
-POS_SESSION_OBJ = []
-POS_ORDER_OBJ = []
-POS_ORDER_LINE_OBJ = []
-PRODUCT_PRODUCT_OBJ = []
-PRODUCT_TEMPLATE_OBJ = []
-PRODUCT_PUBLIC_CATEGORY_OBJ = []
-
-TOTAL_SP = 0.00  # => subtotal --> at pos_order_line
-TOT_SP_TAX = 0.00  # => subtotal - subtotal_incl --> at pos_order_line
-TOT_SP_GRATUITIES = 0.00
-
-TOT_SP_CHECKS = 0.00
-TOT_SP_COVERS = 0.00
-###################################################
 
 class sp_report_functions(report_sxw.rml_parse):
     _name = 'report.account.account.balance'
@@ -68,27 +53,6 @@ class sp_report_functions(report_sxw.rml_parse):
             'get_total_order': self._get_total_order,
         })
         self.context = context
-
-        global POS_SESSION_OBJ, \
-            POS_ORDER_OBJ, \
-            POS_ORDER_LINE_OBJ, \
-            PRODUCT_PRODUCT_OBJ, \
-            PRODUCT_TEMPLATE_OBJ, \
-            PRODUCT_PUBLIC_CATEGORY_OBJ
-        POS_SESSION_OBJ = self.pool.get('pos.session')
-        POS_ORDER_OBJ = self.pool.get('pos.order')
-        POS_ORDER_LINE_OBJ = self.pool.get('pos.order.line')
-        PRODUCT_PRODUCT_OBJ = self.pool.get('product.product')
-        PRODUCT_TEMPLATE_OBJ = self.pool.get('product.template')
-        PRODUCT_PUBLIC_CATEGORY_OBJ = self.pool.get('product.public.category')
-
-        # reset globals
-        global TOTAL_SP, TOT_SP_TAX, TOT_SP_CHECKS, TOT_SP_COVERS
-        TOTAL_SP = 0.00
-        TOT_SP_TAX = 0.00
-
-        TOT_SP_CHECKS = 0.00
-        TOT_SP_COVERS = 0.00
 
     def set_context(self, objects, data, ids, report_type=None):
         new_ids = ids
@@ -140,176 +104,179 @@ class sp_report_functions(report_sxw.rml_parse):
 
         orders = self.cr.dictfetchall()
         for order in orders:
-            if self._get_total_order(order['id'])['tot_no_tax'] < 0:
+            tot_order = self._get_total_order(order['id'])
+            if tot_order['tot_no_tax'] < 0:
                 orders.remove(order)
             else:
-                order['tot_no_tax'] = self._get_total_order(order['id'])['tot_no_tax']
-                order['tot_w_tax'] = self._get_total_order(order['id'])['tot_w_tax']
-                order['tot_no_tax_rnd'] = self._get_total_order(order['id'])['tot_no_tax_rnd']
-                order['tot_w_tax_rnd'] = self._get_total_order(order['id'])['tot_w_tax_rnd']
-                order['sp_percentage'] = "%.2f" % ((order['sp_amount'] / order['tot_w_tax']) * 100)
+                order['tot_no_tax'] = tot_order['tot_no_tax']
+                order['tot_w_tax'] = tot_order['tot_w_tax']
+                order['n_lines'] = tot_order['n_lines']
+                order['sp_percentage'] = "%.2f" % ((order['sp_amount'] / tot_order['tot_w_tax']) * 100)
         return orders
 
     def _get_total_order(self, order_id):
         tot_no_tax = 0.00
         tot_w_tax = 0.00
-        global POS_ORDER_OBJ
-        order = POS_ORDER_OBJ.browse(self.cr, self.uid, order_id)
-        for line in self.get_lines_in_order(self.cr, self.uid, order):
+        n_lines = 0
+
+        for line in self._get_lines_in_order(order_id):
             tot_no_tax += line.price_subtotal
             tot_w_tax += line.price_subtotal_incl
+            n_lines += 1
 
         return {
             'tot_no_tax': tot_no_tax,
             'tot_w_tax': tot_w_tax,
-            'tot_no_tax_rnd': "%.2f" % tot_no_tax,
-            'tot_w_tax_rnd': "%.2f" % tot_w_tax
+            'n_lines': n_lines
         }
 
-    def get_lines_in_order(self, cr, uid, order, context=None):
-        global POS_ORDER_LINE_OBJ
-        order_lines_ids = POS_ORDER_LINE_OBJ.search(cr, uid, [('order_id', '=', order['id'])])
-        order_lines = POS_ORDER_LINE_OBJ.browse(cr, uid, order_lines_ids, context=context)
+    def _get_lines_in_order(self, order_id):
+        pos_order_line_obj = self.pool.get("pos.order.line")
+        order_line_ids = pos_order_line_obj.search(self.cr, self.uid, [('order_id', '=', order_id)])
+        order_lines = pos_order_line_obj.browse(self.cr, self.uid, order_line_ids)
 
         return order_lines
 
-    def get_product_in_line(self, cr, uid, line, context=None):
-        global PRODUCT_PRODUCT_OBJ
-        global PRODUCT_TEMPLATE_OBJ
+    def _get_product_in_line(self, prod_id):
+        product_product_obj = self.pool.get('product.product')
+        product_template_obj = self.pool.get('product.template')
 
-        prod_id = line.product_id.id
-        product = PRODUCT_PRODUCT_OBJ.browse(cr, uid, prod_id, context=context)
+        product = product_product_obj.browse(self.cr, self.uid, prod_id)
 
         prod_tmp_id = product.product_tmpl_id.id
-        product_template = PRODUCT_TEMPLATE_OBJ.browse(cr, uid, prod_tmp_id, context=context)
+        product_template = product_template_obj.browse(self.cr, self.uid, prod_tmp_id)
 
-        product = [product, product_template]
-        return product
+        return [product, product_template]
 
-    def get_categories_string(self, cr, uid, product, context=None):
-        global PRODUCT_PUBLIC_CATEGORY_OBJ
+    def _get_categories_string(self, product):
+        product_public_category_obj = self.pool.get('product.public.category')
 
         cat_id = product[1].public_categ_id.id
         cat_str = []
         while cat_id:
-            category = PRODUCT_PUBLIC_CATEGORY_OBJ.browse(cr, uid, cat_id, context=context)
+            category = product_public_category_obj.browse(self.cr, self.uid, cat_id)
             cat_str.append([cat_id, category.name])
 
             cat_id = category.parent_id.id
         return cat_str
 
-    def has_category(self, cr, uid, product, cat_name, context=None):
-        for cat in self.get_categories_string(cr, uid, product):
+    def _has_category(self, product, cat_name):
+        for cat in self._get_categories_string(product):
             if cat[1].upper() == cat_name.upper():
                 return True
         return False
 
-    def get_total_category(self, cr, uid, form, cat_name, context=None):
-        totals = [0.00, 0.00]
-        for order in self._get_sp_orders(form):
-            for line in self.get_lines_in_order(cr, uid, order):
-                product = self.get_product_in_line(cr, uid, line)
-                percentage = float(order['sp_percentage']) / 100
-                if self.has_category(cr, uid, product, cat_name):
-                    #totals[0] += line.price_subtotal * percentage  # amount without tax
-                    #totals[1] += (line.price_subtotal_incl * percentage) - (line.price_subtotal * percentage)  # the tax
-                    totals[0] += line.price_subtotal  # amount without tax
-                    totals[1] += line.price_subtotal_incl - line.price_subtotal  # the tax
-        return totals
+    def _get_total(self, form, filter):
+        total = 0
 
-###########################################################
-###### local context functions ############################
-# name of category can be upper-lower case (nevermind)
-# "%.2f" % total >> always shows 'total' with two decimals
+        for order in self._get_sp_orders(form):
+            for line in self._get_lines_in_order(order['id']):
+                product = self._get_product_in_line(line.product_id.id)
+                percentage = float(order['sp_percentage']) / 100
+                amount_wo_tax = line.price_subtotal * percentage
+                amount_with_tax = line.price_subtotal_incl * percentage
+
+                if filter == 'tax':
+                    total += amount_with_tax - amount_wo_tax
+
+                elif filter == 'gratuities' and product[1].name.upper() == 'GRATUITY':
+                        total += amount_wo_tax
+
+                elif self._has_category(product, filter):  # filter must be a category name
+                        total += amount_wo_tax
+
+        return total
+
+    def _get_sp_total(self, form):
+        food = self._get_total(form, "food")
+        beverage = self._get_total(form, "beverage")
+        misc = self._get_total(form, "misc")
+
+        return food + beverage + misc
+    ###########################################################
+    ###### local context functions ############################
+    # name of category can be upper-lower case (nevermind)
+    # "%.2f" % total >> always shows 'total' with two decimals
 
     def _get_total_food_sp(self, form):
-        totals = self.get_total_category(self.cr, self.uid, form, "food")
-        global TOTAL_SP, TOT_SP_TAX
-        TOTAL_SP += totals[0]
-        TOT_SP_TAX += totals[1]
-        return "%.2f" % totals[0]
+        total = self._get_total(form, "food")
+        return "%.2f" % total
 
     def _get_total_liquor_sp(self, form):
-        totals = self.get_total_category(self.cr, self.uid, form, "liquor")
-        return "%.2f" % totals[0]
+        total = self._get_total(form, "liquor")
+        return "%.2f" % total
 
     def _get_total_cocktail_sp(self, form):
-        totals = self.get_total_category(self.cr, self.uid, form, "cocktails")
-        return "%.2f" % totals[0]
+        total = self._get_total(form, "cocktails")
+        return "%.2f" % total
 
     def _get_total_wine_sp(self, form):
-        totals = self.get_total_category(self.cr, self.uid, form, "wine")
-        return "%.2f" % totals[0]
+        total = self._get_total(form, "wine")
+        return "%.2f" % total
 
     def _get_total_beer_sp(self, form):
-        totals = self.get_total_category(self.cr, self.uid, form, "beer")
-        return "%.2f" % totals[0]
+        total = self._get_total(form, "beer")
+        return "%.2f" % total
 
     def _get_total_nonalcoholic_sp(self, form):
-        totals = self.get_total_category(self.cr, self.uid, form, "non alcoholic")
-        return "%.2f" % totals[0]
+        total = self._get_total(form, "non alcoholic")
+        return "%.2f" % total
 
     def _get_total_beverage_sp(self, form):
-        totals = self.get_total_category(self.cr, self.uid, form, "beverage")
-        global TOTAL_SP, TOT_SP_TAX
-        TOTAL_SP += totals[0]
-        TOT_SP_TAX += totals[1]
-        return "%.2f" % totals[0]
+        total = self._get_total(form, "beverage")
+        return "%.2f" % total
 
     def _get_total_misc_sp(self, form):
-        totals = self.get_total_category(self.cr, self.uid, form, "misc")
-        global TOTAL_SP, TOT_SP_TAX
-        TOTAL_SP += totals[0]
-        TOT_SP_TAX += totals[1]
-        return "%.2f" % totals[0]
+        total = self._get_total(form, "misc")
+        return "%.2f" % total
 
     def _get_total_sales_sp(self, form):
-        global TOTAL_SP
-        return "%.2f" % TOTAL_SP
+        total = self._get_sp_total(form)
+        return "%.2f" % total
 
     def _get_total_taxes(self, form):
-        global TOT_SP_TAX
-        return "%.2f" % TOT_SP_TAX
+        total = self._get_total(form, "tax")
+        return "%.2f" % total
 
     def _get_total_gratuities(self, form):
-        global TOT_SP_GRATUITIES
-        TOT_SP_GRATUITIES = 0.00
-        for order in self._get_sp_orders(form):
-            for line in self.get_lines_in_order(self.cr, self.uid, order):
-                product = self.get_product_in_line(self.cr, self.uid, line)
-                if product[1].name.upper() == 'GRATUITY' and line.price_subtotal >= 0:
-                    TOT_SP_GRATUITIES += line.price_subtotal
-
-        return TOT_SP_GRATUITIES
+        total = self._get_total(form, "gratuities")
+        return "%.2f" % total
 
     def _get_total_collected(self, form):
-        global TOTAL_SP, TOT_SP_TAX, TOT_SP_GRATUITIES
-        return "%.2f" % (TOTAL_SP + TOT_SP_TAX + TOT_SP_GRATUITIES)
+        sp_tot = self._get_sp_total(form)
+        tax = self._get_total(form, "tax")
+        gratuities = self._get_total(form, "gratuities")
+        return "%.2f" % (sp_tot + tax + gratuities)
 
     def _get_n_of_checks(self, form):
         sp_orders = self._get_sp_orders(form)
-        global TOT_SP_CHECKS
-        TOT_SP_CHECKS = sp_orders.__len__()
-        return "%.2f" % TOT_SP_CHECKS
+        return "%.2f" % sp_orders.__len__()
 
     def _get_n_of_covers(self, form):
         sp_orders = self._get_sp_orders(form)
-        global TOT_SP_COVERS
+        tot_covers = 0
         for order in sp_orders:
-            TOT_SP_COVERS += order['covers']
-        return "%.2f" % TOT_SP_COVERS
+            tot_covers += order['covers']
+        return "%.2f" % tot_covers
 
     def _get_average_check(self, form):
-        global TOTAL_SP, TOT_SP_CHECKS
-        if TOT_SP_CHECKS > 0:
-            return "%.2f" % (TOTAL_SP / TOT_SP_CHECKS)
+        sp_tot = self._get_sp_total(form)
+        sp_orders = self._get_sp_orders(form)
+
+        if sp_orders.__len__() > 0:
+            return "%.2f" % (sp_tot / sp_orders.__len__())
         else:
             return "%.2f" % 0.00
 
     def _get_average_cover(self, form):
-        global TOTAL_SP, TOT_SP_COVERS
-        if TOT_SP_COVERS > 0:
-            return "%.2f" % (TOTAL_SP / TOT_SP_COVERS)
+        sp_tot = self._get_sp_total(form)
+        tot_covers = 0
+        sp_orders = self._get_sp_orders(form)
+        for order in sp_orders:
+            tot_covers += order['covers']
+
+        if tot_covers > 0:
+            return "%.2f" % (sp_tot / tot_covers)
         else:
             return "%.2f" % 0.00
 

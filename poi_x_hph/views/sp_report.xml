@@ -56,7 +56,7 @@
                             <td><span t-esc="order['tables']"/></td>
                             <td><span t-esc="order['sp_percentage']"/></td>
                             <td><span t-esc="order['sp_amount']"/></td>
-                            <td><span t-esc="order['tot_w_tax_rnd']"/></td>
+                            <td><span t-esc="'%.2f' % order['tot_w_tax']"/></td>
                             <td><span t-esc="order['closed_by']"/></td>
                             <td><span t-esc="order['sp_reason']"/></td>
                         </tr>
@@ -68,7 +68,7 @@
                             <td><span t-esc="order['tables']"/></td>
                             <td><span t-esc="order['sp_percentage']"/></td>
                             <td><span t-esc="order['sp_amount']"/></td>
-                            <td><span t-esc="order['tot_w_tax_rnd']"/></td>
+                            <td><span t-esc="'%.2f' % order['tot_w_tax']"/></td>
                             <td><span t-esc="order['closed_by']"/></td>
                             <td><span t-esc="order['sp_reason']"/></td>
                         </tr>
