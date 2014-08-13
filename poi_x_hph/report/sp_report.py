@@ -81,7 +81,7 @@ class sp_report_functions(report_sxw.rml_parse):
             JOIN account_bank_statement_line bsl
                 ON bs.journal_id = '%s'
                 AND bsl.statement_id = bs.id
-                AND bsl.amount > 0
+                --AND bsl.amount > 0
 
             JOIN pos_order ord
                 ON bsl.pos_statement_id = ord.id
@@ -105,13 +105,19 @@ class sp_report_functions(report_sxw.rml_parse):
         orders = self.cr.dictfetchall()
         for order in orders:
             tot_order = self._get_total_order(order['id'])
-            if tot_order['tot_no_tax'] < 0:
-                orders.remove(order)
-            else:
-                order['tot_no_tax'] = tot_order['tot_no_tax']
-                order['tot_w_tax'] = tot_order['tot_w_tax']
-                order['n_lines'] = tot_order['n_lines']
-                order['sp_percentage'] = "%.2f" % ((order['sp_amount'] / tot_order['tot_w_tax']) * 100)
+
+            order['tot_no_tax'] = tot_order['tot_no_tax']
+            order['tot_w_tax'] = tot_order['tot_w_tax']
+            order['n_lines'] = tot_order['n_lines']
+            order['sp_percentage'] = "%.2f" % ((order['sp_amount'] / tot_order['tot_w_tax']) * 100)
+
+            # if tot_order['tot_no_tax'] < 0:
+            #     orders.remove(order)
+            # else:
+            #     order['tot_no_tax'] = tot_order['tot_no_tax']
+            #     order['tot_w_tax'] = tot_order['tot_w_tax']
+            #     order['n_lines'] = tot_order['n_lines']
+            #     order['sp_percentage'] = "%.2f" % ((order['sp_amount'] / tot_order['tot_w_tax']) * 100)
         return orders
 
     def _get_total_order(self, order_id):
@@ -240,6 +246,8 @@ class sp_report_functions(report_sxw.rml_parse):
 
     def _get_total_gratuities(self, form):
         total = self._get_total(form, "gratuities")
+        if total < 0:
+            total = 0.00
         return "%.2f" % total
 
     def _get_total_collected(self, form):
