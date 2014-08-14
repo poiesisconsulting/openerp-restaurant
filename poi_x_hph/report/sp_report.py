@@ -109,7 +109,10 @@ class sp_report_functions(report_sxw.rml_parse):
             order['tot_no_tax'] = tot_order['tot_no_tax']
             order['tot_w_tax'] = tot_order['tot_w_tax']
             order['n_lines'] = tot_order['n_lines']
-            order['sp_percentage'] = "%.2f" % ((order['sp_amount'] / tot_order['tot_w_tax']) * 100)
+            if tot_order['tot_w_tax'] == 0:
+                order['sp_percentage'] = "%.2f" % 100.00
+            else:
+                order['sp_percentage'] = "%.2f" % ((order['sp_amount'] / tot_order['tot_w_tax']) * 100)
 
             # if tot_order['tot_no_tax'] < 0:
             #     orders.remove(order)
